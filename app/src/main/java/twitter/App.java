@@ -3,6 +3,7 @@
  */
 package twitter;
 
+import twitter.service.postService;
 import twitter.service.userService;
 
 import java.sql.*;
@@ -14,13 +15,15 @@ public class App {
         Connection con = null;
 
         userService userService = new userService();
+        postService postService = new postService();
 
         String username = null; // use to in multiple situations
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "Grade510A!");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
+
             // need to change each local environment (change the password, connection url, and database name)
 
             while (true) {
@@ -109,7 +112,7 @@ public class App {
 
             switch (choice) {
                 case 1:
-                    //post(con, scanner, currentUser);
+                    post(con, scanner, currentUser);
                     break;
                 case 2:
                     //follow(con, scanner, currentUser); 임시로 정의해 두었습니다.
@@ -127,7 +130,7 @@ public class App {
     }
 
     public static void post(Connection con, Scanner scanner, User currentUser) {
-        while(true){
+        while(true) {
             System.out.println("1. Write a post");
             System.out.println("2. Delete a post");
             System.out.println("3. Search posts");
@@ -141,28 +144,36 @@ public class App {
 
             switch (choice) {
                 case 1:
-                    System.out.print("Enter your post: ");
-                    String post = scanner.nextLine();
-                    //postService.post(con, currentUser, post); 임시로 정의해 두었습니다.
+                    System.out.print("Enter post content: ");
+                    String content = scanner.nextLine();
+                    postService.writePost(con, currentUser, content); // 글 작성
                     break;
                 case 2:
-                    //postService.viewAllPosts(con); 임시로 정의해 두었습니다.
+                    System.out.print("Enter post ID to delete: ");
+                    int postIdToDelete = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    postService.deletePost(con, currentUser, postIdToDelete); // 글 삭제
                     break;
                 case 3:
-                    System.out.println("Exiting...");
-                    return;
+                    System.out.print("Enter search keyword: ");
+                    String keyword = scanner.nextLine();
+                    postService.searchPosts(con, keyword); // 게시글 검색
+                    break;
                 case 4:
-                    //postService.post(con, currentUser, post); 임시로 정의해 두었습니다.
+                    System.out.print("Enter post ID to like: ");
+                    int postIdToLike = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    postService.likePost(con, currentUser, postIdToLike); // 게시글 좋아요
                     break;
                 case 5:
-                    //postService.viewAllPosts(con); 임시로 정의해 두었습니다.
-                    break;
+                    System.out.println("Returning to previous menu...");
+                    return; // 이전 메뉴로 돌아감
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
-
         }
     }
+
 
     public static void follow(Connection con, Scanner scanner, User currentUser) {
     }
