@@ -3,6 +3,8 @@
  */
 package twitter;
 
+import twitter.service.userService;
+
 import java.sql.*;
 import java.util.Scanner;
 
@@ -11,24 +13,35 @@ public class App {
         Scanner scanner = new Scanner(System.in);
         Connection con = null;
 
+        userService userService = new userService();
+
+        String username = null; // use to in multiple situations
+
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
+            //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "Grade510A!");
+            // need to change each local environment (change the password, connection url, and database name)
 
             while (true) {
                 System.out.println("1. Sign Up");
                 System.out.println("2. Log In");
                 System.out.println("3. Exit");
+                System.out.println();
                 System.out.print("Choose an option: ");
                 int choice = scanner.nextInt();
                 scanner.nextLine(); // Consume newline
 
                 switch (choice) {
                     case 1:
-                        signUp(con, scanner);
+                        signUp(con, scanner, userService);
                         break;
                     case 2:
-                        logIn(con, scanner);
+                        User currentUser = logIn(con, scanner, userService);
+                        if(currentUser != null){
+                            System.out.println("Welcome, " + currentUser.getName() + "!");
+                            //selectService(con, scanner, currentUser);
+                        }
                         break;
                     case 3:
                         System.out.println("Exiting...");
@@ -37,6 +50,8 @@ public class App {
                         System.out.println("Invalid option. Please try again.");
                 }
             }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -49,7 +64,7 @@ public class App {
         }
     }
 
-    private static void signUp(Connection con, Scanner scanner) {
+    private static void signUp(Connection con, Scanner scanner, userService userService) {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
         System.out.print("Enter your password: ");
@@ -57,37 +72,27 @@ public class App {
         System.out.print("Enter your phone number: ");
         String phoneNumber = scanner.nextLine();
 
-        String query = "INSERT INTO user (name, password, phone_number) VALUES (?, ?, ?)";
-        try (PreparedStatement pstmt = con.prepareStatement(query)) {
-            pstmt.setString(1, name);
-            pstmt.setString(2, password);
-            pstmt.setString(3, phoneNumber);
-            pstmt.executeUpdate();
-            System.out.println("User registered successfully!");
+        User newUser = new User(name, password, phoneNumber);
+        try {
+            userService.signup(con, newUser);
         } catch (SQLException e) {
             System.out.println("Error occurred: " + e.getMessage());
         }
     }
 
-    private static void logIn(Connection con, Scanner scanner) {
+    private static User logIn(Connection con, Scanner scanner, userService userService) {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
 
-        String query = "SELECT * FROM user WHERE name = ? AND password = ?";
-        try (PreparedStatement pstmt = con.prepareStatement(query)) {
-            pstmt.setString(1, name);
-            pstmt.setString(2, password);
-            ResultSet rs = pstmt.executeQuery();
+        User varifyUser = new User(name, password);
 
-            if (rs.next()) {
-                System.out.println("Logged in successfully!");
-            } else {
-                System.out.println("Invalid username or password.");
-            }
+        try{
+            return userService.login(con, varifyUser);
         } catch (SQLException e) {
             System.out.println("Error occurred: " + e.getMessage());
+            return null;
         }
     }
 }
