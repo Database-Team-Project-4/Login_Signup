@@ -40,7 +40,7 @@ public class App {
                         User currentUser = logIn(con, scanner, userService);
                         if(currentUser != null){
                             System.out.println("Welcome, " + currentUser.getName() + "!");
-                            //selectService(con, scanner, currentUser);
+                            selectService(con, scanner, currentUser);
                         }
                         break;
                     case 3:
@@ -95,4 +95,82 @@ public class App {
             return null;
         }
     }
+
+    private static void selectService(Connection con, Scanner scanner, User currentUser) {
+        while (true) {
+            System.out.println("1. Post");
+            System.out.println("2. Follow");
+            System.out.println("3. Tag Search");
+            System.out.println("4. logout");
+            System.out.println();
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    //post(con, scanner, currentUser);
+                    break;
+                case 2:
+                    //follow(con, scanner, currentUser); 임시로 정의해 두었습니다.
+                    break;
+                case 3:
+                    //tag_search(con, scanner, currentUser); 임시로 정의해 두었습니다.
+                    break;
+                case 4:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    public static void post(Connection con, Scanner scanner, User currentUser) {
+        while(true){
+            System.out.println("1. Write a post");
+            System.out.println("2. Delete a post");
+            System.out.println("3. Search posts");
+            System.out.println("4. Like a post");
+            System.out.println("5. Back to previous menu");
+            System.out.println();
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter your post: ");
+                    String post = scanner.nextLine();
+                    //postService.post(con, currentUser, post); 임시로 정의해 두었습니다.
+                    break;
+                case 2:
+                    //postService.viewAllPosts(con); 임시로 정의해 두었습니다.
+                    break;
+                case 3:
+                    System.out.println("Exiting...");
+                    return;
+                case 4:
+                    //postService.post(con, currentUser, post); 임시로 정의해 두었습니다.
+                    break;
+                case 5:
+                    //postService.viewAllPosts(con); 임시로 정의해 두었습니다.
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+
+        }
+    }
+
+    public static void follow(Connection con, Scanner scanner, User currentUser) {
+    }
+
+    public static void tag_search(Connection con, Scanner scanner, User currentUser) {
+    }
+
+
+
+
 }

@@ -18,7 +18,8 @@ public class userService {
             pstmt.setString(2, user.getPassword());
             pstmt.setString(3, user.getPhone_number());
             pstmt.executeUpdate();
-            System.out.println("User registered successfully!\n");
+            System.out.println("User registered successfully!");
+            System.out.println();
         }
     }
 
