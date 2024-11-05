@@ -8,105 +8,86 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         Connection con = null;
-        Statement stmt = null;
-        ResultSet rs = null;
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
 
-            System.out.println("Enter your user ID:");
-            int uid = s.nextInt(); // 로그인한 사용자 ID
-            s.nextLine(); // 버퍼 비우기
-
             while (true) {
-                System.out.println("5 to see followers, 6 to see followings, 7 to follow someone, 9 to exit");
-                int op = s.nextInt();
-                s.nextLine();
+                System.out.println("1. Sign Up");
+                System.out.println("2. Log In");
+                System.out.println("3. Exit");
+                System.out.print("Choose an option: ");
+                int choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
 
-                if (op == 7) {
-                    System.out.println("Input user ID to follow:");
-                    int u_id = s.nextInt(); // 팔로우할 대상의 ID 입력
-                    s.nextLine(); // 버퍼 비우기
-
-                    if (u_id == uid) {
-                        System.out.println("Can't follow yourself");
-                    } else {
-                        stmt = con.createStatement();
-
-                        // 이미 팔로우 중인지 확인
-                        String checkQuery = "SELECT user_id FROM follow WHERE follower_id = " + uid + " AND user_id = " + u_id;
-                        rs = stmt.executeQuery(checkQuery);
-
-                        if (rs.next()) {
-                            System.out.println("Already following the user. Please try again.");
-                        } else {
-                            // 팔로우 추가 쿼리문
-                            String insertQuery = "INSERT INTO follow (user_id, follower_id) VALUES (" + uid + ", " + u_id + ")";
-                            stmt.executeUpdate(insertQuery);
-                            System.out.println("Successfully followed user: " + u_id);
-                        }
-                    }
-                } else if (op == 5) {
-                    stmt = con.createStatement();
-
-                    // 팔로워 조회
-                    String s2 = "SELECT user_id FROM follow WHERE follower_id = " + uid;
-                    rs = stmt.executeQuery(s2);
-
-                    boolean hasFollowers = false; // 팔로워가 있는지 확인하기 위한 변수
-
-                    System.out.println("Followers of user " + uid + ":");
-                    while (rs.next()) {
-                        hasFollowers = true; // 팔로워가 있음을 표시
-                        int followerId = rs.getInt("user_id");
-                        System.out.println("Follower ID: " + followerId);
-                    }
-
-                    if (!hasFollowers) {
-                        System.out.println("No followers found.");
-                    }
-                }else if (op == 6) {
-                    stmt = con.createStatement();
-
-                    // 팔로잉 조회
-                    String s2 = "SELECT follower_id FROM follow WHERE user_id = " + uid;
-                    rs = stmt.executeQuery(s2);
-
-                    boolean hasFollowing = false; // 팔로잉이 있는지 확인하기 위한 변수
-
-                    System.out.println("Followings of user " + uid + ":");
-                    while (rs.next()) {
-                        hasFollowing = true; // 팔로워가 있음을 표시
-                        int followingId = rs.getInt("follower_id");
-                        System.out.println("Following ID: " + followingId);
-                    }
-
-                    if (!hasFollowing) {
-                        System.out.println("No followings found.");
-                    }
-                }
-                else if (op == 9) {
-                    break;
-                } else {
-                    System.out.println("Invalid input, please try again.");
+                switch (choice) {
+                    case 1:
+                        signUp(con, scanner);
+                        break;
+                    case 2:
+                        logIn(con, scanner);
+                        break;
+                    case 3:
+                        System.out.println("Exiting...");
+                        return;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
                 if (con != null) con.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            s.close();
+            scanner.close();
+        }
+    }
+
+    private static void signUp(Connection con, Scanner scanner) {
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+        System.out.print("Enter your phone number: ");
+        String phoneNumber = scanner.nextLine();
+
+        String query = "INSERT INTO user (name, password, phone_number) VALUES (?, ?, ?)";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, password);
+            pstmt.setString(3, phoneNumber);
+            pstmt.executeUpdate();
+            System.out.println("User registered successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error occurred: " + e.getMessage());
+        }
+    }
+
+    private static void logIn(Connection con, Scanner scanner) {
+        System.out.print("Enter your name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        String query = "SELECT * FROM user WHERE name = ? AND password = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                System.out.println("Logged in successfully!");
+            } else {
+                System.out.println("Invalid username or password.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error occurred: " + e.getMessage());
         }
     }
 }
