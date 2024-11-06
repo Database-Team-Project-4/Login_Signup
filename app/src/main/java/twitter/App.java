@@ -15,9 +15,6 @@ public class App {
         Connection con = null;
 
         userService userService = new userService();
-        postService postService = new postService();
-
-        String username = null; // use to in multiple situations
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -41,10 +38,13 @@ public class App {
                         signUp(con, scanner, userService);
                         break;
                     case 2:
-                        User currentUser = logIn(con, scanner, userService);
-                        if(currentUser != null){
-                            System.out.println("Welcome, " + currentUser.getName() + "!");
-                            selectService(con, scanner, currentUser);
+                        logIn(con, scanner, userService);
+                        if(userService.currentUser != null){
+                            System.out.println("Welcome, " + userService.currentUser.getName() + "!");
+                            selectService(con, scanner, userService);
+                        }
+                        else{
+                            System.out.println("Failed to login. Please check your credentials.");
                         }
                         break;
                     case 3:
@@ -107,7 +107,7 @@ public class App {
         }
     }
 
-    private static User logIn(Connection con, Scanner scanner, userService userService) {
+    private static void logIn(Connection con, Scanner scanner, userService userService) {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
         System.out.print("Enter your password: ");
@@ -116,14 +116,13 @@ public class App {
         User varifyUser = new User(name, password);
 
         try{
-            return userService.login(con, varifyUser);
+            userService.login(con, varifyUser);
         } catch (SQLException e) {
             System.out.println("Error occurred: " + e.getMessage());
-            return null;
         }
     }
 
-    private static void selectService(Connection con, Scanner scanner, User currentUser) {
+    private static void selectService(Connection con, Scanner scanner, userService userService) {
         while (true) {
             System.out.println("1. Post");
             System.out.println("2. Follow");
@@ -136,7 +135,7 @@ public class App {
 
             switch (choice) {
                 case 1:
-                    post(con, scanner, currentUser);
+                    post(con, scanner, userService);
                     break;
                 case 2:
                     //follow(con, scanner, currentUser); 임시로 정의해 두었습니다.
@@ -153,13 +152,14 @@ public class App {
         }
     }
 
-    public static void post(Connection con, Scanner scanner, User currentUser) {
+    public static void post(Connection con, Scanner scanner, userService userService) {
         while(true) {
             System.out.println("1. Write a post");
             System.out.println("2. Delete a post");
             System.out.println("3. Search posts");
-            System.out.println("4. Like a post");
-            System.out.println("5. Back to previous menu");
+            System.out.println("4. Print all posts");
+            System.out.println("5. Like a post");
+            System.out.println("6. Back to previous menu");
             System.out.println();
             System.out.print("Choose an option: ");
 
@@ -170,13 +170,13 @@ public class App {
                 case 1:
                     System.out.print("Enter post content: ");
                     String content = scanner.nextLine();
-                    postService.writePost(con, currentUser, content); // 글 작성
+                    postService.writePost(con, userService.currentUser, content); // 글 작성
                     break;
                 case 2:
                     System.out.print("Enter post ID to delete: ");
                     int postIdToDelete = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
-                    postService.deletePost(con, currentUser, postIdToDelete); // 글 삭제
+                    postService.deletePost(con, userService.currentUser, postIdToDelete); // 글 삭제
                     break;
                 case 3:
                     System.out.print("Enter search keyword: ");
@@ -184,12 +184,15 @@ public class App {
                     postService.searchPosts(con, keyword); // 게시글 검색
                     break;
                 case 4:
+                    postService.printAllPosts(con); // 모든 게시글 출력
+                    break;
+                case 5:
                     System.out.print("Enter post ID to like: ");
                     int postIdToLike = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
-                    postService.likePost(con, currentUser, postIdToLike); // 게시글 좋아요
+                    postService.likePost(con, userService.currentUser, postIdToLike); // 게시글 좋아요
                     break;
-                case 5:
+                case 6:
                     System.out.println("Returning to previous menu...");
                     return; // 이전 메뉴로 돌아감
                 default:

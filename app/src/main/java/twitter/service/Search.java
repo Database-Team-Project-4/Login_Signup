@@ -37,6 +37,7 @@ public class Search {
                     }
                 }
             } catch (SQLException e) { // 쿼리 연결 문제 시
+                System.out.println(e.getMessage());
                 System.out.println("!QUERY ERROR!");
             }
         } catch (ClassNotFoundException e) {

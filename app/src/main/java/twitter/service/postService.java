@@ -110,4 +110,23 @@ public class postService {
             System.out.println("Error while retrieving like count: " + e.getMessage());
         }
     }
+
+    public static void printAllPosts(Connection con) {
+        String query = "SELECT post.post_id, post.user_id, post.content, user.name " +
+                "FROM post " +
+                "JOIN user ON post.user_id = user.user_id";
+        try (Statement stmt = con.createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+
+            System.out.println("All posts:");
+            while (rs.next()) {
+                int postId = rs.getInt("post_id");
+                String content = rs.getString("content");
+                String name = rs.getString("name");
+                System.out.println("Post ID: " + postId + ", User Name: " + name + ", Content: " + content);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error while retrieving all posts: " + e.getMessage());
+        }
+    }
 }

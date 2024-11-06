@@ -10,6 +10,8 @@ import twitter.User; // User 클래스가 twitter 패키지에 있다고 가정�
 
 public class userService {
 
+    public User currentUser = null;
+
     // 회원가입 메서드
     public void signup(Connection con, User user) throws SQLException {
         String query = "INSERT INTO user (name, password, phone_number) VALUES (?, ?, ?)";
@@ -24,7 +26,7 @@ public class userService {
     }
 
     // 로그인 메서드
-    public User login(Connection con, User user) throws SQLException {
+    public void login(Connection con, User user) throws SQLException {
         String query = "SELECT * FROM user WHERE name = ? AND password = ?";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, user.getName());
@@ -39,10 +41,9 @@ public class userService {
                 String password = rs.getString("password");
                 String phone_number = rs.getString("phone_number");
 
-                return new User(id, name, password, phone_number);
+                currentUser = new User(id, name, password, phone_number);
             } else {
                 System.out.println("Invalid username or password.");
-                return null;
             }
         } // handling exception only at APP
     }
