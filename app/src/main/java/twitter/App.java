@@ -21,15 +21,16 @@ public class App {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
+            //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
 
             // need to change each local environment (change the password, connection url, and database name)
 
             while (true) {
                 System.out.println("1. Sign Up");
                 System.out.println("2. Log In");
-                System.out.println("3. Exit");
+                System.out.println("3. Delete accounnt");
+                System.out.println("4. Exit");
                 System.out.println();
                 System.out.print("Choose an option: ");
                 int choice = scanner.nextInt();
@@ -47,6 +48,9 @@ public class App {
                         }
                         break;
                     case 3:
+                        deleteAccount(con, scanner, userService);
+                        break;
+                    case 4:
                         System.out.println("Exiting...");
                         return;
                     default:
@@ -64,6 +68,26 @@ public class App {
                 e.printStackTrace();
             }
             scanner.close();
+        }
+    }
+
+    private static void deleteAccount(Connection con, Scanner scanner, userService userService) {
+        System.out.print("Enter your name to confirm deletion: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        User userToDelete = new User(name, password);
+
+        try {
+            boolean isDeleted = userService.deleteAccount(con, userToDelete);
+            if (isDeleted) {
+                System.out.println("Account deleted successfully.");
+            } else {
+                System.out.println("Failed to delete account. Please check your credentials.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error occurred: " + e.getMessage());
         }
     }
 

@@ -46,4 +46,15 @@ public class userService {
             }
         } // handling exception only at APP
     }
+
+    public boolean deleteAccount(Connection con, User user) throws SQLException {
+        String query = "DELETE FROM user WHERE name = ? AND password = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setString(1, user.getName());
+            pstmt.setString(2, user.getPassword());
+            int affectedRows = pstmt.executeUpdate();
+
+            return affectedRows > 0;
+        }
+    }
 }
