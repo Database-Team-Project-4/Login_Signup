@@ -5,7 +5,7 @@ package twitter;
 
 import twitter.service.postService;
 import twitter.service.userService;
-
+import twitter.service.followService;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -138,7 +138,7 @@ public class App {
                     post(con, scanner, userService);
                     break;
                 case 2:
-                    //follow(con, scanner, currentUser); 임시로 정의해 두었습니다.
+                    follow(con, scanner, userService);
                     break;
                 case 3:
                     //tag_search(con, scanner, currentUser); 임시로 정의해 두었습니다.
@@ -202,7 +202,38 @@ public class App {
     }
 
 
-    public static void follow(Connection con, Scanner scanner, User currentUser) {
+    public static void follow(Connection con, Scanner scanner, userService userService) {
+        while(true) {
+            System.out.println("1. Add to follow");
+            System.out.println("2. List follower");
+            System.out.println("3. List following");
+            System.out.println("4. Back to previous menu");
+            System.out.println();
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Add to follow: ");
+                    followService.follow(con, userService.currentUser); // 팔로우 추가
+                    break;
+                case 2:
+                    System.out.print("List follower: ");
+                    followService.seeFollower(con, userService.currentUser); // 팔로워 목록 확인
+                    break;
+                case 3:
+                    System.out.print("List following: ");
+                    followService.seeFollowing(con, userService.currentUser); // 팔로잉 목록 확인
+                    break;
+                case 4:
+                    System.out.println("Returning to previous menu...");
+                    return; // 이전 메뉴로 돌아감
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
     }
 
     public static void tag_search(Connection con, Scanner scanner, User currentUser) {
