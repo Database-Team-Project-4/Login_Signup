@@ -1,5 +1,6 @@
 package twitter.ui;
 
+import twitter.MainFrame;
 import twitter.service.userService;
 import twitter.User;
 
@@ -8,16 +9,14 @@ import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Login_Ui extends JFrame {
+public class Login_Ui extends JPanel {
     private userService userService;
     private Connection connection;
 
-    public Login_Ui(Connection connection, userService userService) {
+    public Login_Ui(MainFrame mainframe , Connection connection, userService userService) {
         this.connection = connection;
         this.userService = userService;
 
-        setTitle("Twitter UI");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 600);
         setLayout(new BorderLayout());
 
@@ -84,7 +83,7 @@ public class Login_Ui extends JFrame {
                 userService.login(connection, user);
                 if (userService.currentUser != null) {
                     JOptionPane.showMessageDialog(this, "Welcome, " + userService.currentUser.getName() + "!");
-                    dispose(); // 로그인 성공 시 창 닫기
+                    mainframe.showSignUpPanel(); //잘 넘어가는지 확인하기 위해서 회원가입 panel로 넘어감, mainpanel로 연결 예정
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");
                 }
@@ -107,9 +106,7 @@ public class Login_Ui extends JFrame {
         // 회원가입 버튼 클릭 시 회원가입 UI로 이동
         signupButton.addActionListener(e -> {
             // 회원가입 창 열기
-            dispose();
-            SignUp_Ui signUpUi = new SignUp_Ui(connection, userService);
-            signUpUi.setVisible(true);
+            mainframe.showSignUpPanel();
         });
 
         mainPanel.add(inputPanel, BorderLayout.CENTER);
