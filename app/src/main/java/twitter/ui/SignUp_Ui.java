@@ -1,6 +1,5 @@
 package twitter.ui;
 
-
 import twitter.service.userService;
 import twitter.User;
 import twitter.MainFrame;
@@ -15,7 +14,7 @@ public class SignUp_Ui extends JPanel {
     private userService userService;
 
     // 생성자
-    public SignUp_Ui(MainFrame mainFrame, Connection connection, userService userService) {
+    public SignUp_Ui(MainFrame mainframe, Connection connection, userService userService) {
         this.connection = connection;
         this.userService = userService;
 
@@ -122,8 +121,8 @@ public class SignUp_Ui extends JPanel {
 
             try {
                 userService.signup(connection, newUser);
-                JOptionPane.showMessageDialog(this, "Sign up successful!");
-                mainFrame.showLoginPanel();
+                JOptionPane.showMessageDialog(mainframe, "Sign up successful!");
+                mainframe.showLoginPanel();
             } catch (SQLException ex) {
                 // 에러 메시지 출력
                 ex.printStackTrace();
