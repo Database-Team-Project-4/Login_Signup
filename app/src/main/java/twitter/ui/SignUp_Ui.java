@@ -2,23 +2,22 @@ package twitter.ui;
 
 import twitter.service.userService;
 import twitter.User;
+import twitter.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SignUp_Ui extends JFrame {
+public class SignUp_Ui extends JPanel {
     private Connection connection;
     private userService userService;
 
     // 생성자
-    public SignUp_Ui(Connection connection, userService userService) {
+    public SignUp_Ui(MainFrame mainFrame, Connection connection, userService userService) {
         this.connection = connection;
         this.userService = userService;
 
-        setTitle("Sign Up");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(400, 600);
         setLayout(new BorderLayout());
 
@@ -123,9 +122,7 @@ public class SignUp_Ui extends JFrame {
             try {
                 userService.signup(connection, newUser);
                 JOptionPane.showMessageDialog(this, "Sign up successful!");
-                Login_Ui loginui = new Login_Ui(connection, userService);
-                loginui.setVisible(true);
-                dispose();
+                mainFrame.showLoginPanel();
             } catch (SQLException ex) {
                 // 에러 메시지 출력
                 ex.printStackTrace();
