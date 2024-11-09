@@ -8,7 +8,7 @@ public class Search {
     public static void main(String[] args) {
         try (Scanner scanner = new Scanner(System.in)) {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/twitter", "root", "chlworud7104")) {
+            try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/twitter", "root", "pw")) {
 
                 System.out.print("SEARCH: ");
                 String keyword = scanner.nextLine(); // 모든 검색 기준에 사용할 검색어 입력

@@ -18,7 +18,7 @@ public class App {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "pw");
             //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
 
             // need to change each local environment (change the password, connection url, and database name)
@@ -94,12 +94,14 @@ public class App {
     private static void signUp(Connection con, Scanner scanner, userService userService) {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
+        System.out.print("Enter your Email: ");
+        String email = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
         System.out.print("Enter your phone number: ");
         String phoneNumber = scanner.nextLine();
 
-        User newUser = new User(name, password, phoneNumber);
+        User newUser = new User(name, email , password, phoneNumber);
         try {
             userService.signup(con, newUser);
         } catch (SQLException e) {
@@ -216,8 +218,10 @@ public class App {
 
             switch (choice) {
                 case 1:
-                    System.out.print("Add to follow: ");
-                    followService.follow(con, userService.currentUser); // 팔로우 추가
+                    System.out.print("Enter the user ID to follow: ");
+                    int userToFollow = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline left-over
+                    //followService.follow(con, userService.currentUser, userToFollow);
                     break;
                 case 2:
                     System.out.print("List follower: ");

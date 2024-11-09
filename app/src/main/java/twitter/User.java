@@ -4,23 +4,25 @@ public class User {
     private int id;
     private String name;
     private String password;
-    private String phone_number;
-
-    public User(int id, String name, String password, String phone_number) {
+    private String address;
+    private String email;
+    public User(int id, String email, String name, String password, String address) {
         this.id = id;
+        this.email = email;
         this.name = name;
         this.password = password;
-        this.phone_number = phone_number;
+        this.address = address;
     }
 
-    public User(String name, String password, String phone_number) {
+    public User(String email, String name, String password, String address) {
+        this.email = email;
         this.name = name;
         this.password = password;
-        this.phone_number = phone_number;
+        this.address = address;
     }
 
-    public User(String name, String password) {
-        this.name = name;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
@@ -28,6 +30,10 @@ public class User {
 
     public int getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getName() {
@@ -38,13 +44,13 @@ public class User {
         return password;
     }
 
-    public String getPhone_number(){
-        return phone_number;
+    public String getAddress(){
+        return address;
     }
 
     @Override
     public String toString() {
-        return "User [ID=" + id + ", Username=" + name + ", Phone_number=" + phone_number + "]";
+        return "User [ID=" + id + ", Email=" + email + ", Username=" + name + ", Address=" + address + "]";
     }
 
 }
