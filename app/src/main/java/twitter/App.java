@@ -22,8 +22,7 @@ public class App {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "pw");
-            //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
+            con = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
 
             // need to change each local environment (change the password, connection url, and database name)
 
