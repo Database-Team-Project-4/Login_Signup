@@ -3,12 +3,16 @@
  */
 package twitter;
 
+import twitter.model.User;
 import twitter.service.postService;
+import twitter.service.searchService;
 import twitter.service.userService;
-
+import twitter.service.followService;
 import java.sql.*;
 import java.util.Scanner;
 
+
+// Main Frame으로 통합 진행하기 -> 기능 테스트만 진행
 public class App {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -18,7 +22,7 @@ public class App {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "1234");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root", "pw");
             //con = DriverManager.getConnection("jdbc:mysql://localhost/twitter_clone", "root", "** Enter your password **");
 
             // need to change each local environment (change the password, connection url, and database name)
@@ -94,12 +98,14 @@ public class App {
     private static void signUp(Connection con, Scanner scanner, userService userService) {
         System.out.print("Enter your name: ");
         String name = scanner.nextLine();
+        System.out.print("Enter your Email: ");
+        String email = scanner.nextLine();
         System.out.print("Enter your password: ");
         String password = scanner.nextLine();
         System.out.print("Enter your phone number: ");
         String phoneNumber = scanner.nextLine();
 
-        User newUser = new User(name, password, phoneNumber);
+        User newUser = new User(name, email , password, phoneNumber);
         try {
             userService.signup(con, newUser);
         } catch (SQLException e) {
@@ -138,10 +144,10 @@ public class App {
                     post(con, scanner, userService);
                     break;
                 case 2:
-                    //follow(con, scanner, currentUser); 임시로 정의해 두었습니다.
+                    follow(con, scanner, userService);
                     break;
                 case 3:
-                    //tag_search(con, scanner, currentUser); 임시로 정의해 두었습니다.
+                    search(con, scanner, userService);
                     break;
                 case 4:
                     System.out.println("Exiting...");
@@ -202,13 +208,90 @@ public class App {
     }
 
 
-    public static void follow(Connection con, Scanner scanner, User currentUser) {
+    public static void follow(Connection con, Scanner scanner, userService userService) {
+        while(true) {
+            System.out.println("1. Add to follow");
+            System.out.println("2. List follower");
+            System.out.println("3. List following");
+            System.out.println("4. Back to previous menu");
+            System.out.println();
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the user ID to follow: ");
+                    int userToFollow = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline left-over
+                    //followService.follow(con, userService.currentUser, userToFollow);
+                    break;
+                case 2:
+                    System.out.print("List follower: ");
+                    followService.seeFollower(con, userService.currentUser); // 팔로워 목록 확인
+                    break;
+                case 3:
+                    System.out.print("List following: ");
+                    followService.seeFollowing(con, userService.currentUser); // 팔로잉 목록 확인
+                    break;
+                case 4:
+                    System.out.println("Returning to previous menu...");
+                    return; // 이전 메뉴로 돌아감
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
     }
 
-    public static void tag_search(Connection con, Scanner scanner, User currentUser) {
+    public static void search(Connection con, Scanner scanner, userService userService) {
+        searchService searchService = new searchService();
+
+        while (true) {
+            System.out.println("\nSearch Options:");
+            System.out.println("1. Latest (Default Search)");
+            System.out.println("2. People");
+            System.out.println("3. Media");
+            System.out.println("4. Tags");
+            System.out.println("5. Back to previous menu");
+            System.out.println();
+            System.out.print("Choose an option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Enter a keyword to search: ");
+                    String keyword = scanner.nextLine();
+                    searchService.defaultSearch(con, keyword); // 기본 최신 검색
+                }
+                case 2 -> {
+                    System.out.print("Enter a keyword to search by People: ");
+                    String keyword = scanner.nextLine();
+                    searchService.peopleSearch(con, keyword); // People 기준 검색
+                }
+                case 3 -> {
+                    System.out.print("Enter a keyword to search by Media: ");
+                    String keyword = scanner.nextLine();
+                    searchService.mediaSearch(con, keyword); // Media 기준 검색
+                }
+                case 4 -> {
+                    System.out.print("Enter a keyword to search by Tags: ");
+                    String keyword = scanner.nextLine();
+                    searchService.searchByTag(con, keyword); // Tags 기준 검색
+                }
+                case 5 -> {
+                    System.out.println("Returning to previous menu...");
+                    return; // 이전 메뉴로 돌아가기
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
     }
-
-
-
-
 }
+
+
+
+
+
