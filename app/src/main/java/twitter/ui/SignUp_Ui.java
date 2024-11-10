@@ -1,10 +1,11 @@
 package twitter.ui;
 
 import twitter.service.userService;
+import twitter.main.MainFrame;
 import twitter.model.User;
-import twitter.MainFrame;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -123,7 +124,7 @@ public class SignUp_Ui extends JPanel {
             try {
                 userService.signup(connection, newUser);
                 JOptionPane.showMessageDialog(mainframe, "Sign up successful!");
-                mainframe.showLoginPanel();
+                mainframe.showLoginPanel(); // 로그인 이후 홈화면으로 이동 !! (임시인거 같군여)
             } catch (SQLException ex) {
                 // 에러 메시지 출력
                 ex.printStackTrace();

@@ -14,22 +14,21 @@ public class userService {
 
     // 회원가입 메서드
     public void signup(Connection con, User user) throws SQLException {
-        String query = "INSERT INTO users (email, name, password, address) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Users (email, name, password, address) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, user.getEmail());
             pstmt.setString(2, user.getName());
             pstmt.setString(3, user.getPassword());
             pstmt.setString(4, user.getAddress());
             pstmt.executeUpdate();
-            System.out.println("User registered successfully!");
+            //System.out.println("User registered successfully!");
             System.out.println();
         }
     }
 
-    // 로그인 메서드
 // 로그인 메서드
     public void login(Connection con, User user) throws SQLException {
-        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
+        String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, user.getEmail().trim()); // 입력된 이메일의 공백 제거
             pstmt.setString(2, user.getPassword().trim()); // 입력된 비밀번호의 공백 제거
@@ -53,6 +52,7 @@ public class userService {
                 currentUser = new User(id, email, name, password, address);
             } else {
                 System.out.println("Invalid username or password.");
+
             }
         } catch (SQLException e) {
             System.err.println("Error during login: " + e.getMessage());

@@ -1,10 +1,11 @@
 package twitter.ui;
 
-import twitter.MainFrame;
 import twitter.service.userService;
+import twitter.main.MainFrame;
 import twitter.model.User;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,7 +14,8 @@ public class Login_Ui extends JPanel {
     private userService userService;
     private Connection connection;
 
-    public Login_Ui(MainFrame mainframe , Connection connection, userService userService) {
+    public Login_Ui(MainFrame mainframe , Connection connection, userService userService) 
+    {
         this.connection = connection;
         this.userService = userService;
 

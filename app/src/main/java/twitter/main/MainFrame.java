@@ -1,4 +1,4 @@
-package twitter;
+package twitter.main;
 
 import twitter.service.userService;
 import twitter.ui.Login_Ui;
@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame(Connection connection, userService userService)
     {
-        this.connection = connection;
+        MainFrame.connection = connection;
         this.userService = userService;
 
         setTitle("Twitter");
@@ -47,11 +47,12 @@ public class MainFrame extends JFrame {
     // 필요한 경우 다른 Panel 추가하는 방식으로 만들면 될거 같아요!
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/twitter", "root","pw");
+            connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root","ckwnskg@1");
             userService userService = new userService();
             // 로그인 UI 띄우기
             SwingUtilities.invokeLater(() -> {
