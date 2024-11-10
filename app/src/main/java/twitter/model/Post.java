@@ -1,6 +1,7 @@
 package twitter.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Post {
     private int postId; // post_id
@@ -8,6 +9,9 @@ public class Post {
     private String content; // content
     private Timestamp createdAt; // created_at
     private Timestamp updatedAt; // updated_at
+
+    private List<Image> images; // 다중 이미지를 위한 리스트
+
 
     // 기본 생성자
     public Post() {}
@@ -42,6 +46,13 @@ public class Post {
     public Timestamp getUpdatedAt() {
         return updatedAt;
     }
+
+    //사진 목록을 출력받는 List
+    public List<Image> getImages() {
+        return images;
+    }
+
+
     // toString 메서드 (디버깅 및 로그 출력 용도)
     @Override
     public String toString() {

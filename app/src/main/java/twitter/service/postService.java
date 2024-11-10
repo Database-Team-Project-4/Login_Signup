@@ -1,10 +1,14 @@
 package twitter.service;
 
+import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 
 import twitter.model.User;
 
 public class postService {
+
+    imgService imgService = new imgService();
 
     // Method to write a post
     public static void writePost(Connection con, User currentUser, String content) {
@@ -24,6 +28,31 @@ public class postService {
             System.out.println("Error while creating the post: " + e.getMessage());
         }
     }
+
+    // 게시물 생성 및 이미지 저장 (DEMO)
+    public void createPostWithImages(Connection connection, User currentUser, String content, List<byte[]> images) throws SQLException, IOException {
+        int postId;
+        // 1. 게시물 생성
+        String postQuery = "INSERT INTO posts (user_id, content) VALUES (?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(postQuery, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, currentUser.getId());
+            pstmt.setString(2, content);
+            pstmt.executeUpdate();
+
+            // 2. 생성된 post_id 가져오기
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    postId = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Post creation failed, no ID obtained.");
+                }
+            }
+        }
+
+        // 3. 이미지를 postId와 함께 저장(DEMO)
+        imgService.saveImagesWithPostId(connection, postId, images);
+    }
+
 
     // Method to delete a post
     public static void deletePost(Connection con, User currentUser, int postId) {
