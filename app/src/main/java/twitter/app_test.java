@@ -5,6 +5,8 @@ import twitter.ui.*;
 import java.sql.*;
 import javax.swing.*;
 
+
+// 현재 MainFrame으로 변경된 상태
 public class app_test {
     private static Connection con;
 

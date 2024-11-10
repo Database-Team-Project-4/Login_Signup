@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import twitter.User; // User 클래스가 twitter 패키지에 있다고 가정합니다.
+import twitter.model.User; // User 클래스가 twitter 패키지에 있다고 가정합니다.
 
 public class userService {
 
@@ -59,7 +59,6 @@ public class userService {
             e.printStackTrace();
         }
     }
-
 
     public boolean deleteAccount(Connection con, User user) throws SQLException {
         String query = "DELETE FROM user WHERE email = ? AND password = ?";

@@ -1,7 +1,7 @@
 package twitter.ui;
 
 import twitter.service.userService;
-import twitter.User;
+import twitter.model.User;
 import twitter.MainFrame;
 
 import javax.swing.*;

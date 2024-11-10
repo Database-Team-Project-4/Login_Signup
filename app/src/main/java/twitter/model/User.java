@@ -1,4 +1,4 @@
-package twitter;
+package twitter.model;
 
 public class User {
     private int id;
@@ -6,6 +6,7 @@ public class User {
     private String password;
     private String address;
     private String email;
+
     public User(int id, String email, String name, String password, String address) {
         this.id = id;
         this.email = email;
@@ -25,8 +26,6 @@ public class User {
         this.email = email;
         this.password = password;
     }
-
-
 
     public int getId() {
         return id;
@@ -52,5 +51,6 @@ public class User {
     public String toString() {
         return "User [ID=" + id + ", Email=" + email + ", Username=" + name + ", Address=" + address + "]";
     }
+
 
 }

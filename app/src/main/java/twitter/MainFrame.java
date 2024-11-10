@@ -44,6 +44,9 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
+    // 필요한 경우 다른 Panel 추가하는 방식으로 만들면 될거 같아요!
+
+
     public static void main(String[] args) {
 
         try {

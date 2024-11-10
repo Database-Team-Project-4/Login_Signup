@@ -2,7 +2,7 @@ package twitter.ui;
 
 import twitter.MainFrame;
 import twitter.service.userService;
-import twitter.User;
+import twitter.model.User;
 
 import javax.swing.*;
 import java.awt.*;

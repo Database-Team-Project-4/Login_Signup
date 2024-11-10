@@ -2,7 +2,7 @@ package twitter.service;
 
 import java.sql.*;
 
-import twitter.User;
+import twitter.model.User;
 
 public class postService {
 
