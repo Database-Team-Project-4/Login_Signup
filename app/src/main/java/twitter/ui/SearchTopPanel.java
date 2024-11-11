@@ -1,6 +1,5 @@
-package twitter.ui.TopBars;
+package twitter.ui;
 
-import twitter.ui.customcomponents.CustomSearchField;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -21,8 +20,9 @@ public class SearchTopPanel extends JPanel {
         backButton.setBorderPainted(false);
         backButton.setContentAreaFilled(false);
 
-        // 검색창
-        CustomSearchField searchField = new CustomSearchField("검색", "C:/Users/ind07/OneDrive/바탕 화면/DongHO/VSCODE/pr2/TwitterDesign/TwitterDesign/TwitterIcons/magnifying_icon.png");
+        // 검색창 - 여기에서 CustomSearchField를 사용합니다.
+        // CustomSearchField 생성 시 파라미터 없이 생성 (내부에서 placeholderText와 iconPath 정의)
+        CustomSearchField searchField = new CustomSearchField();  // 수정된 부분: 파라미터 없이 생성
 
         // 필터 버튼
         JButton filterButton = new JButton("필터");
@@ -31,11 +31,12 @@ public class SearchTopPanel extends JPanel {
         filterButton.setBorderPainted(false);
         filterButton.setContentAreaFilled(false);
 
+        // 상단 바 패널 구성
         JPanel topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(7, 7, 7));
         topBar.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         topBar.add(backButton, BorderLayout.WEST);
-        topBar.add(searchField, BorderLayout.CENTER);
+        topBar.add(searchField, BorderLayout.CENTER);  // CustomSearchField 추가
         topBar.add(filterButton, BorderLayout.EAST);
 
         // 하단부 인기/최근/사용자/사진 버튼 패널

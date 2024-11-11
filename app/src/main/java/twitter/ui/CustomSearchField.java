@@ -1,4 +1,4 @@
-package twitter.ui.customcomponents;
+package twitter.ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +13,14 @@ public class CustomSearchField extends JPanel {
     private JLabel placeholderLabel;
     private JPanel overlayPanel;
 
-    public CustomSearchField(String placeholderText, String iconPath) {
+    public CustomSearchField() {
         setLayout(new BorderLayout());
         setOpaque(false);
         setPreferredSize(new Dimension(250, 30));
+
+        // 내부에서 정의된 placeholderText와 iconPath
+        String placeholderText = "검색어를 입력하세요...";
+        String iconPath = "TwitterIcons/magnifying_icon.png";  // 실제 경로로 변경 필요
 
         // 돋보기 아이콘 설정
         iconLabel = new JLabel(new ImageIcon(iconPath));
@@ -28,7 +32,7 @@ public class CustomSearchField extends JPanel {
         placeholderLabel.setForeground(Color.WHITE);
         placeholderLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // overlay 설정: 아이콘과 placeholder를 중앙에 배치
+        // overlay 설정 : 아이콘과 placeholder를 중앙에 배치
         overlayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         overlayPanel.setOpaque(false);
         overlayPanel.add(iconLabel);

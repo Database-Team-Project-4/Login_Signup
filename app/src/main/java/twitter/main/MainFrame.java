@@ -1,9 +1,12 @@
 package twitter.main;
 
 import twitter.service.userService;
+import twitter.ui.CustomSearchField;
 import twitter.ui.Login_Ui;
+import twitter.ui.SearchTopPanel;
 import twitter.ui.SignUp_Ui;
 import twitter.ui.TopicPanel;
+import twitter.ui.TwitterMainUI;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -16,17 +19,53 @@ public class MainFrame extends JFrame {
     private JPanel currentPanel;
     private userService userService = new userService();
 
-    public MainFrame(Connection connection, userService userService)
-    {
+    public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
         this.userService = userService;
 
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400,600);
+        setSize(400, 600);
 
-        //showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
-        showLoginPanel();
+        // showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
+        // showLoginPanel();
+        // showTwitterMainUIPanel();
+        //showCustomSearchFieldPanel();
+        //showSearchTopPanel();
+
+    }
+
+    public void showSearchTopPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new SearchTopPanel();  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showCustomSearchFieldPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new CustomSearchField();  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showTwitterMainUIPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new TwitterMainUI();  // TwitterMainUI 클래스로부터 UI 로직 실행
+        add(currentPanel);
+        revalidate();
+        repaint();
     }
 
     public void showTopicPanel() {
@@ -34,7 +73,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        // 테스트를 위한 임시 주제 데이터 생성 
+        // 테스트를 위한 임시 주제 데이터 생성
         Map<String, Integer> topics = new HashMap<>();
         topics.put("Java", 10);
         topics.put("Swing", 7);
@@ -51,7 +90,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new Login_Ui(this, connection, userService);
+        currentPanel = new Login_Ui(this, connection, userService);  // Login_Ui 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -61,24 +100,19 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new SignUp_Ui(this, connection, userService);
+        currentPanel = new SignUp_Ui(this, connection, userService);  // SignUp_Ui 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
     }
 
-    
-
-    // 필요한 경우 다른 Panel 추가하는 방식으로 만들면 될거 같아요!
-
-
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root","ckwnsgk@1");
+            connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
             userService userService = new userService();
+
             // 로그인 UI 띄우기
             SwingUtilities.invokeLater(() -> {
                 MainFrame frame = new MainFrame(connection, userService);

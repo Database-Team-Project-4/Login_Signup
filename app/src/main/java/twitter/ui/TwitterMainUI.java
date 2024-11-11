@@ -1,36 +1,30 @@
 package twitter.ui;
-import twitter.ui.TopBars.FollowerTopPanel;
-import twitter.ui.TopBars.MainTopPanel;
-import twitter.ui.TopBars.SearchTopPanel;
-
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class TwitterMainUI extends JFrame {
+public class TwitterMainUI extends JPanel {  // JFrame 대신 JPanel로 변경
     private JTextArea timelineArea;
     private JPanel completeTopPanel;
     private JButton homeButton, searchButton, communityButton, messageButton;
 
-    private final String homeIconDefault = "/twitter/ui/TwitterIcons/home_icondef.png";
- private final String homeIconClicked = "/twitter/ui/TwitterIcons/home_iconclicked.png";
-private final String homeIconHover = "/twitter/ui/TwitterIcons/home_iconcursor.png";
-private final String searchIconDefault = "/twitter/ui/TwitterIcons/searchdef.png";
-private final String searchIconHover = "/twitter/ui/TwitterIcons/searchcursor.png";
-private final String searchIconClicked = "/twitter/ui/TwitterIcons/searchclicked.png";
-private final String communityIconDefault = "/twitter/ui/TwitterIcons/comdef.png";
-private final String communityIconHover = "/twitter/ui/TwitterIcons/comcursor.png";
-private final String communityIconClicked = "/twitter/ui/TwitterIcons/comclicked.png";
-private final String messageIconDefault = "/twitter/ui/TwitterIcons/messagedef.png";
-private final String messageIconHover = "/twitter/ui/TwitterIcons/messagecursor.png";
-private final String messageIconClicked = "/twitter/ui/TwitterIcons/messageclicked.png";
+    // 아이콘 경로 설정
+    private final String homeIconDefault = getClass().getClassLoader().getResource("TwitterIcons/home_icondef.png").getPath();
+    private final String homeIconClicked = getClass().getClassLoader().getResource("TwitterIcons/home_iconclicked.png").getPath();
+    private final String homeIconHover = getClass().getClassLoader().getResource("TwitterIcons/home_iconcursor.png").getPath();
+    private final String searchIconDefault = getClass().getClassLoader().getResource("TwitterIcons/searchdef.png").getPath();
+    private final String searchIconHover = getClass().getClassLoader().getResource("TwitterIcons/searchcursor.png").getPath();
+    private final String searchIconClicked = getClass().getClassLoader().getResource("TwitterIcons/searchclicked.png").getPath();
+    private final String communityIconDefault = getClass().getClassLoader().getResource("TwitterIcons/comdef.png").getPath();
+    private final String communityIconHover = getClass().getClassLoader().getResource("TwitterIcons/comcursor.png").getPath();
+    private final String communityIconClicked = getClass().getClassLoader().getResource("TwitterIcons/comclicked.png").getPath();
+    private final String messageIconDefault = getClass().getClassLoader().getResource("TwitterIcons/messagedef.png").getPath();
+    private final String messageIconHover = getClass().getClassLoader().getResource("TwitterIcons/messagecursor.png").getPath();
+    private final String messageIconClicked = getClass().getClassLoader().getResource("TwitterIcons/messageclicked.png").getPath();
 
     public TwitterMainUI() {
-        setTitle("Twitter Main Screen");
-        setSize(400, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout());  // JPanel의 레이아웃 설정
 
         completeTopPanel = new JPanel(new CardLayout());
         completeTopPanel.add(new MainTopPanel(), "MainTop");
@@ -135,12 +129,5 @@ private final String messageIconClicked = "/twitter/ui/TwitterIcons/messageclick
             button.setIcon(clickedIcon);
             isClicked = true;
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            TwitterMainUI ui = new TwitterMainUI();
-            ui.setVisible(true);
-        });
     }
 }

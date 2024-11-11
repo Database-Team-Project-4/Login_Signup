@@ -1,4 +1,4 @@
-package twitter.ui.TopBars;
+package twitter.ui;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package twitter.ui.TopBars;
+package twitter.ui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,10 +9,10 @@ public class MainTopPanel extends JPanel {
     private JPanel recommendButtonUnderline, followButtonUnderline;
     private JButton recommendButton, followButton;
 
-    private final String profileIconPath = "C:/Users/ind07/OneDrive/바탕 화면/DongHO/VSCODE/pr2/TwitterDesign/TwitterDesign/TwitterIcons/icondef.png";
-    private final String xLogoPath = "C:/Users/ind07/OneDrive/바탕 화면/DongHO/VSCODE/pr2/TwitterDesign/TwitterDesign/TwitterIcons/X_logo.png";
-    private final String writePostIconDefault = "C:/Users/ind07/OneDrive/바탕 화면/DongHO/VSCODE/pr2/TwitterDesign/TwitterDesign/TwitterIcons/writepostdef.png";
-    private final String writePostIconHover = "C:/Users/ind07/OneDrive/바탕 화면/DongHO/VSCODE/pr2/TwitterDesign/TwitterDesign/TwitterIcons/writepostcursor.png";
+    private final String profileIconPath = getClass().getClassLoader().getResource("TwitterIcons/icondef.png").getPath();
+    private final String xLogoPath = getClass().getClassLoader().getResource("TwitterIcons/X_logo.png").getPath();
+    private final String writePostIconDefault = getClass().getClassLoader().getResource("TwitterIcons/writepostdef.png").getPath();
+    private final String writePostIconHover = getClass().getClassLoader().getResource("TwitterIcons/writepostcursor.png").getPath();
 
     public MainTopPanel() {
         setLayout(new BorderLayout());
