@@ -1,20 +1,23 @@
-package twitter.ui;
+package twitter.ui.main;
+
+import twitter.main.MainFrame;
+import twitter.service.userService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
 
 public class MainTopPanel extends JPanel {
     private JPanel recommendButtonUnderline, followButtonUnderline;
     private JButton recommendButton, followButton;
-
     private final String profileIconPath = getClass().getClassLoader().getResource("TwitterIcons/icondef.png").getPath();
     private final String xLogoPath = getClass().getClassLoader().getResource("TwitterIcons/X_logo.png").getPath();
     private final String writePostIconDefault = getClass().getClassLoader().getResource("TwitterIcons/writepostdef.png").getPath();
     private final String writePostIconHover = getClass().getClassLoader().getResource("TwitterIcons/writepostcursor.png").getPath();
 
-    public MainTopPanel() {
+    public MainTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
@@ -23,7 +26,7 @@ public class MainTopPanel extends JPanel {
         topPanel.setBackground(new Color(7, 7, 7));
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-        JButton profileButton = createIconButton(profileIconPath);
+        JButton profileButton = createIconButton(profileIconPath,userService, mainframe);
         JLabel logoLabel = new JLabel(new ImageIcon(xLogoPath), SwingConstants.CENTER);
         JButton writePostButton = createIconButtonWithHover(writePostIconDefault, writePostIconHover, writePostIconDefault);
 
@@ -95,15 +98,37 @@ public class MainTopPanel extends JPanel {
         recommendButtonUnderline.setVisible(recommendSelected);
         followButtonUnderline.setVisible(!recommendSelected);
     }
+    private JButton createIconButton(String iconPath, userService userService, MainFrame mainFrame) {
+        JButton button;
+        if (!userService.isLoggedIn()) {
+            // 로그인되어 있지 않은 경우: "Login" 버튼 표시
+            button = new JButton("Login");
+            button.setForeground(Color.WHITE);
+            button.setFocusPainted(false);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
 
-    private JButton createIconButton(String iconPath) {
-        ImageIcon icon = new ImageIcon(iconPath);
-        JButton button = new JButton(icon);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setContentAreaFilled(false);
+            // 로그인 페이지로 이동하는 이벤트 추가
+            button.addActionListener(e -> mainFrame.showLoginPanel());
+        } else {
+            // 로그인되어 있는 경우: 프로필 아이콘 버튼 표시
+            ImageIcon icon = new ImageIcon(iconPath);
+            button = new JButton(icon);
+            button.setFocusPainted(false);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
+
+            // 프로필 페이지로 이동하는 이벤트 추가
+            button.addActionListener(e -> {
+                // 프로필 페이지로 이동하는 코드
+                System.out.println("Go to Profile Page");
+                // mainFrame.showProfilePanel(); // 실제 프로필 패널로 이동하는 메서드가 있다면 사용
+            });
+        }
+
         return button;
     }
+
 
     private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
         ImageIcon defaultIcon = new ImageIcon(defaultIconPath);

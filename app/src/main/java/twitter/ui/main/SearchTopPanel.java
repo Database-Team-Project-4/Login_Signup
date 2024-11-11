@@ -1,15 +1,20 @@
-package twitter.ui;
+package twitter.ui.main;
+
+import twitter.main.MainFrame;
+import twitter.service.userService;
+import twitter.ui.CustomSearchField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
 
 public class SearchTopPanel extends JPanel {
     private JButton popularButton, recentButton, userButton, photosButton;
     private JPanel popularUnderline, recentUnderline, userUnderline, photosUnderline;
 
-    public SearchTopPanel() {
+    public SearchTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
 

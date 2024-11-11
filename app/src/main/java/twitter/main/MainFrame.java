@@ -3,10 +3,10 @@ package twitter.main;
 import twitter.service.userService;
 import twitter.ui.CustomSearchField;
 import twitter.ui.Login_Ui;
-import twitter.ui.SearchTopPanel;
+import twitter.ui.main.SearchTopPanel;
 import twitter.ui.SignUp_Ui;
 import twitter.ui.TopicPanel;
-import twitter.ui.TwitterMainUI;
+import twitter.ui.main.Main_Ui;
 
 import javax.swing.*;
 import java.sql.Connection;
@@ -27,12 +27,11 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 600);
 
-        // showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
-        // showLoginPanel();
-        // showTwitterMainUIPanel();
+        //showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
+        //showLoginPanel();
+        showTwitterMainUiPanel();
         //showCustomSearchFieldPanel();
         //showSearchTopPanel();
-
     }
 
     public void showSearchTopPanel() {
@@ -40,7 +39,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new SearchTopPanel();  // CustomSearchField에 파라미터 전달
+        currentPanel = new SearchTopPanel(this, connection, userService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -57,12 +56,12 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
-    public void showTwitterMainUIPanel() {
+    public void showTwitterMainUiPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
         }
 
-        currentPanel = new TwitterMainUI();  // TwitterMainUI 클래스로부터 UI 로직 실행
+        currentPanel = new Main_Ui(this, connection, userService);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();

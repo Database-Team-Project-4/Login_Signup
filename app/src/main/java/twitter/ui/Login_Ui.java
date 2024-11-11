@@ -85,7 +85,7 @@ public class Login_Ui extends JPanel {
                 userService.login(connection, user);
                 if (userService.currentUser != null) {
                     JOptionPane.showMessageDialog(mainframe, "Welcome, " + userService.currentUser.getName() + "!");
-                    mainframe.showSignUpPanel(); //잘 넘어가는지 확인하기 위해서 회원가입 panel로 넘어감, mainpanel로 연결 예정
+                    mainframe.showTwitterMainUiPanel(); //잘 넘어가는지 확인하기 위해서 회원가입 panel로 넘어감, mainpanel로 연결 예정
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");
                 }

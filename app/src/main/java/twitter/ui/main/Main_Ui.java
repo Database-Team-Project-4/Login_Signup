@@ -1,10 +1,14 @@
-package twitter.ui;
+package twitter.ui.main;
+
+import twitter.main.MainFrame;
+import twitter.service.userService;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
 import javax.swing.*;
 
-public class TwitterMainUI extends JPanel {  // JFrame 대신 JPanel로 변경
+public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
     private JTextArea timelineArea;
     private JPanel completeTopPanel;
     private JButton homeButton, searchButton, communityButton, messageButton;
@@ -23,12 +27,12 @@ public class TwitterMainUI extends JPanel {  // JFrame 대신 JPanel로 변경
     private final String messageIconHover = getClass().getClassLoader().getResource("TwitterIcons/messagecursor.png").getPath();
     private final String messageIconClicked = getClass().getClassLoader().getResource("TwitterIcons/messageclicked.png").getPath();
 
-    public TwitterMainUI() {
+    public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());  // JPanel의 레이아웃 설정
 
         completeTopPanel = new JPanel(new CardLayout());
-        completeTopPanel.add(new MainTopPanel(), "MainTop");
-        completeTopPanel.add(new SearchTopPanel(), "SearchTop");
+        completeTopPanel.add(new MainTopPanel(mainframe, connection, userService), "MainTop");
+        completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
         completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop");
 
         JPanel bottomPanel = new JPanel();
