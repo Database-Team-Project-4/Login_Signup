@@ -211,9 +211,18 @@ updatePostContent("recommend");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+             int postCount = postPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
+     
+        postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
+        
+        postPanel.revalidate(); // 레이아웃 업데이트
+        postPanel.repaint(); // 화면 갱신
 
-        postPanel.revalidate();
-        postPanel.repaint();
+         JScrollPane scrollPane = (JScrollPane) postPanel.getParent().getParent();
+         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+
+       
     }
         **/
 
