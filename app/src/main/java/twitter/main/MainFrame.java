@@ -30,11 +30,13 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 600);
 
-        //showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
-        //showLoginPanel();
+        showLoginPanel();
+        /*
+        showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
         showTwitterMainUiPanel();
-        //showCustomSearchFieldPanel();
-        //showSearchTopPanel();
+        showCustomSearchFieldPanel();
+        showSearchTopPanel();
+         */
     }
 
     public void showSearchTopPanel() {

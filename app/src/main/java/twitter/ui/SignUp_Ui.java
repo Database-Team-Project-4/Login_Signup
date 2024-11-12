@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class SignUp_Ui extends JPanel {
     private Connection connection;
     private userService userService;
-
+    private final String xLogoPath = getClass().getClassLoader().getResource("TwitterIcons/X_logo.png").getPath();
     // 생성자
     public SignUp_Ui(MainFrame mainframe, Connection connection, userService userService) {
         this.connection = connection;
