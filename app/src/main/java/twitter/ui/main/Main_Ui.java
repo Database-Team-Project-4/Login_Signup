@@ -34,7 +34,7 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
         completeTopPanel = new JPanel(new CardLayout());
         completeTopPanel.add(new MainTopPanel(mainframe, connection, userService), "MainTop");
         completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
-        completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop");
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop");
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));

@@ -120,6 +120,7 @@ public class MainTopPanel extends JPanel {
     private JButton createIconButton(ImageIcon icon, userService userService, MainFrame mainFrame) {
         JButton button;
         if (!userService.isLoggedIn()) {
+            // 로그인되어 있지 않은 경우: "Login" 버튼 표시 => 임의로 이렇게 설정해두었습니다! 디자인 알맞게 수정해주시면 될 거 같아요
             button = new JButton("Login");
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
