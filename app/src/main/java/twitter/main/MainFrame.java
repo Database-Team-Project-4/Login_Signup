@@ -1,18 +1,21 @@
 package twitter.main;
 
-import twitter.service.userService;
-import twitter.ui.CustomSearchField;
-import twitter.ui.Login_Ui;
-import twitter.ui.main.SearchTopPanel;
-import twitter.ui.SignUp_Ui;
-import twitter.ui.TopicPanel;
-import twitter.ui.main.Main_Ui;
-
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import twitter.service.userService;
+import twitter.ui.CustomSearchField;
+import twitter.ui.Login_Ui;
+import twitter.ui.SignUp_Ui;
+import twitter.ui.TopicPanel;
+import twitter.ui.main.Main_Ui;
+import twitter.ui.main.SearchTopPanel;
 
 public class MainFrame extends JFrame {
     private static Connection connection;

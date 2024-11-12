@@ -3,10 +3,11 @@ package twitter.ui.main;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.Connection;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Connection;
 
 public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
     private JTextArea timelineArea;
@@ -14,21 +15,21 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
     private JButton homeButton, searchButton, communityButton, messageButton;
 
     // 아이콘 경로 설정
-    private final String homeIconDefault = getClass().getClassLoader().getResource("TwitterIcons/home_icondef.png").getPath();
-    private final String homeIconClicked = getClass().getClassLoader().getResource("TwitterIcons/home_iconclicked.png").getPath();
-    private final String homeIconHover = getClass().getClassLoader().getResource("TwitterIcons/home_iconcursor.png").getPath();
-    private final String searchIconDefault = getClass().getClassLoader().getResource("TwitterIcons/searchdef.png").getPath();
-    private final String searchIconHover = getClass().getClassLoader().getResource("TwitterIcons/searchcursor.png").getPath();
-    private final String searchIconClicked = getClass().getClassLoader().getResource("TwitterIcons/searchclicked.png").getPath();
-    private final String communityIconDefault = getClass().getClassLoader().getResource("TwitterIcons/comdef.png").getPath();
-    private final String communityIconHover = getClass().getClassLoader().getResource("TwitterIcons/comcursor.png").getPath();
-    private final String communityIconClicked = getClass().getClassLoader().getResource("TwitterIcons/comclicked.png").getPath();
-    private final String messageIconDefault = getClass().getClassLoader().getResource("TwitterIcons/messagedef.png").getPath();
-    private final String messageIconHover = getClass().getClassLoader().getResource("TwitterIcons/messagecursor.png").getPath();
-    private final String messageIconClicked = getClass().getClassLoader().getResource("TwitterIcons/messageclicked.png").getPath();
+    private final String homeIconDefault = "/TwitterIcons/home_icondef.png";
+    private final String homeIconClicked = "/TwitterIcons/home_iconclicked.png";
+    private final String homeIconHover = "/TwitterIcons/home_iconcursor.png";
+    private final String searchIconDefault = "/TwitterIcons/searchdef.png";
+    private final String searchIconHover = "/TwitterIcons/searchcursor.png";
+    private final String searchIconClicked = "/TwitterIcons/searchclicked.png";
+    private final String communityIconDefault = "/TwitterIcons/comdef.png";
+    private final String communityIconHover = "/TwitterIcons/comcursor.png";
+    private final String communityIconClicked = "/TwitterIcons/comclicked.png";
+    private final String messageIconDefault = "/TwitterIcons/messagedef.png";
+    private final String messageIconHover = "/TwitterIcons/messagecursor.png";
+    private final String messageIconClicked = "/TwitterIcons/messageclicked.png";
 
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
-        setLayout(new BorderLayout());  // JPanel의 레이아웃 설정
+        setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
         completeTopPanel.add(new MainTopPanel(mainframe, connection, userService), "MainTop");
@@ -73,9 +74,9 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
     }
 
     private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
-        ImageIcon defaultIcon = new ImageIcon(defaultIconPath);
-        ImageIcon hoverIcon = new ImageIcon(hoverIconPath);
-        ImageIcon clickedIcon = new ImageIcon(clickedIconPath);
+        ImageIcon defaultIcon = loadIcon(defaultIconPath);
+        ImageIcon hoverIcon = loadIcon(hoverIconPath);
+        ImageIcon clickedIcon = loadIcon(clickedIconPath);
 
         JButton button = new JButton(defaultIcon);
         button.setFocusPainted(false);
@@ -86,11 +87,22 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
         return button;
     }
 
+    private ImageIcon loadIcon(String iconPath) {
+        java.net.URL resource = getClass().getResource(iconPath);
+        System.out.println("Loading icon: " + iconPath + " | URL: " + resource);
+        if (resource != null) {
+            return new ImageIcon(resource);
+        } else {
+            System.err.println("Icon not found: " + iconPath);
+            return null;
+        }
+    }
+
     private void resetBottomIcons() {
-        homeButton.setIcon(new ImageIcon(homeIconDefault));
-        searchButton.setIcon(new ImageIcon(searchIconDefault));
-        communityButton.setIcon(new ImageIcon(communityIconDefault));
-        messageButton.setIcon(new ImageIcon(messageIconDefault));
+        homeButton.setIcon(loadIcon(homeIconDefault));
+        searchButton.setIcon(loadIcon(searchIconDefault));
+        communityButton.setIcon(loadIcon(communityIconDefault));
+        messageButton.setIcon(loadIcon(messageIconDefault));
     }
 
     private void setBottomButtonSelected(JButton selectedButton) {
@@ -115,14 +127,14 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            if (!isClicked) {
+            if (!isClicked && hoverIcon != null) {
                 button.setIcon(hoverIcon);
             }
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (!isClicked) {
+            if (!isClicked && defaultIcon != null) {
                 button.setIcon(defaultIcon);
             }
         }
@@ -130,7 +142,9 @@ public class Main_Ui extends JPanel {  // JFrame 대신 JPanel로 변경
         @Override
         public void mouseClicked(MouseEvent e) {
             resetBottomIcons();
-            button.setIcon(clickedIcon);
+            if (clickedIcon != null) {
+                button.setIcon(clickedIcon);
+            }
             isClicked = true;
         }
     }

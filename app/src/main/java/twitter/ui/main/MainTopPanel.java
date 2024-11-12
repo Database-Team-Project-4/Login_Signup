@@ -1,21 +1,39 @@
 package twitter.ui.main;
 
-import twitter.main.MainFrame;
-import twitter.service.userService;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import twitter.main.MainFrame;
+import twitter.service.userService;
+
 public class MainTopPanel extends JPanel {
     private JPanel recommendButtonUnderline, followButtonUnderline;
     private JButton recommendButton, followButton;
-    private final String profileIconPath = getClass().getClassLoader().getResource("TwitterIcons/icondef.png").getPath();
-    private final String xLogoPath = getClass().getClassLoader().getResource("TwitterIcons/X_logo.png").getPath();
-    private final String writePostIconDefault = getClass().getClassLoader().getResource("TwitterIcons/writepostdef.png").getPath();
-    private final String writePostIconHover = getClass().getClassLoader().getResource("TwitterIcons/writepostcursor.png").getPath();
+    private final ImageIcon profileIcon = loadIcon("/TwitterIcons/icondef.png");
+    private final ImageIcon xLogoIcon = loadIcon("/TwitterIcons/X_logo.png");
+    private final ImageIcon writePostIconDefault = loadIcon("/TwitterIcons/writepostdef.png");
+    private final ImageIcon writePostIconHover = loadIcon("/TwitterIcons/writepostcursor.png");
+
+    private ImageIcon loadIcon(String path) {
+        java.net.URL resource = getClass().getResource(path);
+        if (resource == null) {
+            System.out.println("Icon not found at path: " + path);
+            return null;
+        }
+        return new ImageIcon(resource);
+    }
 
     public MainTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
@@ -26,8 +44,8 @@ public class MainTopPanel extends JPanel {
         topPanel.setBackground(new Color(7, 7, 7));
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-        JButton profileButton = createIconButton(profileIconPath,userService, mainframe);
-        JLabel logoLabel = new JLabel(new ImageIcon(xLogoPath), SwingConstants.CENTER);
+        JButton profileButton = createIconButton(profileIcon, userService, mainframe);
+        JLabel logoLabel = new JLabel(xLogoIcon, SwingConstants.CENTER);
         JButton writePostButton = createIconButtonWithHover(writePostIconDefault, writePostIconHover, writePostIconDefault);
 
         topPanel.add(profileButton, BorderLayout.WEST);
@@ -43,7 +61,7 @@ public class MainTopPanel extends JPanel {
         followButtonUnderline = createUnderlinePanel(followButton);
         followButtonUnderline.setVisible(false);
 
-        recommendButton.setForeground(Color.WHITE); // 기본 선택된 버튼 텍스트 색상 흰색 설정
+        recommendButton.setForeground(Color.WHITE);
         recommendButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -98,43 +116,27 @@ public class MainTopPanel extends JPanel {
         recommendButtonUnderline.setVisible(recommendSelected);
         followButtonUnderline.setVisible(!recommendSelected);
     }
-    private JButton createIconButton(String iconPath, userService userService, MainFrame mainFrame) {
+
+    private JButton createIconButton(ImageIcon icon, userService userService, MainFrame mainFrame) {
         JButton button;
         if (!userService.isLoggedIn()) {
-            // 로그인되어 있지 않은 경우: "Login" 버튼 표시
             button = new JButton("Login");
             button.setForeground(Color.WHITE);
             button.setFocusPainted(false);
             button.setBorderPainted(false);
             button.setContentAreaFilled(false);
-
-            // 로그인 페이지로 이동하는 이벤트 추가
             button.addActionListener(e -> mainFrame.showLoginPanel());
         } else {
-            // 로그인되어 있는 경우: 프로필 아이콘 버튼 표시
-            ImageIcon icon = new ImageIcon(iconPath);
             button = new JButton(icon);
             button.setFocusPainted(false);
             button.setBorderPainted(false);
             button.setContentAreaFilled(false);
-
-            // 프로필 페이지로 이동하는 이벤트 추가
-            button.addActionListener(e -> {
-                // 프로필 페이지로 이동하는 코드
-                System.out.println("Go to Profile Page");
-                // mainFrame.showProfilePanel(); // 실제 프로필 패널로 이동하는 메서드가 있다면 사용
-            });
+            button.addActionListener(e -> System.out.println("Go to Profile Page"));
         }
-
         return button;
     }
 
-
-    private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
-        ImageIcon defaultIcon = new ImageIcon(defaultIconPath);
-        ImageIcon hoverIcon = new ImageIcon(hoverIconPath);
-        ImageIcon clickedIcon = new ImageIcon(clickedIconPath);
-
+    private JButton createIconButtonWithHover(ImageIcon defaultIcon, ImageIcon hoverIcon, ImageIcon clickedIcon) {
         JButton button = new JButton(defaultIcon);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
