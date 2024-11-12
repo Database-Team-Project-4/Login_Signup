@@ -25,17 +25,20 @@ public class MainTopPanel extends JPanel {
     private final ImageIcon xLogoIcon = loadIcon("/TwitterIcons/X_logo.png");
     private final ImageIcon writePostIconDefault = loadIcon("/TwitterIcons/writepostdef.png");
     private final ImageIcon writePostIconHover = loadIcon("/TwitterIcons/writepostcursor.png");
+    private Main_Ui mainUI;  // MainUI 인스턴스 참조 추가
 
+    // 기존 기능 유지하며 아이콘 로드 기능
     private ImageIcon loadIcon(String path) {
         java.net.URL resource = getClass().getResource(path);
         if (resource == null) {
-            System.out.println("Icon not found at path: " + path);
             return null;
         }
         return new ImageIcon(resource);
     }
 
-    public MainTopPanel(MainFrame mainframe, Connection connection, userService userService) {
+    // MainUI 인스턴스를 추가하여 recommendButton, followButton 클릭 시 호출
+    public MainTopPanel(Main_Ui mainUI, MainFrame mainframe, Connection connection, userService userService) {
+        this.mainUI = mainUI;
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
@@ -68,6 +71,7 @@ public class MainTopPanel extends JPanel {
                 toggleButtons(true);
                 recommendButton.setForeground(Color.WHITE);
                 followButton.setForeground(Color.GRAY);
+                mainUI.updatePostContent("recommend"); // 추천 포스트 호출
             }
         });
 
@@ -77,6 +81,7 @@ public class MainTopPanel extends JPanel {
                 toggleButtons(false);
                 followButton.setForeground(Color.WHITE);
                 recommendButton.setForeground(Color.GRAY);
+                mainUI.updatePostContent("following"); // 팔로우 중 포스트 호출
             }
         });
 
@@ -87,6 +92,7 @@ public class MainTopPanel extends JPanel {
         add(subTopPanel, BorderLayout.SOUTH);
     }
 
+    // 기존 기능 유지
     private JButton createCustomButton(String text) {
         JButton button = new JButton(text);
         button.setForeground(Color.GRAY);
