@@ -55,8 +55,12 @@ public class Main_Ui extends JPanel {
         completeTopPanel = new JPanel(new CardLayout());
         completeTopPanel.add(new MainTopPanel(this, mainframe, connection, userService), "MainTop");
         completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
-        completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다. 
-        //completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop"); --> 데이터베이스에서 정보를 가져오는 방식입니다.
+
+        //completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다. 
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop"); //--> 데이터베이스에서 정보를 가져오는 방식입니다.
+
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop");
+
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));

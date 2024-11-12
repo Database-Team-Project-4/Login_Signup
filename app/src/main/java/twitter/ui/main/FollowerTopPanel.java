@@ -1,11 +1,13 @@
 package twitter.ui.main;
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,11 +15,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import twitter.main.MainFrame;
+import twitter.service.userService;
+
 public class FollowerTopPanel extends JPanel {
     private JPanel followerUnderline, followingUnderline;
     private JButton followerButton, followingButton;
 
-    public FollowerTopPanel(String username) {
+    public FollowerTopPanel(MainFrame mainFrame, Connection connection, userService userService) {
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
@@ -27,7 +32,10 @@ public class FollowerTopPanel extends JPanel {
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
         JButton backButton = createHoverButton("<");
-        JLabel usernameLabel = new JLabel(username, SwingConstants.CENTER);
+
+        String usernameText = (userService.currentUser != null) ? userService.currentUser.getName() : "Need to Login";
+        JLabel usernameLabel = new JLabel(usernameText, SwingConstants.CENTER);
+
         usernameLabel.setForeground(Color.WHITE);
 
         JButton addFriendButton = createHoverButton("+");
