@@ -1,11 +1,21 @@
 package twitter.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class CustomSearchField extends JPanel {
     private JTextField searchField;
@@ -18,38 +28,33 @@ public class CustomSearchField extends JPanel {
         setOpaque(false);
         setPreferredSize(new Dimension(250, 30));
 
-        // 내부에서 정의된 placeholderText와 iconPath
         String placeholderText = "검색어를 입력하세요...";
-        String iconPath = "TwitterIcons/magnifying_icon.png";  // 실제 경로로 변경 필요
+        String iconPath = "/TwitterIcons/searchdef.png";
 
-        // 돋보기 아이콘 설정
-        iconLabel = new JLabel(new ImageIcon(iconPath));
+        iconLabel = new JLabel(new ImageIcon(getClass().getResource(iconPath)));
         iconLabel.setForeground(Color.LIGHT_GRAY);
         iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 5));
 
-        // placeholder 설정
         placeholderLabel = new JLabel(placeholderText);
-        placeholderLabel.setForeground(Color.WHITE);
+        placeholderLabel.setForeground(Color.LIGHT_GRAY);
         placeholderLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // overlay 설정 : 아이콘과 placeholder를 중앙에 배치
         overlayPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         overlayPanel.setOpaque(false);
         overlayPanel.add(iconLabel);
         overlayPanel.add(placeholderLabel);
+
         add(overlayPanel, BorderLayout.CENTER);
 
-        // 검색 필드 설정
         searchField = new JTextField();
         searchField.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         searchField.setOpaque(false);
         searchField.setForeground(Color.WHITE);
         searchField.setCaretColor(Color.WHITE);
         searchField.setHorizontalAlignment(JTextField.CENTER);
-        searchField.setVisible(false); // 처음에는 숨김 상태
+        searchField.setVisible(false);
         add(searchField, BorderLayout.CENTER);
 
-        // 검색창 클릭 시 overlay 숨기고 검색 필드 표시
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -59,7 +64,6 @@ public class CustomSearchField extends JPanel {
             }
         });
 
-        // 검색 필드 포커스 해제 시 overlay 표시
         searchField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -74,13 +78,8 @@ public class CustomSearchField extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.DARK_GRAY);
+        g.setColor(new Color(50, 50, 50));  // 진한 회색 배경으로 테스트
         g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-    }
-
-    @Override
-    protected void paintBorder(Graphics g) {
-        // 테두리 비활성화
     }
 
     public String getSearchText() {

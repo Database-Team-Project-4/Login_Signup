@@ -14,6 +14,7 @@ import twitter.ui.CustomSearchField;
 import twitter.ui.Login_Ui;
 import twitter.ui.SignUp_Ui;
 import twitter.ui.TopicPanel;
+import twitter.ui.main.BookmarkTopPanel;
 import twitter.ui.main.Main_Ui;
 import twitter.ui.main.SearchTopPanel;
 
@@ -40,6 +41,20 @@ public class MainFrame extends JFrame {
         showSearchTopPanel();
          */
     }
+
+    // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
+
+    public void showBookmarkTopPanel() {
+       if (currentPanel != null) {
+           remove(currentPanel);
+      }
+    
+    currentPanel = new BookmarkTopPanel();  // BookmarkTopPanel로 설정
+    add(currentPanel);
+    revalidate();
+    repaint();
+}
+
 
     public void showSearchTopPanel() {
         if (currentPanel != null) {

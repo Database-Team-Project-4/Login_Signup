@@ -30,7 +30,7 @@ import twitter.ui.PostUI;
 
 public class Main_Ui extends JPanel {
     private JPanel completeTopPanel;
-    private JButton homeButton, searchButton, followerButton, messageButton;
+    private JButton homeButton, searchButton, followerButton, bookmarkButton;
     private JPanel postPanel;
     private JPanel bottomPanel;
     private Connection connection;
@@ -61,6 +61,8 @@ public class Main_Ui extends JPanel {
 
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop");
 
+        completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
+
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));
@@ -70,7 +72,7 @@ public class Main_Ui extends JPanel {
         homeButton = createIconButtonWithHover(homeIconDefault, homeIconHover, homeIconClicked);
         searchButton = createIconButtonWithHover(searchIconDefault, searchIconHover, searchIconClicked);
         followerButton = createIconButtonWithHover(communityIconDefault, communityIconHover, communityIconClicked);
-        messageButton = createIconButtonWithHover(BookmarkIconDefault, BookmarkIconHover, BookmarkIconClicked);
+        bookmarkButton = createIconButtonWithHover(BookmarkIconDefault, BookmarkIconHover, BookmarkIconClicked);
 
         homeButton.addActionListener(e -> {
             setBottomButtonSelected(homeButton);
@@ -86,12 +88,17 @@ public class Main_Ui extends JPanel {
             setBottomButtonSelected(followerButton);
             showPanel("FollowerTop");
         });
+
+        bookmarkButton.addActionListener(e -> {
+            setBottomButtonSelected(bookmarkButton);
+            showPanel("BookmarkTop"); // 북마크 버튼 클릭 시 BookmarkTop 패널 표시
+        });
         
 
         bottomPanel.add(homeButton);
         bottomPanel.add(searchButton);
         bottomPanel.add(followerButton);
-        bottomPanel.add(messageButton);
+        bottomPanel.add(bookmarkButton);
 
         postPanel = new JPanel();
         postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.Y_AXIS));
@@ -250,7 +257,7 @@ updatePostContent("recommend");
         homeButton.setIcon(loadIcon(homeIconDefault));
         searchButton.setIcon(loadIcon(searchIconDefault));
         followerButton.setIcon(loadIcon(communityIconDefault));
-        messageButton.setIcon(loadIcon(BookmarkIconDefault));
+        bookmarkButton.setIcon(loadIcon(BookmarkIconDefault));
     
         // 클릭된 버튼만 클릭된 상태의 아이콘으로 설정
         if (selectedButton == homeButton) {
@@ -259,7 +266,7 @@ updatePostContent("recommend");
             selectedButton.setIcon(loadIcon(searchIconClicked));
         } else if (selectedButton == followerButton) {
             selectedButton.setIcon(loadIcon(communityIconClicked));
-        } else if (selectedButton == messageButton) {
+        } else if (selectedButton == bookmarkButton) {
             selectedButton.setIcon(loadIcon(BookmarkIconClicked));
         }
         
@@ -267,7 +274,7 @@ updatePostContent("recommend");
         homeButton.setForeground(Color.GRAY);
         searchButton.setForeground(Color.GRAY);
         followerButton.setForeground(Color.GRAY);
-        messageButton.setForeground(Color.GRAY);
+        bookmarkButton.setForeground(Color.GRAY);
         
         selectedButton.setForeground(Color.WHITE);
     }
