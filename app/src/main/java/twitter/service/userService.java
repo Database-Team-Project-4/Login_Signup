@@ -50,6 +50,7 @@ public class userService {
                 String password = rs.getString("password");
                 String address = rs.getString("address");
 
+                
                 // 현재 로그인한 사용자 정보를 currentUser에 저장
                 currentUser = new User(id, email, name, password, address);
                 isLoggedIn = true; // 로그인 상태를 true로 설정
