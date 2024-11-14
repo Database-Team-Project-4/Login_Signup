@@ -1,4 +1,4 @@
-package twitter.ui.main;
+package twitter.ui.mainPage;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;

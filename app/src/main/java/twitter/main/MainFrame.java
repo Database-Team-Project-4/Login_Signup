@@ -14,9 +14,9 @@ import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
 import twitter.ui.signup.SignUp_Ui;
 import twitter.ui.topic.TopicPanel;
-import twitter.ui.main.BookmarkTopPanel;
-import twitter.ui.main.Main_Ui;
-import twitter.ui.main.SearchTopPanel;
+import twitter.ui.mainPage.BookmarkTopPanel;
+import twitter.ui.mainPage.Main_Ui;
+import twitter.ui.mainPage.SearchTopPanel;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -40,42 +40,6 @@ public class MainFrame extends JFrame {
         showCustomSearchFieldPanel();
         showSearchTopPanel();
          */
-    }
-
-    // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
-
-    public void showBookmarkTopPanel() {
-       if (currentPanel != null) {
-           remove(currentPanel);
-      }
-    
-    currentPanel = new BookmarkTopPanel();  // BookmarkTopPanel로 설정
-    add(currentPanel);
-    revalidate();
-    repaint();
-}
-
-
-    public void showSearchTopPanel() {
-        if (currentPanel != null) {
-            remove(currentPanel);
-        }
-
-        currentPanel = new SearchTopPanel(this, connection, userService);  // CustomSearchField에 파라미터 전달
-        add(currentPanel);
-        revalidate();
-        repaint();
-    }
-
-    public void showCustomSearchFieldPanel() {
-        if (currentPanel != null) {
-            remove(currentPanel);
-        }
-
-        currentPanel = new CustomSearchField();  // CustomSearchField에 파라미터 전달
-        add(currentPanel);
-        revalidate();
-        repaint();
     }
 
     public void showTwitterMainUiPanel() {

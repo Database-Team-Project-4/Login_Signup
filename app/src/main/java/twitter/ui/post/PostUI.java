@@ -23,10 +23,11 @@ public class PostUI extends JPanel {
 
         // 기본 변수 설정
         String userName = "Unknown";
-        String userHandle = "@unknown";
+        String userEmail = "123@abc";
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
         String contentText = "내용을 불러올 수 없습니다.";
-        String postInfo = "00:00 · 날짜 없음 · 조회수 없음";
+        String postInfo = "00:00 · 날짜 없음";
+
         int likes = 0;
         int comments = 0;
         int bookmarks = 0;
@@ -40,7 +41,7 @@ public class PostUI extends JPanel {
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 userName = rs.getString("name");
-                userHandle = rs.getString("handle");
+                userEmail = rs.getString("handle");
                 contentText = rs.getString("content");
                 postInfo = String.format("%s · 조회 %d 회", rs.getString("created_at"), rs.getInt("views"));
                 likes = rs.getInt("likes");
@@ -53,7 +54,7 @@ public class PostUI extends JPanel {
     }
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userHandle, profileIcon);
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (게시글 본문 및 작성 정보)
