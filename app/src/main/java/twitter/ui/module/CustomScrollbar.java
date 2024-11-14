@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.module;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -8,7 +8,7 @@ import java.awt.*;
 Follow_ui에 사용되는 custom scrollbar입니다.
  */
 
-class CustomScrollbar extends BasicScrollBarUI {
+public class CustomScrollbar extends BasicScrollBarUI {
     private static final int THUMB_SIZE = 8;
     private static final Color THUMB_COLOR = Color.WHITE; // 스크롤 thumb 기본 색상
     private static final Color THUMB_HOVER_COLOR = new Color(200, 200, 200); // hover 시 색상

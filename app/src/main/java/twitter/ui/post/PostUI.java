@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.post;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

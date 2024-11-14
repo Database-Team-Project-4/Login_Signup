@@ -26,14 +26,13 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;
-import twitter.ui.PostUI;
+import twitter.ui.post.PostUI;
 
 public class Main_Ui extends JPanel {
     private JPanel completeTopPanel;
     private JButton homeButton, searchButton, followerButton, bookmarkButton;
     private JPanel postPanel;
     private JPanel bottomPanel;
-    private Connection connection;
 
     private final String homeIconDefault = "/TwitterIcons/home_icondef.png";
     private final String homeIconClicked = "/TwitterIcons/home_iconclicked.png";
@@ -49,7 +48,6 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
 
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
-        this.connection = connection;
         setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
@@ -62,8 +60,7 @@ public class Main_Ui extends JPanel {
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop");
 
         completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
-
-
+        
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -114,7 +111,6 @@ public class Main_Ui extends JPanel {
     protected void configureScrollBarColors() {
         this.thumbColor = new Color(128, 128, 128, 180); // 회색, 반투명
     }
-
     @Override
     protected JButton createDecreaseButton(int orientation) {
         return createEmptyButton();

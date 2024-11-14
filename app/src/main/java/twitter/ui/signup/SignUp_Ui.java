@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.signup;
 
 import twitter.service.userService;
 import twitter.main.MainFrame;

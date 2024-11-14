@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import twitter.main.MainFrame;
-import twitter.ui.CustomSearchField;
+import twitter.ui.module.CustomSearchField;
 
 public class BookmarkTopPanel extends JPanel {
 

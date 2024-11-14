@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.topic;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;

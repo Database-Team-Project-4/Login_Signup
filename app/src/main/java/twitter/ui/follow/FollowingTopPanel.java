@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.follow;
 
 import twitter.main.MainFrame;
 

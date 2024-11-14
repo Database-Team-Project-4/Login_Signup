@@ -1,7 +1,9 @@
-package twitter.ui;
+package twitter.ui.follow;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;
+import twitter.ui.module.custombutton.RoundedButtonforFollowingUi;
+import twitter.ui.module.CustomScrollbar;
 
 import javax.swing.*;
 import java.awt.*;

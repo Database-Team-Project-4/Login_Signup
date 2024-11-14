@@ -10,10 +10,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import twitter.service.userService;
-import twitter.ui.CustomSearchField;
-import twitter.ui.Login_Ui;
-import twitter.ui.SignUp_Ui;
-import twitter.ui.TopicPanel;
+import twitter.ui.module.CustomSearchField;
+import twitter.ui.login.Login_Ui;
+import twitter.ui.signup.SignUp_Ui;
+import twitter.ui.topic.TopicPanel;
 import twitter.ui.main.BookmarkTopPanel;
 import twitter.ui.main.Main_Ui;
 import twitter.ui.main.SearchTopPanel;

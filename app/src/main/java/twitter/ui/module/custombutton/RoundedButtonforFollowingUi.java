@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.module.custombutton;
 
 import javax.swing.*;
 import java.awt.*;

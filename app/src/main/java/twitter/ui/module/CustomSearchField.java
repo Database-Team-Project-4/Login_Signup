@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.module;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

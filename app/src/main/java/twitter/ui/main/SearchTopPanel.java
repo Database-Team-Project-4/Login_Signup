@@ -2,7 +2,7 @@ package twitter.ui.main;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;
-import twitter.ui.CustomSearchField;
+import twitter.ui.module.CustomSearchField;
 
 import javax.swing.*;
 import java.awt.*;

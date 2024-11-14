@@ -1,4 +1,6 @@
-package twitter.ui;
+package twitter.ui.post;
+
+import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
 import java.awt.*;
