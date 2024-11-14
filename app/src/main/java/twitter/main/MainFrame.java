@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import twitter.service.userService;
+import twitter.ui.follow.follower.Follower_Ui;
+import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
 import twitter.ui.signup.SignUp_Ui;
@@ -17,6 +19,7 @@ import twitter.ui.topic.TopicPanel;
 import twitter.ui.main.BookmarkTopPanel;
 import twitter.ui.main.Main_Ui;
 import twitter.ui.main.SearchTopPanel;
+import twitter.ui.follow.*;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -39,6 +42,8 @@ public class MainFrame extends JFrame {
         showTwitterMainUiPanel();
         showCustomSearchFieldPanel();
         showSearchTopPanel();
+        showFollowerPanel();
+        showFollowingPanel();
          */
     }
 
@@ -66,6 +71,8 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+
+
 
     public void showCustomSearchFieldPanel() {
         if (currentPanel != null) {
@@ -102,6 +109,28 @@ public class MainFrame extends JFrame {
         topics.put("AI", 5);
 
         currentPanel = new TopicPanel(topics);  // 임시 데이터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showFollowerPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new Follower_Ui(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showFollowingPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new Following_Ui(this, connection, userService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();

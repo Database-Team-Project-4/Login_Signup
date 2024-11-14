@@ -9,7 +9,9 @@ public class PostFooterPanel extends JPanel {
     public PostFooterPanel(int likes, int comments, int bookmarks) {
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
         setBackground(Color.BLACK);
-
+        /*
+        POSTUI 하단패널ㄴ
+         */
         // 댓글 버튼 (댓글 수 표시)
         JButton commentButton = createIconButton("commentdef.png", "commenthover.png");
         commentButton.setText(" " + comments);

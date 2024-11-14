@@ -15,14 +15,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import twitter.ui.main.Main_Ui;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 
 public class FollowerTopPanel extends JPanel {
     private JPanel followerUnderline, followingUnderline;
     private JButton followerButton, followingButton;
+    private Main_Ui mainUi;
 
-    public FollowerTopPanel(MainFrame mainFrame, Connection connection, userService userService) {
+    public FollowerTopPanel(MainFrame mainFrame, Connection connection, userService userService, Main_Ui mainui) {
+        this.mainUi = mainui;
+
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
@@ -61,6 +65,9 @@ public class FollowerTopPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectButton(followerButton, followerUnderline);
+                if (mainUi != null) {
+                    mainUi.updateFollowContent("follower");
+                }
             }
         });
 
@@ -68,6 +75,9 @@ public class FollowerTopPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 selectButton(followingButton, followingUnderline);
+                if (mainUi != null) {
+                    mainUi.updateFollowContent("following");
+                }
             }
         });
 

@@ -1,18 +1,13 @@
-package twitter.ui.follow;
+package twitter.ui.follow.follower;
 
 import twitter.main.MainFrame;
-
-/*
-   following_ui에 임시로 사용된 상단바 입니다!
- */
-
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class FollowingTopPanel extends JPanel {
+public class FollowerTopPanel extends JPanel {
     private JButton backButton;
     private JLabel usernameLabel;
 
@@ -21,7 +16,7 @@ public class FollowingTopPanel extends JPanel {
     private static final Color TEXT_COLOR = Color.WHITE;
     private static final Color BUTTON_COLOR = new Color(0, 122, 255);
 
-    public FollowingTopPanel(MainFrame mainframe) {
+    public FollowerTopPanel(MainFrame mainframe) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
         setPreferredSize(new Dimension(getWidth(), 40));  // 상단바 높이
@@ -45,7 +40,7 @@ public class FollowingTopPanel extends JPanel {
         });
 
         // 사용자 이름 레이블 생성
-        usernameLabel = new JLabel("FOLLOWING", SwingConstants.LEFT);
+        usernameLabel = new JLabel("FOLLOWER", SwingConstants.LEFT);
         usernameLabel.setForeground(TEXT_COLOR);
         usernameLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
 //      usernameLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0)); //왼쪽에 여백 추가

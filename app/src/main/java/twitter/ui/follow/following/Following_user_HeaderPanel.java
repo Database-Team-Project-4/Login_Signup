@@ -1,18 +1,21 @@
-package twitter.ui.post;
+package twitter.ui.follow.following;
 
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class UserHeaderPanel extends JPanel {
-    public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage) {
+public class Following_user_HeaderPanel extends JPanel {
+    public Following_user_HeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
 
         /*
-        POSTUI에 사용되는 header panel
+        Following에 사용되는 중간패널입니다, 버튼 눌렀을때 event를 넣기 편하기위해 post의
+        UserHeaderPanel과 분리했습니다
          */
 
         // 프로필 사진 (크기 조정: 1.8배)
@@ -45,9 +48,21 @@ public class UserHeaderPanel extends JPanel {
         followButtonWrapper.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // 상하 여백 설정
 
         // 팔로우 버튼
-        JButton followButton = new RoundedRectangleButton("팔로우");
+        JButton followButton = new RoundedRectangleButton("팔로잉"); //팔로잉을 하고있다는 가정
         followButton.setPreferredSize(new Dimension(70, 20));
         followButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
+
+        // 팔로잉 버튼 클릭 시 이벤트 (팔로우/언팔로우 기능)
+        followButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (followButton.getText().equals("팔로잉")) {
+                    followButton.setText("팔로우");
+                } else {
+                    followButton.setText("팔로잉");
+                }
+            }
+        });
 
         followButtonWrapper.add(followButton, BorderLayout.CENTER);
 

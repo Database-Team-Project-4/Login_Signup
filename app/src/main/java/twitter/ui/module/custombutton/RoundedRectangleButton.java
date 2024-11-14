@@ -15,6 +15,9 @@ public class RoundedRectangleButton extends JButton {
     private Color hoverBackground = Color.LIGHT_GRAY;
     private Color clickedBackground = Color.GRAY;
 
+    /*
+    POSTUI에 사용되는 팔로우 버튼 모양
+     */
     public RoundedRectangleButton(String text) {
         super(text);
         setFocusPainted(false);

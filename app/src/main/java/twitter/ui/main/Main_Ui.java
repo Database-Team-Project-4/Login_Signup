@@ -12,6 +12,8 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,6 +26,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import twitter.ui.follow.follower.FollowerListPanel;
+import twitter.ui.follow.following.FollowingListPanel;
+import twitter.ui.main.FollowerTopPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
@@ -31,7 +36,7 @@ import twitter.ui.post.PostUI;
 public class Main_Ui extends JPanel {
     private JPanel completeTopPanel;
     private JButton homeButton, searchButton, followerButton, bookmarkButton;
-    private JPanel postPanel;
+    private JPanel mainPanel;
     private JPanel bottomPanel;
 
     private final String homeIconDefault = "/TwitterIcons/home_icondef.png";
@@ -54,13 +59,13 @@ public class Main_Ui extends JPanel {
         completeTopPanel.add(new MainTopPanel(this, mainframe, connection, userService), "MainTop");
         completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
 
-        //completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다. 
-        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop"); //--> 데이터베이스에서 정보를 가져오는 방식입니다.
+        //completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다.
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //--> 데이터베이스에서 정보를 가져오는 방식입니다.
 
-        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService), "FollowerTop");
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
         completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
-        
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -70,17 +75,16 @@ public class Main_Ui extends JPanel {
         searchButton = createIconButtonWithHover(searchIconDefault, searchIconHover, searchIconClicked);
         followerButton = createIconButtonWithHover(communityIconDefault, communityIconHover, communityIconClicked);
         bookmarkButton = createIconButtonWithHover(BookmarkIconDefault, BookmarkIconHover, BookmarkIconClicked);
-
         homeButton.addActionListener(e -> {
             setBottomButtonSelected(homeButton);
             showPanel("MainTop");
         });
-        
+
         searchButton.addActionListener(e -> {
             setBottomButtonSelected(searchButton);
             showPanel("SearchTop");
         });
-        
+
         followerButton.addActionListener(e -> {
             setBottomButtonSelected(followerButton);
             showPanel("FollowerTop");
@@ -90,21 +94,21 @@ public class Main_Ui extends JPanel {
             setBottomButtonSelected(bookmarkButton);
             showPanel("BookmarkTop"); // 북마크 버튼 클릭 시 BookmarkTop 패널 표시
         });
-        
+
 
         bottomPanel.add(homeButton);
         bottomPanel.add(searchButton);
         bottomPanel.add(followerButton);
         bottomPanel.add(bookmarkButton);
 
-        postPanel = new JPanel();
-        postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.Y_AXIS));
-        postPanel.setAlignmentX(LEFT_ALIGNMENT); // 패널을 왼쪽 정렬로 설정
-        
-        JScrollPane scrollPane = new JScrollPane(postPanel);
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setAlignmentX(LEFT_ALIGNMENT); // 패널을 왼쪽 정렬로 설정
+
+        JScrollPane scrollPane = new JScrollPane(mainPanel);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        
+
    // 커스텀 스크롤바 디자인 적용
    scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
     @Override
@@ -161,34 +165,35 @@ updatePostContent("recommend");
 
 
 }
-      
+
+
     public void updatePostContent(String type) {
-        postPanel.removeAll(); // 기존 콘텐츠를 지우고 새로운 콘텐츠로 업데이트
-        
+        mainPanel.removeAll(); // 기존 콘텐츠를 지우고 새로운 콘텐츠로 업데이트
+
         // 테스트용 임시 데이터로 PostUI 인스턴스를 추가
         if (type.equals("recommend")) {
-            postPanel.add(new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3));
-            postPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
-            postPanel.add(new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0));
-            postPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
-            
-        } else if (type.equals("following")) {
-            postPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
-            postPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
-        }
-        int postCount = postPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
-     
-        postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
-        
-        postPanel.revalidate(); // 레이아웃 업데이트
-        postPanel.repaint(); // 화면 갱신
+            mainPanel.add(new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3));
+            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
+            mainPanel.add(new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0));
+            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
 
-         JScrollPane scrollPane = (JScrollPane) postPanel.getParent().getParent();
+        } else if (type.equals("following")) {
+            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
+            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
+        }
+        int postCount = mainPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
+
+        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
+
+        mainPanel.revalidate(); // 레이아웃 업데이트
+        mainPanel.repaint(); // 화면 갱신
+
+         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
          SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
-    
+
 
 
     // 추천 및 팔로우 중에 따른 포스트 내용 갱신 메서드 -> 데이터베이스에서 불러옴
@@ -216,18 +221,52 @@ updatePostContent("recommend");
         }
              int postCount = postPanel.getComponentCount();
         int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
-     
+
         postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
-        
+
         postPanel.revalidate(); // 레이아웃 업데이트
         postPanel.repaint(); // 화면 갱신
 
          JScrollPane scrollPane = (JScrollPane) postPanel.getParent().getParent();
          SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
 
-       
+
     }
         **/
+
+    public void updateFollowContent(String type) {
+        mainPanel.removeAll();
+        /*
+        DB에서 follow관련 데이터를 가져와야합니다.
+         */
+        String[] userNameArray = {
+                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content",
+                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content"
+        };
+        String[] userHandleArray = {
+                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content",
+                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content"
+        };
+
+        List<String> userNames = Arrays.asList(userNameArray);
+        List<String> userHandles = Arrays.asList(userHandleArray);
+        ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
+        if (type.equals("follower")) {
+            System.out.println("follower화면으로 바꿨어요"); //debug code
+            mainPanel.add(new FollowerListPanel(userNames,userHandles,profileImage));
+        } else if (type.equals("following")){
+            System.out.println("following화면으로 바꿨어요"); //debug code
+            mainPanel.add(new FollowingListPanel(userNames,userHandles,profileImage));
+        }
+
+        //postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
+
+        mainPanel.revalidate(); // 레이아웃 업데이트
+        mainPanel.repaint(); // 화면 갱신
+
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+    }
 
     private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
         ImageIcon defaultIcon = loadIcon(defaultIconPath);
@@ -254,7 +293,7 @@ updatePostContent("recommend");
         searchButton.setIcon(loadIcon(searchIconDefault));
         followerButton.setIcon(loadIcon(communityIconDefault));
         bookmarkButton.setIcon(loadIcon(BookmarkIconDefault));
-    
+
         // 클릭된 버튼만 클릭된 상태의 아이콘으로 설정
         if (selectedButton == homeButton) {
             selectedButton.setIcon(loadIcon(homeIconClicked));
@@ -265,29 +304,30 @@ updatePostContent("recommend");
         } else if (selectedButton == bookmarkButton) {
             selectedButton.setIcon(loadIcon(BookmarkIconClicked));
         }
-        
+
         // 선택된 버튼 텍스트 색상을 흰색으로 설정하고 나머지는 기본색으로 초기화
         homeButton.setForeground(Color.GRAY);
         searchButton.setForeground(Color.GRAY);
         followerButton.setForeground(Color.GRAY);
         bookmarkButton.setForeground(Color.GRAY);
-        
+
         selectedButton.setForeground(Color.WHITE);
     }
     private void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (completeTopPanel.getLayout());
         cl.show(completeTopPanel, panelName);
 
-         // MainTopPanel을 보여줄 때만 postPanel을 업데이트
-     if ("MainTop".equals(panelName)) {
-         updatePostContent("recommend"); // 기본값으로 추천 내용을 보여줍니다.
-     } else {
-         postPanel.removeAll(); // 다른 패널로 전환될 때는 postPanel의 내용을 지웁니다.
-         postPanel.revalidate();
-         postPanel.repaint();
-     }
+        if ("MainTop".equals(panelName)) {
+            updatePostContent("recommend");
+        } else if ("FollowerTop".equals(panelName)) {
+            updateFollowContent("follower");
+        } else {
+            mainPanel.removeAll();
+            mainPanel.revalidate();
+            mainPanel.repaint();
+        }
     }
-    
+
 
     private class IconButtonMouseAdapter extends MouseAdapter {
         private final JButton button;

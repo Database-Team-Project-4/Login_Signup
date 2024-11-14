@@ -7,7 +7,9 @@ public class PostContentPanel extends JPanel {
     public PostContentPanel(String contentText, String postInfo, int likes, int comments, int bookmarks) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.BLACK);
-
+        /*
+        POSTUI에 사용되는 중간패널
+         */
         // 본문 내용
         JTextArea contentArea = new JTextArea(contentText);
         contentArea.setEditable(false);
