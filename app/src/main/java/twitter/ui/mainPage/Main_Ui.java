@@ -1,4 +1,4 @@
-package twitter.ui.main;
+package twitter.ui.mainPage;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -28,7 +28,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
-import twitter.ui.main.FollowerTopPanel;
+import twitter.ui.mainPage.FollowerTopPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;

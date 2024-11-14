@@ -16,10 +16,9 @@ import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
 import twitter.ui.signup.SignUp_Ui;
 import twitter.ui.topic.TopicPanel;
-import twitter.ui.main.BookmarkTopPanel;
-import twitter.ui.main.Main_Ui;
-import twitter.ui.main.SearchTopPanel;
-import twitter.ui.follow.*;
+import twitter.ui.mainPage.BookmarkTopPanel;
+import twitter.ui.mainPage.Main_Ui;
+import twitter.ui.mainPage.SearchTopPanel;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -71,8 +70,6 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
-
-
 
     public void showCustomSearchFieldPanel() {
         if (currentPanel != null) {

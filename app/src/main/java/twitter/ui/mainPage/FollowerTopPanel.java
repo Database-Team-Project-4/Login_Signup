@@ -1,4 +1,4 @@
-package twitter.ui.main;
+package twitter.ui.mainPage;
 
 
 import java.awt.BorderLayout;
@@ -15,7 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import twitter.ui.main.Main_Ui;
+import twitter.ui.mainPage.Main_Ui;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 
