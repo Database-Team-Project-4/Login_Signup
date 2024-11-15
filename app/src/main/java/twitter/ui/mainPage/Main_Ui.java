@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.*;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -32,6 +33,11 @@ public class Main_Ui extends JPanel {
     private JButton homeButton, searchButton, followerButton, bookmarkButton;
     private JPanel mainPanel;
     private JPanel bottomPanel;
+
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+
 
     private final String homeIconDefault = "/TwitterIcons/home_icondef.png";
     private final String homeIconClicked = "/TwitterIcons/home_iconclicked.png";
@@ -229,10 +235,27 @@ updatePostContent("recommend");
         **/
 
     public void updateSearchContent(String keyword, String filterType) {
-        mainPanel.removeAll(); // 기존 콘텐츠를 지우고 새로운 콘텐츠로 업데이트
 
+        mainPanel.removeAll(); // 콘텐츠 제거
+        if (keyword == null || keyword.trim().isEmpty()) {
+            // 검색어가 없을 때 "검색어 없음" 메시지 출력
+            System.out.println("검색어가 비어 있습니다. '검색어 없음' 메시지를 표시합니다.");
+            JPanel noKeywordPanel = new JPanel();
+            noKeywordPanel.setBackground(Color.BLACK);
+            noKeywordPanel.setLayout(new GridBagLayout());
+            JLabel noKeywordLabel = new JLabel("검색어 없음");
+            noKeywordLabel.setForeground(Color.WHITE);
+            noKeywordLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            noKeywordPanel.add(noKeywordLabel);
+
+            mainPanel.add(noKeywordPanel); // 메인 패널에 추가
+        } else {
         // 예시 데이터
         List<PostUI> examplePosts = Arrays.asList(
+
+                new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0),
+                new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1),
+                new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3),
                 new PostUI("Tom", "@tom", "This is a test post about Java programming.", 15, 5, 2),
                 new PostUI("Lud", "@lud", "Learning Swing in Java!", 10, 3, 1),
                 new PostUI("Kim", "@kim", "Search functionality is great.", 20, 7, 5),
@@ -243,55 +266,59 @@ updatePostContent("recommend");
                 new PostUI("Dave", "@dave", "How to implement search in Java apps?", 8, 3, 0)
         );
 
-        // 키워드를 포함하는 포스트 필터링
-        List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
-                .filter(post -> post.getContentText().toLowerCase().contains(keyword.toLowerCase()))
-                .toList());
-        filteredPosts.forEach(post -> System.out.println(post.getContentText()));
+
+            // 키워드를 포함하는 포스트 필터링
+            List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
+                    .filter(post -> post.getContentText().toLowerCase().contains(keyword.toLowerCase()) ||
+                            post.getUserName().toLowerCase().contains(keyword.toLowerCase()) ||
+                            post.getUserHandle().toLowerCase().contains(keyword.toLowerCase()))
+                    .toList());
+
+            filteredPosts.forEach(post -> System.out.println(post.getContentText()));
 
 
-        System.out.println("numbers of posts on filter : " + filteredPosts.size());
+            mainPanel.revalidate();
+            mainPanel.repaint();
+
+            // 필터링 결과를 인기순/최신순으로 정렬
+            if ("popular".equals(filterType)) {
+                filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
+            } else if ("recent".equals(filterType)) {
+                // 최신순 정렬. 예시 데이터에 최신 정보를 추가하지 않았으므로 생략
+                // filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime()));
+            }
+            //filteredPosts.forEach(mainPanel::add);
+
+            // 필터링된 결과를 메인 패널에 추가
+            for (PostUI post : filteredPosts) {
+                mainPanel.add(post);
+                System.out.println("added post: " + post.getContentText());
+            }
+
+            // 동적 크기 조정 및 레이아웃 업데이트
+            int postCount = mainPanel.getComponentCount();
+            int postHeight = 150; // 각 포스트의 예상 높이
+            mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
+
+            mainPanel.revalidate(); // 레이아웃 업데이트
+            mainPanel.repaint(); // 화면 갱신
+
+            showPanel("SearchTop");
 
 
-        // 필터링 결과를 인기순/최신순으로 정렬
-        if ("popular".equals(filterType)) {
-            filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
-        } else if ("recent".equals(filterType)) {
-            // 최신순 정렬. 예시 데이터에 최신 정보를 추가하지 않았으므로 생략
-            // filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime()));
+            for (Component c : getComponents()) {
+                System.out.println(c.getClass().getName());
+            }
+
+            for (Component comp : mainPanel.getComponents()) {
+                System.out.println(comp.getClass().getName());
+            }
+
+            // 스크롤바 위치 초기화
+            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+
         }
-        //filteredPosts.forEach(mainPanel::add);
-
-
-        // 필터링된 결과를 메인 패널에 추가
-        for (PostUI post : filteredPosts) {
-            mainPanel.add(post);
-            System.out.println("added post: " + post.getContentText());
-        }
-
-        // 동적 크기 조정 및 레이아웃 업데이트
-        int postCount = mainPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이
-        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
-
-        System.out.println("Size of mainpanel: " );
-
-        System.out.println("UI가 갱신되었습니다.");
-        System.out.println("PostUI 내부 구성 요소:");
-        for (Component c : getComponents()) {
-            System.out.println(c.getClass().getName());
-        }
-        System.out.println("mainPanel componets: " + mainPanel.getComponentCount());
-        for (Component comp : mainPanel.getComponents()) {
-            System.out.println(comp.getClass().getName());
-        }
-
-        // 스크롤바 위치 초기화
-        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
     public void updateFollowContent(String type) {
@@ -375,37 +402,51 @@ updatePostContent("recommend");
     }
     private void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (completeTopPanel.getLayout());
-        cl.show(completeTopPanel, panelName);
+        cl.show(completeTopPanel, panelName); // 패널 전환
 
         if ("MainTop".equals(panelName)) {
             updatePostContent("recommend");
         } else if ("FollowerTop".equals(panelName)) {
             updateFollowContent("follower");
         } else if ("SearchTop".equals(panelName)) {
+            System.out.println("SearchTop 패널 표시");
             SearchTopPanel searchTopPanel = (SearchTopPanel) completeTopPanel.getComponent(1); // SearchTopPanel 가져오기
-            String keyword = searchTopPanel.getKeyword(); // 검색어 가져오기
-            String filterType = searchTopPanel.getCurrentFilterType(); // 필터 타입 가져오기
-            updateSearchContent(keyword, filterType); // 검색 결과 갱신
+            searchTopPanel.addSearchListener(() -> {
+                updateSearchContent("", "default");
+                String keyword = searchTopPanel.getKeyword(); // 검색어 가져오기
+                String filterType = searchTopPanel.getCurrentFilterType(); // 필터 타입 가져오기
 
-            // 예제: SearchTopPanel의 검색 필드에서 검색어를 가져오는 코드 추가 필요
-            // 예를 들어, 검색어를 SearchTopPanel에서 전달받아야 한다면 다음처럼 처리:
-            // keyword = searchTopPanel.getSearchKeyword();
-            // filterType = searchTopPanel.getFilterType();
+                // updateSearchContent 호출로 mainPanel 갱신
+                updateSearchContent(keyword, filterType);
 
-            // mainPanel 업데이트
+                // 갱신된 mainPanel 출력
+                mainPanel.revalidate();
+                mainPanel.repaint();
 
+                JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+                SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
 
-            // 스크롤 초기화
-            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+            });
+
         } else {
-            // 다른 패널의 경우 초기화 처리
-            mainPanel.removeAll();
+            mainPanel.removeAll(); // 다른 패널에서는 초기화
             mainPanel.revalidate();
             mainPanel.repaint();
         }
+
+        // 현재 활성화된 패널 디버그 출력
+
     }
 
+
+    public void refreshMainPanel() {
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기
+        System.out.println("mainPanel Refreshed!!");
+    }
 
 
     private class IconButtonMouseAdapter extends MouseAdapter {

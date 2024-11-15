@@ -30,6 +30,8 @@ public class MainFrame extends JFrame {
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
         this.userService = userService;
+        mainUi = new Main_Ui(this, connection, userService);
+        add(mainUi); // MainFrame에 Main_Ui 추가
 
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -16,12 +16,14 @@ import javax.swing.SwingUtilities;
 
 public class PostUI extends JPanel {
 
+
+
     private String userName;
     private String userHandle;
     private String contentText;
     private int likes;
-
-
+    private int comments;
+    private int bookmarks;
 
     public PostUI(int postId, Connection connection) {
         setLayout(new BorderLayout());
@@ -106,6 +108,21 @@ public class PostUI extends JPanel {
         setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
 
     }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserHandle() {
+        return userHandle;
+    }
+    public int getComments() {
+        return comments;
+    }
+    public int getBookmarks() {
+        return bookmarks;
+    }
+
 
 
     public String getContentText() {

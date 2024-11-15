@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.sql.Connection;
 
 public class SearchTopPanel extends JPanel {
-    private JButton popularButton, recentButton, userButton, photosButton;
+    private JButton popularButton, recentButton;
     private JPanel popularUnderline, recentUnderline, userUnderline, photosUnderline;
     private CustomSearchField searchField; // 인스턴스 변수로 수정
     private JComboBox<String> filterCombo;
@@ -35,6 +35,7 @@ public class SearchTopPanel extends JPanel {
 
 
 
+
         // 필터 버튼
         JButton filterButton = new JButton("필터");
         filterButton.setForeground(Color.GRAY);
@@ -51,13 +52,12 @@ public class SearchTopPanel extends JPanel {
         topBar.add(filterButton, BorderLayout.EAST);
 
         // 하단부 인기/최근/사용자/사진 버튼 패널
-        JPanel subTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JPanel subTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 10));
         subTopPanel.setBackground(new Color(7, 7, 7));
 
         popularButton = createCustomButton("인기");
         recentButton = createCustomButton("최근");
-        userButton = createCustomButton("사용자");
-        photosButton = createCustomButton("사진");
+
 
         // 언더라인 생성
         popularUnderline = createUnderlinePanel();
@@ -72,14 +72,12 @@ public class SearchTopPanel extends JPanel {
         // 클릭 시 언더라인 설정
         addUnderlineToggle(popularButton, popularUnderline, true);
         addUnderlineToggle(recentButton, recentUnderline, false);
-        addUnderlineToggle(userButton, userUnderline, false);
-        addUnderlineToggle(photosButton, photosUnderline, false);
+
 
         // 버튼을 패널에 추가
         subTopPanel.add(createButtonPanel(popularButton, popularUnderline));
         subTopPanel.add(createButtonPanel(recentButton, recentUnderline));
-        subTopPanel.add(createButtonPanel(userButton, userUnderline));
-        subTopPanel.add(createButtonPanel(photosButton, photosUnderline));
+
 
         searchField.addActionListener(e -> triggerSearch(mainframe));
 
@@ -123,15 +121,29 @@ public class SearchTopPanel extends JPanel {
         return currentFilter; // 현재 필터 타입 반환
     }
 
-
+    public void addSearchListener(Runnable listener) {
+        searchField.addActionListener(e -> listener.run());
+    }
 
     private void triggerSearch(MainFrame mainframe) {
         String keyword = searchField.getSearchText(); // 검색어 가져오기
-        mainframe.getMainUi().updateSearchContent(keyword, currentFilter);
+        mainframe.getMainUi().updateSearchContent(keyword, currentFilter); // 검색 결과 갱신
 
-        // 디버그 로그
+        // mainPanel 즉시 갱신 및 출력
+        JPanel mainPanel = mainframe.getMainUi().getMainPanel();
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        // 스크롤 초기화
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+
+        // 디버깅 로그
         System.out.println("Searching executed: " + keyword + ", filter: " + currentFilter);
+        System.out.println("mainPanel 컴포넌트 수: " + mainPanel.getComponentCount());
     }
+
+
 
     private JButton createCustomButton(String text) {
         JButton button = new JButton(text);
@@ -180,8 +192,7 @@ public class SearchTopPanel extends JPanel {
 
         popularButton.setForeground(Color.GRAY);
         recentButton.setForeground(Color.GRAY);
-        userButton.setForeground(Color.GRAY);
-        photosButton.setForeground(Color.GRAY);
+
     }
 
     // 내부 클래스들
