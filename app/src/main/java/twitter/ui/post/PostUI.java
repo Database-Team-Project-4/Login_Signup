@@ -15,6 +15,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class PostUI extends JPanel {
+
+    private String userName;
+    private String userHandle;
+    private String contentText;
+    private int likes;
+
+
+
     public PostUI(int postId, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -73,6 +81,11 @@ public class PostUI extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
+         this.userName = userName;
+         this.userHandle = userHandle;
+         this.contentText = contentText;
+         this.likes = likes;
+
         // 임시 데이터 초기화
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
         String postInfo = "00:00 · 날짜 없음 · 조회수 없음";
@@ -91,6 +104,16 @@ public class PostUI extends JPanel {
 
         // 전체 크기 조정
         setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
+
+    }
+
+
+    public String getContentText() {
+        return contentText;
+    }
+
+    public int getLikes() {
+        return likes;
     }
 
 

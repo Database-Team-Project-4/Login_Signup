@@ -24,6 +24,8 @@ public class MainFrame extends JFrame {
     private static Connection connection;
     private JPanel currentPanel;
     private userService userService = new userService();
+    private Main_Ui mainUi;
+    private Follower_Ui followerUi;
 
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
@@ -87,10 +89,15 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
+        mainUi = new Main_Ui(this, connection, userService);
         currentPanel = new Main_Ui(this, connection, userService);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
+    }
+    // Main_Ui를 반환하는 Getter 추가
+    public Main_Ui getMainUi() {
+        return mainUi;
     }
 
     public void showTopicPanel() {
@@ -142,6 +149,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+
 
     public void showSignUpPanel() {
         if (currentPanel != null) {

@@ -73,6 +73,7 @@ public class CustomSearchField extends JPanel {
                 }
             }
         });
+
     }
 
     @Override
@@ -91,5 +92,9 @@ public class CustomSearchField extends JPanel {
         boolean hasText = !text.isEmpty();
         overlayPanel.setVisible(!hasText);
         searchField.setVisible(hasText);
+    }
+
+    public void addActionListener(java.awt.event.ActionListener listener) {
+        searchField.addActionListener(listener);
     }
 }

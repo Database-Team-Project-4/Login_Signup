@@ -13,6 +13,10 @@ import java.sql.Connection;
 public class SearchTopPanel extends JPanel {
     private JButton popularButton, recentButton, userButton, photosButton;
     private JPanel popularUnderline, recentUnderline, userUnderline, photosUnderline;
+    private CustomSearchField searchField; // 인스턴스 변수로 수정
+    private JComboBox<String> filterCombo;
+    private String currentFilter = "popular";
+
 
     public SearchTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
@@ -27,7 +31,9 @@ public class SearchTopPanel extends JPanel {
 
         // 검색창 - 여기에서 CustomSearchField를 사용합니다.
         // CustomSearchField 생성 시 파라미터 없이 생성 (내부에서 placeholderText와 iconPath 정의)
-        CustomSearchField searchField = new CustomSearchField();  // 수정된 부분: 파라미터 없이 생성
+        searchField = new CustomSearchField();
+
+
 
         // 필터 버튼
         JButton filterButton = new JButton("필터");
@@ -75,9 +81,56 @@ public class SearchTopPanel extends JPanel {
         subTopPanel.add(createButtonPanel(userButton, userUnderline));
         subTopPanel.add(createButtonPanel(photosButton, photosUnderline));
 
+        searchField.addActionListener(e -> triggerSearch(mainframe));
+
+        // 각 버튼 클릭 시 이벤트
+        popularButton.addActionListener(e -> {
+            currentFilter = "popular";
+            triggerSearch(mainframe);
+        });
+
+        recentButton.addActionListener(e -> {
+            currentFilter = "recent";
+            triggerSearch(mainframe);
+        });
+
+        /**searchField.addActionListener(e -> {
+            String keyword = searchField.getSearchText(); // 검색 키워드 가져오기
+            mainframe.getMainUi().updateSearchContent(keyword, "recent"); // 기본값: '최근' 정렬
+        });// 수정된 부분: 파라미터 없이 생성
+
+        popularButton.addActionListener(e -> {
+            String keyword = searchField.getSearchText();
+            mainframe.getMainUi().updateSearchContent(keyword, "popular"); // '인기' 정렬
+        });
+
+        recentButton.addActionListener(e -> {
+            String keyword = searchField.getSearchText();
+            mainframe.getMainUi().updateSearchContent(keyword, "recent"); // '최근' 정렬
+        }); **/
+
         // 레이아웃에 상단바와 하단부 버튼 패널 추가
         add(topBar, BorderLayout.NORTH);
         add(subTopPanel, BorderLayout.SOUTH);
+    }
+
+    // SearchTopPanel 클래스 수정 부분
+    public String getKeyword() {
+        return searchField.getSearchText(); // 검색 필드에서 키워드 가져오기
+    }
+
+    public String getCurrentFilterType() {
+        return currentFilter; // 현재 필터 타입 반환
+    }
+
+
+
+    private void triggerSearch(MainFrame mainframe) {
+        String keyword = searchField.getSearchText(); // 검색어 가져오기
+        mainframe.getMainUi().updateSearchContent(keyword, currentFilter);
+
+        // 디버그 로그
+        System.out.println("Searching executed: " + keyword + ", filter: " + currentFilter);
     }
 
     private JButton createCustomButton(String text) {

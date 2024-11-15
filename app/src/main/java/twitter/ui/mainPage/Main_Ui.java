@@ -1,17 +1,10 @@
 package twitter.ui.mainPage;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +25,7 @@ import twitter.ui.mainPage.FollowerTopPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
+import twitter.ui.post.*;
 
 public class Main_Ui extends JPanel {
     private JPanel completeTopPanel;
@@ -234,6 +228,72 @@ updatePostContent("recommend");
     }
         **/
 
+    public void updateSearchContent(String keyword, String filterType) {
+        mainPanel.removeAll(); // 기존 콘텐츠를 지우고 새로운 콘텐츠로 업데이트
+
+        // 예시 데이터
+        List<PostUI> examplePosts = Arrays.asList(
+                new PostUI("Tom", "@tom", "This is a test post about Java programming.", 15, 5, 2),
+                new PostUI("Lud", "@lud", "Learning Swing in Java!", 10, 3, 1),
+                new PostUI("Kim", "@kim", "Search functionality is great.", 20, 7, 5),
+                new PostUI("Jun", "@jun", "Working on a Java project today.", 5, 2, 0),
+                new PostUI("Alice", "@alice", "I love coding in Java!", 25, 10, 7),
+                new PostUI("Bob", "@bob", "Designing user interfaces is fun.", 12, 4, 1),
+                new PostUI("Charlie", "@charlie", "Java is versatile and powerful.", 18, 6, 3),
+                new PostUI("Dave", "@dave", "How to implement search in Java apps?", 8, 3, 0)
+        );
+
+        // 키워드를 포함하는 포스트 필터링
+        List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
+                .filter(post -> post.getContentText().toLowerCase().contains(keyword.toLowerCase()))
+                .toList());
+        filteredPosts.forEach(post -> System.out.println(post.getContentText()));
+
+
+        System.out.println("numbers of posts on filter : " + filteredPosts.size());
+
+
+        // 필터링 결과를 인기순/최신순으로 정렬
+        if ("popular".equals(filterType)) {
+            filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
+        } else if ("recent".equals(filterType)) {
+            // 최신순 정렬. 예시 데이터에 최신 정보를 추가하지 않았으므로 생략
+            // filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime()));
+        }
+        //filteredPosts.forEach(mainPanel::add);
+
+
+        // 필터링된 결과를 메인 패널에 추가
+        for (PostUI post : filteredPosts) {
+            mainPanel.add(post);
+            System.out.println("added post: " + post.getContentText());
+        }
+
+        // 동적 크기 조정 및 레이아웃 업데이트
+        int postCount = mainPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이
+        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        System.out.println("Size of mainpanel: " );
+
+        System.out.println("UI가 갱신되었습니다.");
+        System.out.println("PostUI 내부 구성 요소:");
+        for (Component c : getComponents()) {
+            System.out.println(c.getClass().getName());
+        }
+        System.out.println("mainPanel componets: " + mainPanel.getComponentCount());
+        for (Component comp : mainPanel.getComponents()) {
+            System.out.println(comp.getClass().getName());
+        }
+
+        // 스크롤바 위치 초기화
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+    }
+
     public void updateFollowContent(String type) {
         mainPanel.removeAll();
         /*
@@ -321,12 +381,31 @@ updatePostContent("recommend");
             updatePostContent("recommend");
         } else if ("FollowerTop".equals(panelName)) {
             updateFollowContent("follower");
+        } else if ("SearchTop".equals(panelName)) {
+            SearchTopPanel searchTopPanel = (SearchTopPanel) completeTopPanel.getComponent(1); // SearchTopPanel 가져오기
+            String keyword = searchTopPanel.getKeyword(); // 검색어 가져오기
+            String filterType = searchTopPanel.getCurrentFilterType(); // 필터 타입 가져오기
+            updateSearchContent(keyword, filterType); // 검색 결과 갱신
+
+            // 예제: SearchTopPanel의 검색 필드에서 검색어를 가져오는 코드 추가 필요
+            // 예를 들어, 검색어를 SearchTopPanel에서 전달받아야 한다면 다음처럼 처리:
+            // keyword = searchTopPanel.getSearchKeyword();
+            // filterType = searchTopPanel.getFilterType();
+
+            // mainPanel 업데이트
+
+
+            // 스크롤 초기화
+            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
         } else {
+            // 다른 패널의 경우 초기화 처리
             mainPanel.removeAll();
             mainPanel.revalidate();
             mainPanel.repaint();
         }
     }
+
 
 
     private class IconButtonMouseAdapter extends MouseAdapter {
