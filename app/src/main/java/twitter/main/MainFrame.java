@@ -134,6 +134,17 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
+    public void showAddPostPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new addPostUi(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
     public void showLoginPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
