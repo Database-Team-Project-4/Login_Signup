@@ -6,20 +6,34 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+
+import twitter.model.User;
 import twitter.service.GeminiService;
+import twitter.service.userService;
 
 
 public class Gemini_panel extends JPanel {
 
+    private User currentUser;
+    private Connection connection;
+    private userService userService;
+
+    
     private JTextField promptField; // 프롬프트 입력 필드
     private JPanel chatArea; // 채팅 표시 영역
     private List<ChatMessage> messages; // 채팅 메시지 목록
     private JButton runButton; // 실행 버튼
     private int chatAreaWidth = 150;
+    
+    public Gemini_panel(Connection connection, userService userService) {
 
-    public Gemini_panel() {
+        this.connection = connection;
+        this.userService = userService;
+        this.currentUser = userService.currentUser; 
+
         
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -50,7 +64,7 @@ public class Gemini_panel extends JPanel {
         topPanel.add(BlankLabel, BorderLayout.EAST);
         
 
-    // 상단 패널을 메인 패널의 북쪽에 추가
+        // 상단 패널을 메인 패널의 북쪽에 추가
         add(topPanel, BorderLayout.NORTH);
         // 채팅 영역 설정
         chatArea = new JPanel();
@@ -88,6 +102,7 @@ public class Gemini_panel extends JPanel {
                 }
             }
         });
+
 
 
         // 실행 버튼 설정
@@ -148,30 +163,37 @@ public class Gemini_panel extends JPanel {
 
     }
 
+    public void setCurrentUser(User user) 
+    {  // currentUser 설정 메서드
+        this.currentUser = user;
+    }
 
-    // 채팅 메시지 추가 메서드
     private void addMessage(String sender, String text) {
         ChatMessage message = new ChatMessage(sender, text);
         messages.add(message);
-
+    
         JPanel messagePanel = new JPanel(new FlowLayout(sender.equals("사용자") ? FlowLayout.RIGHT : FlowLayout.LEFT));
         messagePanel.setOpaque(false);
-
-
+    
         JLabel label = new JLabel("<html><div style='width:" + (chatAreaWidth - 40) + "px; word-wrap: break-word;'>" + text + "</div></html>");
         label.setOpaque(true);
         label.setBorder(new EmptyBorder(5, 10, 5, 10));
         label.setForeground(Color.WHITE);
         label.setBackground(sender.equals("사용자") ? new Color(0, 120, 215) : new Color(50, 50, 50));
-
+    
+        if (currentUser != null) { // currentUser가 null이 아닌 경우에만 정보 출력
+            String userInfo = String.format(" (ID: %d, Email: %s)", currentUser.getId(), currentUser.getEmail());
+            label.setText(label.getText() + userInfo); // 기존 텍스트에 사용자 정보 추가
+            System.out.println("Current User Information: " + userInfo); // 콘솔에 정보 출력 (디버깅용)
+        }
+    
         messagePanel.add(label);
         messagePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, label.getPreferredSize().height + 10));
-
-
+    
         chatArea.add(messagePanel);
         chatArea.revalidate();
         chatArea.repaint();
-
+    
         JScrollBar vertical = ((JScrollPane) chatArea.getParent().getParent()).getVerticalScrollBar();
         vertical.setValue(vertical.getMaximum());
     }

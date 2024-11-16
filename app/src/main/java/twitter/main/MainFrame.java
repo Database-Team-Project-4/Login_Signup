@@ -97,7 +97,8 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new Gemini_panel();  // 임시 데이터 전달
+    
+        currentPanel = new Gemini_panel(connection, userService); // connection, userService 전달
         add(currentPanel);
         revalidate();
         repaint();
