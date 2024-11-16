@@ -10,21 +10,37 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import twitter.service.userService;
+<<<<<<< HEAD
 import twitter.ui.CustomSearchField;
 import twitter.ui.Login_Ui;
 import twitter.ui.SignUp_Ui;
 import twitter.ui.Gemini_panel;
 import twitter.ui.main.Main_Ui;
 import twitter.ui.main.SearchTopPanel;
+=======
+import twitter.ui.follow.follower.Follower_Ui;
+import twitter.ui.follow.following.Following_Ui;
+import twitter.ui.module.CustomSearchField;
+import twitter.ui.login.Login_Ui;
+import twitter.ui.signup.SignUp_Ui;
+import twitter.ui.topic.TopicPanel;
+import twitter.ui.mainPage.BookmarkTopPanel;
+import twitter.ui.mainPage.Main_Ui;
+import twitter.ui.mainPage.SearchTopPanel;
+>>>>>>> main/develop
 
 public class MainFrame extends JFrame {
     private static Connection connection;
     private JPanel currentPanel;
     private userService userService = new userService();
+    private Main_Ui mainUi;
+    private Follower_Ui followerUi;
 
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
         this.userService = userService;
+        mainUi = new Main_Ui(this, connection, userService);
+        add(mainUi); // MainFrame에 Main_Ui 추가
 
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,10 +54,31 @@ public class MainFrame extends JFrame {
         /*
         showTwitterMainUiPanel();
         showCustomSearchFieldPanel();
+<<<<<<< HEAD
         */
         //showSearchTopPanel();
          
+=======
+        showSearchTopPanel();
+        showFollowerPanel();
+        showFollowingPanel();
+         */
+>>>>>>> main/develop
     }
+
+    // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
+
+    public void showBookmarkTopPanel() {
+       if (currentPanel != null) {
+           remove(currentPanel);
+      }
+    
+    currentPanel = new BookmarkTopPanel();  // BookmarkTopPanel로 설정
+    add(currentPanel);
+    revalidate();
+    repaint();
+}
+
 
     public void showSearchTopPanel() {
         if (currentPanel != null) {
@@ -70,10 +107,15 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
+        mainUi = new Main_Ui(this, connection, userService);
         currentPanel = new Main_Ui(this, connection, userService);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
+    }
+    // Main_Ui를 반환하는 Getter 추가
+    public Main_Ui getMainUi() {
+        return mainUi;
     }
 
     public void showGeminiPanel() {
@@ -81,6 +123,28 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         currentPanel = new Gemini_panel();  // 임시 데이터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showFollowerPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new Follower_Ui(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showFollowingPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new Following_Ui(this, connection, userService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -95,6 +159,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+
 
     public void showSignUpPanel() {
         if (currentPanel != null) {

@@ -1,5 +1,0 @@
-{
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.project.sourcePaths": ["src/main/java", "src/main/resources/TwitterIcons"]
-}
