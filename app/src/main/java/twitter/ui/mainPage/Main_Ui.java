@@ -5,12 +5,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import twitter.service.postService;
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
@@ -59,7 +59,6 @@ public class Main_Ui extends JPanel {
         completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
 
         //completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다.
-        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //--> 데이터베이스에서 정보를 가져오는 방식입니다.
 
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
@@ -259,26 +258,17 @@ updatePostContent("recommend");
 
             mainPanel.add(noKeywordPanel); // 메인 패널에 추가
         } else {
-            // 예시 데이터
-            List<PostUI> examplePosts = Arrays.asList(
-                    new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0),
-                    new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1),
-                    new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3),
-                    new PostUI("Tom", "@tom", "This is a test post about Java programming.", 15, 5, 2),
-                    new PostUI("Lud", "@lud", "Learning Swing in Java!", 10, 3, 1),
-                    new PostUI("Kim", "@kim", "Search functionality is great.", 20, 7, 5),
-                    new PostUI("Jun", "@jun", "Working on a Java project today.", 5, 2, 0),
-                    new PostUI("Alice", "@alice", "I love coding in Java!", 25, 10, 7),
-                    new PostUI("Bob", "@bob", "Designing user interfaces is fun.", 12, 4, 1),
-                    new PostUI("Charlie", "@charlie", "Java is versatile and powerful.", 18, 6, 3),
-                    new PostUI("Dave", "@dave", "How to implement search in Java apps?", 8, 3, 0)
-            );
+
+            postService postService = new postService();
+            Connection con = MainFrame.getConnection();
+
+            List<PostUI> examplePosts = postService.getAllPosts(con); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
                     .filter(post -> post.getContentText().toLowerCase().contains(keyword.toLowerCase()) ||
                             post.getUserName().toLowerCase().contains(keyword.toLowerCase()) ||
-                            post.getUserHandle().toLowerCase().contains(keyword.toLowerCase()))
+                            post.getUserEmail().toLowerCase().contains(keyword.toLowerCase()))
                     .toList());
 
             if (filteredPosts.isEmpty()) {
@@ -340,17 +330,14 @@ updatePostContent("recommend");
         /*
         DB에서 follow관련 데이터를 가져와야합니다.
          */
-        String[] userNameArray = {
-                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content",
-                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content"
-        };
-        String[] userHandleArray = {
-                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content",
-                "tvN drama", "KBS DRAMA", "TVING", "쿠팡플레이", "Netflix K-Content"
-        };
+        List<String> userNames = new ArrayList<>();
+        List<String> userHandles = new ArrayList<>();
 
-        List<String> userNames = Arrays.asList(userNameArray);
-        List<String> userHandles = Arrays.asList(userHandleArray);
+        Connection connection = MainFrame.getConnection();
+        userService userService = new userService();
+
+
+
         ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
         if (type.equals("follower")) {
             System.out.println("follower화면으로 바꿨어요"); //debug code
@@ -417,7 +404,9 @@ updatePostContent("recommend");
         GeminiButton.setForeground(Color.GRAY);
         selectedButton.setForeground(Color.WHITE);
     }
+
     private String currentSearchKeyword = "";
+
     private void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (completeTopPanel.getLayout());
         cl.show(completeTopPanel, panelName); // 패널 전환

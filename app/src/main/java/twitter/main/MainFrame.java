@@ -41,6 +41,14 @@ public class MainFrame extends JFrame {
 
     }
 
+    public static Connection getConnection() {
+        return connection;
+    }
+
+    public userService getUserService() {
+        return userService;
+    }
+
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
 
     public void showBookmarkTopPanel() {

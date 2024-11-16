@@ -1,161 +1,196 @@
 package twitter.service;
 
+import twitter.model.Post;
+import twitter.model.User;
+import twitter.ui.post.PostUI;
+
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-
-import twitter.model.User;
 
 public class postService {
 
-    imgService imgService = new imgService();
+    private final imgService imgService = new imgService();
 
-    // Method to write a post
-    public static void writePost(Connection con, User currentUser, String content) {
+    public Post post = new Post();
+
+
+    // 게시물 작성 메서드, 작성 후 Post 객체에 값 저장
+    public Post writePost(Connection con, User currentUser, String content) throws SQLException {
         String query = "INSERT INTO post (user_id, content) VALUES (?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, currentUser.getId());
             pstmt.setString(2, content);
             pstmt.executeUpdate();
 
+            // 생성된 게시물 ID 가져오기
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int postId = generatedKeys.getInt(1);
-                    System.out.println("The post has been created successfully with Post ID: " + postId);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error while creating the post: " + e.getMessage());
-        }
-    }
-
-    // 게시물 생성 및 이미지 저장 (DEMO)
-    public void createPostWithImages(Connection connection, User currentUser, String content, List<byte[]> images) throws SQLException, IOException {
-        int postId;
-        // 1. 게시물 생성
-        String postQuery = "INSERT INTO posts (user_id, content) VALUES (?, ?)";
-        try (PreparedStatement pstmt = connection.prepareStatement(postQuery, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, currentUser.getId());
-            pstmt.setString(2, content);
-            pstmt.executeUpdate();
-
-            // 2. 생성된 post_id 가져오기
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    postId = generatedKeys.getInt(1);
-                } else {
-                    throw new SQLException("Post creation failed, no ID obtained.");
+                    System.out.println("게시물이 성공적으로 생성되었습니다. Post ID: " + postId);
+                    return new Post(postId, currentUser.getId(), content);
                 }
             }
         }
-
-        // 3. 이미지를 postId와 함께 저장(DEMO)
-        imgService.saveImagesWithPostId(connection, postId, images);
+        throw new SQLException("게시물 생성 실패, ID를 가져올 수 없습니다.");
     }
 
+    // 게시물과 이미지 생성 메서드
+    public Post createPostWithImages(Connection connection, User currentUser, String content, List<byte[]> images) throws SQLException, IOException {
+        // 1. 게시물 작성 및 Post 객체 생성
+        Post post = writePost(connection, currentUser, content);
 
-    // Method to delete a post
-    public static void deletePost(Connection con, User currentUser, int postId) {
+        // 2. 생성된 postId로 이미지를 저장
+        imgService.saveImagesWithPostId(connection, post.getPostId(), images);
+        return post;
+    }
+
+    // 게시물 삭제 메서드
+    public boolean deletePost(Connection con, User currentUser, int postId) throws SQLException {
         String query = "DELETE FROM post WHERE post_id = ? AND user_id = ?";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, postId);
             pstmt.setInt(2, currentUser.getId());
             int rowsAffected = pstmt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("The post has been deleted successfully.");
-            } else {
-                System.out.println("Failed to delete the post. Either the post ID is invalid or you do not have permission to delete this post.");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error while deleting the post: " + e.getMessage());
+            return rowsAffected > 0; // 삭제 성공 시 true 반환
         }
     }
 
-    // Method to search posts
-    public static void searchPosts(Connection con, String keyword) {
-        // Join query to include the user's name with the post information
-        String query = "SELECT post.post_id, post.user_id, post.content, user.name " +
+    // 키워드로 게시물 검색, Post 객체 리스트 반환
+    public List<Post> searchPosts(Connection con, String keyword) throws SQLException {
+        List<Post> posts = new ArrayList<>();
+        String query = "SELECT post.post_id, post.user_id, post.content, post.created_at, post.updated_at " +
                 "FROM post " +
                 "JOIN user ON post.user_id = user.user_id " +
                 "WHERE post.content LIKE ?";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setString(1, "%" + keyword + "%");
-            ResultSet rs = pstmt.executeQuery();
-
-            System.out.println("Search results:");
-            while (rs.next()) {
-                int postId = rs.getInt("post_id");
-                String content = rs.getString("content");
-                String name = rs.getString("name");
-                System.out.println("Post ID: " + postId + ", User Name: " + name + ", Content: " + content);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // 검색된 데이터를 기반으로 Post 객체 생성 후 리스트에 추가
+                    Post post = new Post(
+                            rs.getInt("post_id"),
+                            rs.getInt("user_id"),
+                            rs.getString("content")
+                    );
+                    posts.add(post);
+                }
             }
-        } catch (SQLException e) {
-            System.out.println("Error while searching posts: " + e.getMessage());
         }
+        return posts;
     }
 
-    // Method to like a post
-    public static void likePost(Connection con, User currentUser, int postId) {
-        // Check if the user already liked the post
+    // 게시물 좋아요 메서드
+    public void likePost(Connection con, User currentUser, int postId) throws SQLException {
+        // 이미 좋아요를 눌렀는지 확인
         String checkQuery = "SELECT * FROM like_post WHERE user_id = ? AND post_id = ?";
         try (PreparedStatement checkStmt = con.prepareStatement(checkQuery)) {
             checkStmt.setInt(1, currentUser.getId());
             checkStmt.setInt(2, postId);
             ResultSet rs = checkStmt.executeQuery();
-
             if (rs.next()) {
-                // User has already liked the post
-                System.out.println("You have already liked this post.");
+                System.out.println("이미 이 게시물에 좋아요를 눌렀습니다.");
                 return;
             }
-        } catch (SQLException e) {
-            System.out.println("Error while checking likes: " + e.getMessage());
-            return;
         }
 
-        // Insert like if the user has not liked the post yet
+        // 좋아요가 없으면 새로 추가
         String insertQuery = "INSERT INTO like_post (user_id, post_id) VALUES (?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(insertQuery)) {
             pstmt.setInt(1, currentUser.getId());
             pstmt.setInt(2, postId);
             pstmt.executeUpdate();
-            System.out.println("You have liked the post.");
-        } catch (SQLException e) {
-            System.out.println("Error while liking the post: " + e.getMessage());
-            return;
+            System.out.println("게시물에 좋아요를 눌렀습니다.");
         }
 
-        // Retrieve the updated like count for the post
+        // 업데이트된 좋아요 개수 가져오기
         String likeCountQuery = "SELECT COUNT(*) AS like_count FROM like_post WHERE post_id = ?";
         try (PreparedStatement countStmt = con.prepareStatement(likeCountQuery)) {
             countStmt.setInt(1, postId);
             ResultSet rs = countStmt.executeQuery();
-
             if (rs.next()) {
                 int likeCount = rs.getInt("like_count");
-                System.out.println("Now the post with ID " + postId + " has " + likeCount + " likes.");
+                System.out.println("이제 게시물 ID " + postId + "의 좋아요 수는 " + likeCount + "개입니다.");
             }
-        } catch (SQLException e) {
-            System.out.println("Error while retrieving like count: " + e.getMessage());
         }
     }
 
-    public static void printAllPosts(Connection con) {
-        String query = "SELECT post.post_id, post.user_id, post.content, user.name " +
-                "FROM post " +
-                "JOIN user ON post.user_id = user.user_id";
-        try (Statement stmt = con.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
 
-            System.out.println("All posts:");
+
+    // 모든 게시물 조회 메서드
+    public List<PostUI> getAllPosts(Connection con) {
+        List<PostUI> postUIs = new ArrayList<>();
+        String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, Posts.updated_at, " +
+                "Users.name, Users.email " +
+                "FROM Posts " +
+                "JOIN Users ON Posts.user_id = Users.user_id";
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
+                // ResultSet에서 데이터 읽기
                 int postId = rs.getInt("post_id");
+                String userName = rs.getString("name");
+                String email = rs.getString("email");
                 String content = rs.getString("content");
-                String name = rs.getString("name");
-                System.out.println("Post ID: " + postId + ", User Name: " + name + ", Content: " + content);
+
+                int likes = getLikeCount(con, postId); // 게시물 좋아요 수 가져오기
+                int comments = getCommentCount(con, postId); // 게시물 댓글 수 가져오기
+                int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
+
+                // PostUI 객체 생성 및 리스트에 추가
+                PostUI postUI = new PostUI(userName, email, content, likes, comments, bookmarks);
+                postUIs.add(postUI);
             }
         } catch (SQLException e) {
-            System.out.println("Error while retrieving all posts: " + e.getMessage());
+            System.out.println("Error fetching posts: " + e.getMessage());
         }
+        return postUIs;
+    }
+
+
+
+    private int getLikeCount(Connection con, int postId) {
+        String query = "SELECT COUNT(*) AS like_count FROM Post_Likes WHERE post_id = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, postId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("like_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching like count: " + e.getMessage());
+        }
+        return 0; // 기본값 반환
+    }
+
+
+    private int getCommentCount(Connection con, int postId) {
+        String query = "SELECT COUNT(*) AS comment_count FROM Comments WHERE post_id = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, postId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("comment_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching comment count: " + e.getMessage());
+        }
+        return 0; // 기본값 반환
+    }
+
+
+    private int getBookmarkCount(Connection con, int postId) {
+        String query = "SELECT COUNT(*) AS bookmark_count FROM Bookmarks WHERE post_id = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, postId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("bookmark_count");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching bookmark count: " + e.getMessage());
+        }
+        return 0; // 기본값 반환
     }
 }
