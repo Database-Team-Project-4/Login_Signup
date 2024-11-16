@@ -17,6 +17,7 @@ import twitter.ui.topic.Gemini_panel;
 import twitter.ui.mainPage.BookmarkTopPanel;
 import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
+import twitter.ui.addPost.addPostUi;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -35,7 +36,9 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 700);
         
+
         showTwitterMainUiPanel(); 
+
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
@@ -122,6 +125,17 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
+    public void showAddPostPanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new addPostUi(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
     public void showLoginPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
@@ -142,7 +156,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
-    
+
     public static void main(String[] args) {
 
         try {
