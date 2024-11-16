@@ -1,4 +1,4 @@
-package twitter.ui;
+package twitter.ui.topic;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import twitter.service.GeminiService;
-import twitter.main.MainFrame;
 
 
 public class Gemini_panel extends JPanel {

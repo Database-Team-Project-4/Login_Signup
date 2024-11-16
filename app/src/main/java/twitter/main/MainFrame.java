@@ -2,32 +2,21 @@ package twitter.main;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import twitter.service.userService;
-<<<<<<< HEAD
-import twitter.ui.CustomSearchField;
-import twitter.ui.Login_Ui;
-import twitter.ui.SignUp_Ui;
-import twitter.ui.Gemini_panel;
-import twitter.ui.main.Main_Ui;
-import twitter.ui.main.SearchTopPanel;
-=======
 import twitter.ui.follow.follower.Follower_Ui;
 import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
 import twitter.ui.signup.SignUp_Ui;
-import twitter.ui.topic.TopicPanel;
+import twitter.ui.topic.Gemini_panel;
 import twitter.ui.mainPage.BookmarkTopPanel;
 import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
->>>>>>> main/develop
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -54,16 +43,10 @@ public class MainFrame extends JFrame {
         /*
         showTwitterMainUiPanel();
         showCustomSearchFieldPanel();
-<<<<<<< HEAD
-        */
-        //showSearchTopPanel();
-         
-=======
         showSearchTopPanel();
         showFollowerPanel();
         showFollowingPanel();
          */
->>>>>>> main/develop
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
