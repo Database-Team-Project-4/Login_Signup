@@ -45,9 +45,9 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
 
     // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ 
-    private final String GeminiIconDefault = "/TwitterIcons/bookmarkdef.png";
-    private final String GeminiIconHover = "/TwitterIcons/bookmarkdef.png";
-    private final String GeminiIconClicked = "/TwitterIcons/bookmarkClicked.png";
+    private final String GeminiIconDefault = "/TwitterIcons/aimessagebot.png";
+    private final String GeminiIconHover = "/TwitterIcons/aimessagebothover.png";
+    private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
 
 
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
@@ -241,14 +241,13 @@ updatePostContent("recommend");
         **/
 
     public void updateSearchContent(String keyword, String filterType) {
-        System.out.println("updateSearchContent 호출됨. keyword: [" + keyword + "], filterType: " + filterType);
 
         mainPanel.removeAll(); // 기존 콘텐츠 제거
         mainPanel.setPreferredSize(null); // 크기 초기화
 
         if (keyword == null || keyword.trim().isEmpty()) {
             // 검색어가 없을 때 "검색어 없음" 메시지 출력
-            System.out.println("empty keyword. '검색어 없음' 메시지를 표시합니다.");
+            System.out.println("empty keyword.");
 
             JPanel noKeywordPanel = new JPanel(new GridBagLayout());
             noKeywordPanel.setBackground(Color.BLACK);
@@ -283,7 +282,7 @@ updatePostContent("recommend");
                     .toList());
 
             if (filteredPosts.isEmpty()) {
-                System.out.println("검색 결과 없음. '검색 결과 없음' 메시지를 표시합니다.");
+                //검색 결과 없음
 
                 JPanel noResultPanel = new JPanel(new GridBagLayout());
                 noResultPanel.setBackground(Color.BLACK);
@@ -317,7 +316,7 @@ updatePostContent("recommend");
                 // 필터링된 포스트를 메인 패널에 추가
                 for (PostUI post : filteredPosts) {
                     mainPanel.add(post);
-                    System.out.println("added post: " + post.getContentText());
+
                 }
             }
         }
