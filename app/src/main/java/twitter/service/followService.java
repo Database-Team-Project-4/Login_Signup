@@ -2,7 +2,7 @@ package twitter.service;
 
 import java.sql.*;
 import java.util.Scanner;
-import twitter.User;
+import twitter.model.User;
 
 public class followService {
     private static Scanner s = new Scanner(System.in);
