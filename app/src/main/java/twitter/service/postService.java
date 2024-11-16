@@ -18,7 +18,7 @@ public class postService {
 
     // 게시물 작성 메서드, 작성 후 Post 객체에 값 저장
     public Post writePost(Connection con, User currentUser, String content) throws SQLException {
-        String query = "INSERT INTO post (user_id, content) VALUES (?, ?)";
+        String query = "INSERT INTO Posts (user_id, content) VALUES (?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setInt(1, currentUser.getId());
             pstmt.setString(2, content);
@@ -55,30 +55,6 @@ public class postService {
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0; // 삭제 성공 시 true 반환
         }
-    }
-
-    // 키워드로 게시물 검색, Post 객체 리스트 반환
-    public List<Post> searchPosts(Connection con, String keyword) throws SQLException {
-        List<Post> posts = new ArrayList<>();
-        String query = "SELECT post.post_id, post.user_id, post.content, post.created_at, post.updated_at " +
-                "FROM post " +
-                "JOIN user ON post.user_id = user.user_id " +
-                "WHERE post.content LIKE ?";
-        try (PreparedStatement pstmt = con.prepareStatement(query)) {
-            pstmt.setString(1, "%" + keyword + "%");
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    // 검색된 데이터를 기반으로 Post 객체 생성 후 리스트에 추가
-                    Post post = new Post(
-                            rs.getInt("post_id"),
-                            rs.getInt("user_id"),
-                            rs.getString("content")
-                    );
-                    posts.add(post);
-                }
-            }
-        }
-        return posts;
     }
 
     // 게시물 좋아요 메서드
@@ -133,13 +109,14 @@ public class postService {
                 String userName = rs.getString("name");
                 String email = rs.getString("email");
                 String content = rs.getString("content");
+                String created_at =rs.getString("created_at");
 
                 int likes = getLikeCount(con, postId); // 게시물 좋아요 수 가져오기
                 int comments = getCommentCount(con, postId); // 게시물 댓글 수 가져오기
                 int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
 
                 // PostUI 객체 생성 및 리스트에 추가
-                PostUI postUI = new PostUI(userName, email, content, likes, comments, bookmarks);
+                PostUI postUI = new PostUI(userName, email, content, likes, comments, bookmarks, created_at);
                 postUIs.add(postUI);
             }
         } catch (SQLException e) {

@@ -121,7 +121,7 @@ public class MainTopPanel extends JPanel {
 
     private JPanel createButtonPanel(JButton button, JPanel underline) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(7, 7, 7));
+        panel.setBackground(new Color(0, 7, 7));
         panel.add(button, BorderLayout.CENTER);
         panel.add(underline, BorderLayout.SOUTH);
         return panel;

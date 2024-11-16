@@ -17,6 +17,7 @@ public class addPostBottomPanel extends JPanel {
     private static final Color TEXT_COLOR = new Color(111, 152, 209);
 
     private addPostMiddlePanel middlePanel;
+    private File selectedImageFile; // 선택된 이미지 파일 저장
 
     public addPostBottomPanel(MainFrame mainframe, addPostMiddlePanel middlePanel) {
         this.middlePanel = middlePanel;
@@ -50,8 +51,8 @@ public class addPostBottomPanel extends JPanel {
             fileChooser.setFileFilter(new FileNameExtensionFilter("Image files", "jpg", "jpeg", "png", "gif"));
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                middlePanel.setImage(selectedFile);
+                selectedImageFile = fileChooser.getSelectedFile(); // 선택된 파일 저장
+                middlePanel.setImage(selectedImageFile);
             }
         });
 
@@ -78,5 +79,9 @@ public class addPostBottomPanel extends JPanel {
     // 이미지 버튼에 접근할 수 있도록 메서드 제공
     public JButton getImageButton() {
         return imageButton;
+    }
+
+    public File getSelectedImageFile() {
+        return selectedImageFile;
     }
 }

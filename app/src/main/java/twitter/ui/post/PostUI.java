@@ -83,7 +83,7 @@ public class PostUI extends JPanel {
 
 
      // 새로운 생성자 (테스트 데이터를 위한 생성자)
-     public PostUI(String userName, String userEmail, String contentText, int likes, int comments, int bookmarks) {
+     public PostUI(String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -94,7 +94,7 @@ public class PostUI extends JPanel {
 
         // 임시 데이터 초기화
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
-        String postInfo = "00:00 · 날짜 없음 · 조회수 없음";
+        String postInfo = String.format("%s", created_at); // createdAt 포함
 
         // 상단 패널 (작성자 정보)
         UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon);

@@ -30,6 +30,9 @@ public class Main_Ui extends JPanel {
         return mainPanel;
     }
 
+    public Main_Ui getMainUi() {
+        return this;
+    }
 
     private final String homeIconDefault = "/TwitterIcons/home_icondef.png";
     private final String homeIconClicked = "/TwitterIcons/home_iconclicked.png";
@@ -177,14 +180,14 @@ updatePostContent("recommend");
 
         // 테스트용 임시 데이터로 PostUI 인스턴스를 추가
         if (type.equals("recommend")) {
-            mainPanel.add(new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3));
-            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
-            mainPanel.add(new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0));
-            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
+            mainPanel.add(new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3, "2021-06-01"));
+            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1,"2021-06-01"));
+            mainPanel.add(new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0, "2021-06-01"));
+            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2, "2021-06-01"));
 
         } else if (type.equals("following")) {
-            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1));
-            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2));
+            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1, "2021-06-01"));
+            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2, "2021-06-01"));
         }
         int postCount = mainPanel.getComponentCount();
         int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
@@ -407,7 +410,7 @@ updatePostContent("recommend");
 
     private String currentSearchKeyword = "";
 
-    private void showPanel(String panelName) {
+    public void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (completeTopPanel.getLayout());
         cl.show(completeTopPanel, panelName); // 패널 전환
 

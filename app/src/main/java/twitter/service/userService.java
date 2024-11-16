@@ -76,6 +76,9 @@ public class userService {
     public boolean isLoggedIn() {
         return isLoggedIn;
     }
+    public User getCurrentUser() {
+        return currentUser;
+    }
 
 
     public boolean deleteAccount(Connection con, User user) throws SQLException {
