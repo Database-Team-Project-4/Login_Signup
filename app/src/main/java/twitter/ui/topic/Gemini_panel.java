@@ -21,11 +21,11 @@ public class Gemini_panel extends JPanel {
 
     public Gemini_panel() {
         
-        
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         messages = new ArrayList<>();
-    // 뒤로가기 버튼
+
+        // 뒤로가기 버튼
         JButton backButton = new JButton("<");
         backButton.setForeground(Color.GRAY);
         backButton.setFocusPainted(false);

@@ -33,20 +33,9 @@ public class MainFrame extends JFrame {
 
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 600);
+        setSize(450, 700);
         
-
-        //showTwitterMainUiPanel();
-        //showLoginPanel();
-        
-        showGeminiPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
-        /*
-        showTwitterMainUiPanel();
-        showCustomSearchFieldPanel();
-        showSearchTopPanel();
-        showFollowerPanel();
-        showFollowingPanel();
-         */
+        showTwitterMainUiPanel(); 
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
