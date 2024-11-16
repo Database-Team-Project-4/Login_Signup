@@ -13,7 +13,7 @@ import twitter.service.userService;
 import twitter.ui.CustomSearchField;
 import twitter.ui.Login_Ui;
 import twitter.ui.SignUp_Ui;
-import twitter.ui.TopicPanel;
+import twitter.ui.Gemini_panel;
 import twitter.ui.main.Main_Ui;
 import twitter.ui.main.SearchTopPanel;
 
@@ -31,14 +31,16 @@ public class MainFrame extends JFrame {
         setSize(400, 600);
         
 
-        showTwitterMainUiPanel();
+        //showTwitterMainUiPanel();
         //showLoginPanel();
+        
+        showGeminiPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
         /*
-        showTopicPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
         showTwitterMainUiPanel();
         showCustomSearchFieldPanel();
-        showSearchTopPanel();
-         */
+        */
+        //showSearchTopPanel();
+         
     }
 
     public void showSearchTopPanel() {
@@ -74,19 +76,11 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
-    public void showTopicPanel() {
+    public void showGeminiPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-
-        // 테스트를 위한 임시 주제 데이터 생성
-        Map<String, Integer> topics = new HashMap<>();
-        topics.put("Java", 10);
-        topics.put("Swing", 7);
-        topics.put("Database", 15);
-        topics.put("AI", 5);
-
-        currentPanel = new TopicPanel(topics);  // 임시 데이터 전달
+        currentPanel = new Gemini_panel();  // 임시 데이터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -111,7 +105,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
-
+    
     public static void main(String[] args) {
 
         try {
