@@ -17,6 +17,7 @@ import twitter.ui.topic.Gemini_panel;
 import twitter.ui.mainPage.BookmarkTopPanel;
 import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
+import twitter.ui.addPost.addPostUi;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -38,7 +39,7 @@ public class MainFrame extends JFrame {
 
         //showTwitterMainUiPanel();
         //showLoginPanel();
-        
+
         showGeminiPanel();   // 테스트 하고자 바꾸어 놨습니다! 작업시 변경 바랍니다 ~!
         /*
         showTwitterMainUiPanel();
@@ -153,7 +154,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
-    
+
     public static void main(String[] args) {
 
         try {

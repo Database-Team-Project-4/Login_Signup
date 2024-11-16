@@ -55,6 +55,15 @@ public class MainTopPanel extends JPanel {
         topPanel.add(logoLabel, BorderLayout.CENTER);
         topPanel.add(writePostButton, BorderLayout.EAST);
 
+
+        // Post작성 버튼을 누르면 addPostPanel로 넘어갑니다.
+        writePostButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mainframe.showAddPostPanel();
+            }
+        });
+
         JPanel subTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 10));
         subTopPanel.setBackground(new Color(7, 7, 7));
         recommendButton = createCustomButton("추천");
