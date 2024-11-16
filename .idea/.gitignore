@@ -1,3 +1,13 @@
+# 디폴트 무시된 파일
+/shelf/
+/workspace.xml
+# 에디터 기반 HTTP 클라이언트 요청
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+
 # Ignore Gradle project-specific cache directory
 .gradle
 
@@ -239,4 +249,4 @@ gradle-app.setting
 # Java heap dump
 *.hprof
 
-# End of https://www.toptal.com/developers/gitignore/api/intellij,eclipse,java,gradle.idea/
+# End of https://www.toptal.com/developers/gitignore/api/intellij,eclipse,java,gradle
