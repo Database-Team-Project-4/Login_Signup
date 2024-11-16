@@ -9,30 +9,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
-import twitter.ui.mainPage.FollowerTopPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
-import twitter.ui.post.*;
+
 
 public class Main_Ui extends JPanel {
     private JPanel completeTopPanel;
-    private JButton homeButton, searchButton, followerButton, bookmarkButton;
+    private JButton homeButton, searchButton, followerButton, bookmarkButton, GeminiButton;
     private JPanel mainPanel;
     private JPanel bottomPanel;
+    private MainFrame mainFrame;
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -52,7 +43,14 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconHover = "/TwitterIcons/bookmarkdef.png";
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
 
+    // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ 
+    private final String GeminiIconDefault = "/TwitterIcons/bookmarkdef.png";
+    private final String GeminiIconHover = "/TwitterIcons/bookmarkdef.png";
+    private final String GeminiIconClicked = "/TwitterIcons/bookmarkClicked.png";
+
+
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
+        this.mainFrame = mainframe;
         setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
@@ -75,6 +73,8 @@ public class Main_Ui extends JPanel {
         searchButton = createIconButtonWithHover(searchIconDefault, searchIconHover, searchIconClicked);
         followerButton = createIconButtonWithHover(communityIconDefault, communityIconHover, communityIconClicked);
         bookmarkButton = createIconButtonWithHover(BookmarkIconDefault, BookmarkIconHover, BookmarkIconClicked);
+        GeminiButton = createIconButtonWithHover(GeminiIconDefault, GeminiIconHover, GeminiIconClicked);
+
         homeButton.addActionListener(e -> {
             setBottomButtonSelected(homeButton);
             showPanel("MainTop");
@@ -94,12 +94,22 @@ public class Main_Ui extends JPanel {
             setBottomButtonSelected(bookmarkButton);
             showPanel("BookmarkTop"); // 북마크 버튼 클릭 시 BookmarkTop 패널 표시
         });
+        GeminiButton.addActionListener(e -> {
+            setBottomButtonSelected(GeminiButton);
+            showPanel("GeminiPanel"); // 새 패널 이름 - 적절히 수정
+        });
 
+        GeminiButton.addActionListener(e -> {
+            setBottomButtonSelected(GeminiButton);
+            mainFrame.showGeminiPanel(); // mainFrame 사용
+            showPanel("GeminiPanel");  // GeminiPanel을 보여주도록 showPanel 호출 추가
+        });
 
         bottomPanel.add(homeButton);
         bottomPanel.add(searchButton);
         bottomPanel.add(followerButton);
         bottomPanel.add(bookmarkButton);
+        bottomPanel.add(GeminiButton);
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -380,6 +390,7 @@ updatePostContent("recommend");
         searchButton.setIcon(loadIcon(searchIconDefault));
         followerButton.setIcon(loadIcon(communityIconDefault));
         bookmarkButton.setIcon(loadIcon(BookmarkIconDefault));
+        GeminiButton.setIcon(loadIcon(GeminiIconDefault));
 
         // 클릭된 버튼만 클릭된 상태의 아이콘으로 설정
         if (selectedButton == homeButton) {
@@ -390,6 +401,8 @@ updatePostContent("recommend");
             selectedButton.setIcon(loadIcon(communityIconClicked));
         } else if (selectedButton == bookmarkButton) {
             selectedButton.setIcon(loadIcon(BookmarkIconClicked));
+        } else if (selectedButton == GeminiButton) {
+            selectedButton.setIcon(loadIcon(GeminiIconClicked));
         }
 
         // 선택된 버튼 텍스트 색상을 흰색으로 설정하고 나머지는 기본색으로 초기화
@@ -397,7 +410,7 @@ updatePostContent("recommend");
         searchButton.setForeground(Color.GRAY);
         followerButton.setForeground(Color.GRAY);
         bookmarkButton.setForeground(Color.GRAY);
-
+        GeminiButton.setForeground(Color.GRAY);
         selectedButton.setForeground(Color.WHITE);
     }
     private void showPanel(String panelName) {
@@ -406,6 +419,10 @@ updatePostContent("recommend");
 
         if ("MainTop".equals(panelName)) {
             updatePostContent("recommend");
+        } else if ("GeminiPanel".equals(panelName)) { // GeminiPanel 처리 추가
+            mainPanel.removeAll();
+            mainPanel.revalidate();
+            mainPanel.repaint();
         } else if ("FollowerTop".equals(panelName)) {
             updateFollowContent("follower");
         } else if ("SearchTop".equals(panelName)) {
