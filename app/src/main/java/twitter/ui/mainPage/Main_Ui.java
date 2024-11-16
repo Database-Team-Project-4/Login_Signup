@@ -96,11 +96,6 @@ public class Main_Ui extends JPanel {
         });
         GeminiButton.addActionListener(e -> {
             setBottomButtonSelected(GeminiButton);
-            showPanel("GeminiPanel"); // 새 패널 이름 - 적절히 수정
-        });
-
-        GeminiButton.addActionListener(e -> {
-            setBottomButtonSelected(GeminiButton);
             mainFrame.showGeminiPanel(); // mainFrame 사용
             showPanel("GeminiPanel");  // GeminiPanel을 보여주도록 showPanel 호출 추가
         });
