@@ -25,6 +25,7 @@ public class Main_Ui extends JPanel {
     private JPanel bottomPanel;
     private MainFrame mainFrame;
 
+
     public JPanel getMainPanel() {
         return mainPanel;
     }
@@ -240,37 +241,39 @@ updatePostContent("recommend");
         **/
 
     public void updateSearchContent(String keyword, String filterType) {
+        System.out.println("updateSearchContent 호출됨. keyword: [" + keyword + "], filterType: " + filterType);
 
-        mainPanel.removeAll(); // 콘텐츠 제거
+        mainPanel.removeAll(); // 기존 콘텐츠 제거
+        mainPanel.setPreferredSize(null); // 크기 초기화
+
         if (keyword == null || keyword.trim().isEmpty()) {
             // 검색어가 없을 때 "검색어 없음" 메시지 출력
-            System.out.println("검색어가 비어 있습니다. '검색어 없음' 메시지를 표시합니다.");
-            JPanel noKeywordPanel = new JPanel();
+            System.out.println("empty keyword. '검색어 없음' 메시지를 표시합니다.");
+
+            JPanel noKeywordPanel = new JPanel(new GridBagLayout());
             noKeywordPanel.setBackground(Color.BLACK);
-            noKeywordPanel.setLayout(new GridBagLayout());
+
             JLabel noKeywordLabel = new JLabel("검색어 없음");
             noKeywordLabel.setForeground(Color.WHITE);
-            noKeywordLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            noKeywordLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
             noKeywordPanel.add(noKeywordLabel);
 
             mainPanel.add(noKeywordPanel); // 메인 패널에 추가
         } else {
-        // 예시 데이터
-        List<PostUI> examplePosts = Arrays.asList(
-
-                new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0),
-                new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1),
-                new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3),
-                new PostUI("Tom", "@tom", "This is a test post about Java programming.", 15, 5, 2),
-                new PostUI("Lud", "@lud", "Learning Swing in Java!", 10, 3, 1),
-                new PostUI("Kim", "@kim", "Search functionality is great.", 20, 7, 5),
-                new PostUI("Jun", "@jun", "Working on a Java project today.", 5, 2, 0),
-                new PostUI("Alice", "@alice", "I love coding in Java!", 25, 10, 7),
-                new PostUI("Bob", "@bob", "Designing user interfaces is fun.", 12, 4, 1),
-                new PostUI("Charlie", "@charlie", "Java is versatile and powerful.", 18, 6, 3),
-                new PostUI("Dave", "@dave", "How to implement search in Java apps?", 8, 3, 0)
-        );
-
+            // 예시 데이터
+            List<PostUI> examplePosts = Arrays.asList(
+                    new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0),
+                    new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1),
+                    new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3),
+                    new PostUI("Tom", "@tom", "This is a test post about Java programming.", 15, 5, 2),
+                    new PostUI("Lud", "@lud", "Learning Swing in Java!", 10, 3, 1),
+                    new PostUI("Kim", "@kim", "Search functionality is great.", 20, 7, 5),
+                    new PostUI("Jun", "@jun", "Working on a Java project today.", 5, 2, 0),
+                    new PostUI("Alice", "@alice", "I love coding in Java!", 25, 10, 7),
+                    new PostUI("Bob", "@bob", "Designing user interfaces is fun.", 12, 4, 1),
+                    new PostUI("Charlie", "@charlie", "Java is versatile and powerful.", 18, 6, 3),
+                    new PostUI("Dave", "@dave", "How to implement search in Java apps?", 8, 3, 0)
+            );
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
@@ -279,52 +282,59 @@ updatePostContent("recommend");
                             post.getUserHandle().toLowerCase().contains(keyword.toLowerCase()))
                     .toList());
 
-            filteredPosts.forEach(post -> System.out.println(post.getContentText()));
+            if (filteredPosts.isEmpty()) {
+                System.out.println("검색 결과 없음. '검색 결과 없음' 메시지를 표시합니다.");
 
+                JPanel noResultPanel = new JPanel(new GridBagLayout());
+                noResultPanel.setBackground(Color.BLACK);
 
-            mainPanel.revalidate();
-            mainPanel.repaint();
+                JLabel noResultLabel = new JLabel(keyword+"에 해당하는 검색 결과 없음");
+                noResultLabel.setForeground(Color.WHITE);
+                noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+                noResultPanel.add(noResultLabel);
 
-            // 필터링 결과를 인기순/최신순으로 정렬
-            if ("popular".equals(filterType)) {
-                filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
-            } else if ("recent".equals(filterType)) {
-                // 최신순 정렬. 예시 데이터에 최신 정보를 추가하지 않았으므로 생략
-                // filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime()));
+                // 하단 설명 메시지 라벨 생성
+                JLabel suggestionLabel = new JLabel("검색어를 다시 확인해보세요");
+                suggestionLabel.setForeground(Color.LIGHT_GRAY);
+                suggestionLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+                // GridBagLayout을 사용하여 아래쪽에 배치
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 1; // 두 번째 줄
+                gbc.insets = new Insets(10, 0, 0, 0); // 위쪽 여백 설정
+                noResultPanel.add(suggestionLabel, gbc);
+
+                mainPanel.add(noResultPanel); // 메인 패널에 추가
+            } else {
+                // 인기순/최신순 정렬
+                if ("popular".equals(filterType)) {
+                    filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
+                } else if ("recent".equals(filterType)) {
+                    //filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime())); // 최신순 정렬
+                }
+
+                // 필터링된 포스트를 메인 패널에 추가
+                for (PostUI post : filteredPosts) {
+                    mainPanel.add(post);
+                    System.out.println("added post: " + post.getContentText());
+                }
             }
-            //filteredPosts.forEach(mainPanel::add);
-
-            // 필터링된 결과를 메인 패널에 추가
-            for (PostUI post : filteredPosts) {
-                mainPanel.add(post);
-                System.out.println("added post: " + post.getContentText());
-            }
-
-            // 동적 크기 조정 및 레이아웃 업데이트
-            int postCount = mainPanel.getComponentCount();
-            int postHeight = 150; // 각 포스트의 예상 높이
-            mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
-
-            mainPanel.revalidate(); // 레이아웃 업데이트
-            mainPanel.repaint(); // 화면 갱신
-
-            showPanel("SearchTop");
-
-
-            for (Component c : getComponents()) {
-                System.out.println(c.getClass().getName());
-            }
-
-            for (Component comp : mainPanel.getComponents()) {
-                System.out.println(comp.getClass().getName());
-            }
-
-            // 스크롤바 위치 초기화
-            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
-
         }
+
+        // 동적 크기 조정 및 레이아웃 갱신
+        int postCount = mainPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이
+        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
+
+        mainPanel.revalidate(); // 레이아웃 업데이트
+        mainPanel.repaint(); // 화면 갱신
+
+        // 스크롤바 위치 초기화
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
     }
+
 
     public void updateFollowContent(String type) {
         mainPanel.removeAll();
@@ -408,6 +418,7 @@ updatePostContent("recommend");
         GeminiButton.setForeground(Color.GRAY);
         selectedButton.setForeground(Color.WHITE);
     }
+    private String currentSearchKeyword = "";
     private void showPanel(String panelName) {
         CardLayout cl = (CardLayout) (completeTopPanel.getLayout());
         cl.show(completeTopPanel, panelName); // 패널 전환
@@ -422,14 +433,17 @@ updatePostContent("recommend");
             updateFollowContent("follower");
         } else if ("SearchTop".equals(panelName)) {
             System.out.println("SearchTop 패널 표시");
+            currentSearchKeyword = "";
+            updateSearchContent(currentSearchKeyword, "default");
+
             SearchTopPanel searchTopPanel = (SearchTopPanel) completeTopPanel.getComponent(1); // SearchTopPanel 가져오기
             searchTopPanel.addSearchListener(() -> {
-                updateSearchContent("", "default");
-                String keyword = searchTopPanel.getKeyword(); // 검색어 가져오기
+
+                currentSearchKeyword = searchTopPanel.getKeyword(); // 검색어 가져오기
                 String filterType = searchTopPanel.getCurrentFilterType(); // 필터 타입 가져오기
 
                 // updateSearchContent 호출로 mainPanel 갱신
-                updateSearchContent(keyword, filterType);
+                updateSearchContent(currentSearchKeyword, filterType);
 
                 // 갱신된 mainPanel 출력
                 mainPanel.revalidate();
