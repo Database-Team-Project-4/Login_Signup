@@ -18,6 +18,7 @@ import twitter.ui.mainPage.BookmarkTopPanel;
 import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
 import twitter.ui.addPost.addPostUi;
+import twitter.ui.profile.UserProfile;
 
 public class MainFrame extends JFrame {
     private static Connection connection;
@@ -32,12 +33,13 @@ public class MainFrame extends JFrame {
         mainUi = new Main_Ui(this, connection, userService);
         add(mainUi); // MainFrame에 Main_Ui 추가
 
+
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 700);
         
-
-        showTwitterMainUiPanel(); 
+        showUserProfilePanel();
+        //showTwitterMainUiPanel();
 
     }
 
@@ -153,6 +155,17 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         currentPanel = new SignUp_Ui(this, connection, userService);  // SignUp_Ui 클래스로부터 UI 로직 실행
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showUserProfilePanel() {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new UserProfile(); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();
