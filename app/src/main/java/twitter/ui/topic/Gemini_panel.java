@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import twitter.main.MainFrame;
 import twitter.model.User;
 import twitter.service.GeminiService;
 import twitter.service.userService;
@@ -28,7 +29,7 @@ public class Gemini_panel extends JPanel {
     private JButton runButton; // 실행 버튼
     private int chatAreaWidth = 150;
     
-    public Gemini_panel(Connection connection, userService userService) {
+    public Gemini_panel(MainFrame mainframe, Connection connection, userService userService) {
 
         this.connection = connection;
         this.userService = userService;
@@ -45,6 +46,13 @@ public class Gemini_panel extends JPanel {
         backButton.setFocusPainted(false);
         backButton.setBorderPainted(false);
         backButton.setContentAreaFilled(false);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainframe.showTwitterMainUiPanel(); // 뒤로가기 버튼을 누르면 메인화면으로 갑니다.
+            }
+        });
 
         // 제목 라벨 생성 및 설정
         JLabel titleLabel = new JLabel("Gemini API", JLabel.CENTER);

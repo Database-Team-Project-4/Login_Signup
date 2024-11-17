@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import twitter.service.postService;
 import twitter.service.userService;
 import twitter.ui.follow.follower.Follower_Ui;
 import twitter.ui.follow.following.Following_Ui;
@@ -21,9 +22,11 @@ import twitter.ui.addPost.addPostUi;
 import twitter.ui.profile.UserProfile;
 
 public class MainFrame extends JFrame {
+
     private static Connection connection;
     private JPanel currentPanel;
     private userService userService = new userService();
+    private postService postService = new postService();
     private Main_Ui mainUi;
     private Follower_Ui followerUi;
 
@@ -41,6 +44,17 @@ public class MainFrame extends JFrame {
         showUserProfilePanel();
         //showTwitterMainUiPanel();
 
+    }
+
+    public static Connection getConnection() {
+        return connection;
+    }
+
+    public userService getUserService() {
+        return userService;
+    }
+    public postService getPostService() {
+        return postService;
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
@@ -100,7 +114,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
     
-        currentPanel = new Gemini_panel(connection, userService); // connection, userService 전달
+        currentPanel = new Gemini_panel(this, connection, userService); // connection, userService 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -133,7 +147,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new addPostUi(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        currentPanel = new addPostUi(this, connection, userService, postService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();

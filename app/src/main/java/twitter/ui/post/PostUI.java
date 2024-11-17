@@ -19,7 +19,7 @@ public class PostUI extends JPanel {
 
 
     private String userName;
-    private String userHandle;
+    private String userEmail;
     private String contentText;
     private int likes;
     private int comments;
@@ -44,14 +44,14 @@ public class PostUI extends JPanel {
 
        
         // 데이터베이스에서 postId 기반 정보 가져오기
-        String query = "SELECT u.name, u.handle, p.content, p.created_at, p.views, p.likes, p.comments, p.bookmarks " +
+        String query = "SELECT u.name, u.email, p.content, p.created_at, p.views, p.likes, p.comments, p.bookmarks " +
                        "FROM posts p JOIN users u ON p.user_id = u.user_id WHERE p.post_id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, postId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
                 userName = rs.getString("name");
-                userEmail = rs.getString("handle");
+                userEmail = rs.getString("email");
                 contentText = rs.getString("content");
                 postInfo = String.format("%s · 조회 %d 회", rs.getString("created_at"), rs.getInt("views"));
                 likes = rs.getInt("likes");
@@ -78,22 +78,26 @@ public class PostUI extends JPanel {
         // 전체 크기 조정
         setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
     }
+
+
+
+
      // 새로운 생성자 (테스트 데이터를 위한 생성자)
-     public PostUI(String userName, String userHandle, String contentText, int likes, int comments, int bookmarks) {
+     public PostUI(String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
          this.userName = userName;
-         this.userHandle = userHandle;
+         this.userEmail = userEmail;
          this.contentText = contentText;
          this.likes = likes;
 
         // 임시 데이터 초기화
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
-        String postInfo = "00:00 · 날짜 없음 · 조회수 없음";
+        String postInfo = String.format("%s", created_at); // createdAt 포함
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userHandle, profileIcon);
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (게시글 본문 및 작성 정보)
@@ -112,9 +116,8 @@ public class PostUI extends JPanel {
     public String getUserName() {
         return userName;
     }
-
-    public String getUserHandle() {
-        return userHandle;
+    public String getUserEmail() {
+        return userEmail;
     }
     public int getComments() {
         return comments;
@@ -122,13 +125,9 @@ public class PostUI extends JPanel {
     public int getBookmarks() {
         return bookmarks;
     }
-
-
-
     public String getContentText() {
         return contentText;
     }
-
     public int getLikes() {
         return likes;
     }
