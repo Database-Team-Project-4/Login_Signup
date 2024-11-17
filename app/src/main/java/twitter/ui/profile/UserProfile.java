@@ -1,11 +1,15 @@
 package twitter.ui.profile;
 
+import twitter.main.MainFrame;
+import twitter.service.userService;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 import twitter.ui.post.PostUI;
 import twitter.ui.module.CustomScrollbar;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -19,14 +23,15 @@ import java.sql.SQLException;
 //기본적인 프로필화면입니다. 다른 사용자의 프로필임을 상정하고 만들어 팔로우 버튼이 있으며 팔로우 버튼만 삭제하면 바로 나의 프로필로 사용할 수 있습니다.
 //추가로 나의 프로필에서 팔로우 버튼 위치에 사용자 정보 수정 버튼 등을 생성할수도 있습니다.
 public class UserProfile extends JPanel {
-
+    private MainFrame mainframe;
     private JPanel mainPanel;
     private JButton postButton;
     private JButton replyButton;
     private JPanel postUnderline;
     private JPanel replyUnderline;
 
-    public UserProfile() {
+    public UserProfile(MainFrame mainframe, Connection connection, userService userService) {
+        this.mainframe = mainframe;
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -175,14 +180,54 @@ private JButton createFollowButton() {
         followInfoPanel.setBackground(new Color(7, 7, 7));
         followInfoPanel.setBounds(8, 155, 200, 30); // 핸들 아래 위치
 
+        //자신의 팔로잉 ui로 들어가는 버튼
         JButton followingButton = createHoverableButton("4 팔로잉");
         followingButton.setPreferredSize(new Dimension(70, 25)); // 버튼 크기 조정
         followingButton.setMargin(new Insets(0, 0, 0, 0)); // 버튼 내부 패딩 축소
 
+        // following 버튼 호버 및 클릭 이벤트
+        followingButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                followingButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
+                followingButton.setForeground(Color.WHITE);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                followingButton.setBackground(Color.BLACK); // 기본 색상
+                followingButton.setForeground(Color.WHITE);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mainframe.showFollowingPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+            }
+        });
+        //자신의 팔로우 ui로 들어가는 버튼
         JButton followerButton = createHoverableButton("2 팔로우");
         followerButton.setPreferredSize(new Dimension(70, 25)); // 버튼 크기 조정
         followerButton.setMargin(new Insets(0, 0, 0, 0)); // 버튼 내부 패딩 축소
 
+        // following 버튼 호버 및 클릭 이벤트
+        followerButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                followerButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
+                followerButton.setForeground(Color.WHITE);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                followerButton.setBackground(Color.BLACK); // 기본 색상
+                followerButton.setForeground(Color.WHITE);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mainframe.showFollowerPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+            }
+        });
         // 팔로우 버튼
         JButton followButton = createFollowButton();
         followButton.setBounds(340, 55, 80, 30);  // 패널 오른쪽 경계 근처에 위치

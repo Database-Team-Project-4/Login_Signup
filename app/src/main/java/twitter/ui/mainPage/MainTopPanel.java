@@ -64,6 +64,13 @@ public class MainTopPanel extends JPanel {
             }
         });
 
+        profileButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mainframe.showUserProfilePanel();
+            }
+        });
+
         JPanel subTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 10));
         subTopPanel.setBackground(new Color(7, 7, 7));
         recommendButton = createCustomButton("추천");

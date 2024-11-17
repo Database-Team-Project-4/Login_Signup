@@ -41,8 +41,8 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 700);
         
-        showUserProfilePanel();
-        //showTwitterMainUiPanel();
+        //showUserProfilePanel();
+        showTwitterMainUiPanel();
 
     }
 
@@ -179,7 +179,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new UserProfile(); // UserProfile 클래스를 추가
+        currentPanel = new UserProfile(this, connection, userService); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();
