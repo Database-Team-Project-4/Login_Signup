@@ -10,6 +10,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 //기본적인 프로필화면입니다. 다른 사용자의 프로필임을 상정하고 만들어 팔로우 버튼이 있으며 팔로우 버튼만 삭제하면 바로 나의 프로필로 사용할 수 있습니다.
 //추가로 나의 프로필에서 팔로우 버튼 위치에 사용자 정보 수정 버튼 등을 생성할수도 있습니다.
 public class UserProfile extends JPanel {
@@ -322,14 +328,24 @@ private JButton createFollowButton() {
         mainPanel.removeAll();
         List<PostUI> posts = new ArrayList<>();
 
-        if ("posts".equals(type)) {
-            for (int i = 1; i <= 10; i++) { // 테스트용 10개의 포스트 생성
-                posts.add(new PostUI("Gachon", "@gachon", "게시물 #" + i, 15 + i, 3 + i, 5 + i));
+        try {
+            // 데이터베이스 연결
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
+
+            if ("posts".equals(type)) {
+                for (int i = 1; i <= 10; i++) { // 테스트용 10개의 포스트 생성
+                    posts.add(new PostUI(i, connection)); // postId를 기반으로 생성
+                }
+            } else if ("replies".equals(type)) {
+                for (int i = 11; i <= 15; i++) { // 테스트용 5개의 답글 생성
+                    posts.add(new PostUI(i, connection)); // postId를 기반으로 생성
+                }
             }
-        } else if ("replies".equals(type)) {
-            for (int i = 1; i <= 5; i++) { // 테스트용 5개의 답글 생성
-                posts.add(new PostUI("Gachon", "@gachon", "답글 #" + i, 5 + i, 1 + i, i));
-            }
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         for (PostUI post : posts) {

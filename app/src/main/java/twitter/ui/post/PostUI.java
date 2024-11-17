@@ -42,7 +42,7 @@ public class PostUI extends JPanel {
         int comments = 0;
         int bookmarks = 0;
 
-       
+
         // 데이터베이스에서 postId 기반 정보 가져오기
         String query = "SELECT u.name, u.email, p.content, p.created_at, p.views, p.likes, p.comments, p.bookmarks " +
                        "FROM posts p JOIN users u ON p.user_id = u.user_id WHERE p.post_id = ?";
@@ -60,7 +60,7 @@ public class PostUI extends JPanel {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        
+
     }
 
         // 상단 패널 (작성자 정보)
@@ -111,6 +111,9 @@ public class PostUI extends JPanel {
         // 전체 크기 조정
         setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
 
+    }
+
+    public PostUI(String gachon, String s, String s1, int i, int i1, int i2) {
     }
 
     public String getUserName() {
