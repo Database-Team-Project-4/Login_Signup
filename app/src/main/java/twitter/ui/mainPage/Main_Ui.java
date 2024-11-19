@@ -16,6 +16,7 @@ import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
+import twitter.ui.post.ExpandedPostUI;
 
 
 public class Main_Ui extends JPanel {
@@ -175,31 +176,74 @@ updatePostContent("recommend");
 }
 
 
-    public void updatePostContent(String type) {
-        mainPanel.removeAll(); // 기존 콘텐츠를 지우고 새로운 콘텐츠로 업데이트
+    public void updatePostContent(String filterType) {
+        mainPanel.removeAll(); // 기존 콘텐츠 제거
+        mainPanel.setPreferredSize(null); // 크기 초기화
 
-        // 테스트용 임시 데이터로 PostUI 인스턴스를 추가
-        if (type.equals("recommend")) {
-            mainPanel.add(new PostUI("Tom", "@tom", "Test content from Tom", 10, 2, 3, "2021-06-01"));
-            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1,"2021-06-01"));
-            mainPanel.add(new PostUI("Kim", "@kim", "Hello world!", 5, 1, 0, "2021-06-01"));
-            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2, "2021-06-01"));
+        postService postService = new postService();
+        Connection con = MainFrame.getConnection();
 
-        } else if (type.equals("following")) {
-            mainPanel.add(new PostUI("Lud", "@lud", "Following content from Lud", 8, 4, 1, "2021-06-01"));
-            mainPanel.add(new PostUI("Jun", "@jun", "Good day everyone!", 15, 7, 2, "2021-06-01"));
+        // 모든 포스트 가져오기
+        List<PostUI> examplePosts = postService.getAllPosts(con);
+
+        if (examplePosts.isEmpty()) {
+            // 포스트가 없을 때 "게시글 없음" 메시지 출력
+            JPanel noResultPanel = new JPanel(new GridBagLayout());
+            noResultPanel.setBackground(Color.BLACK);
+
+            JLabel noResultLabel = new JLabel("게시글 없음");
+            noResultLabel.setForeground(Color.WHITE);
+            noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            noResultPanel.add(noResultLabel);
+
+            mainPanel.add(noResultPanel); // 메인 패널에 추가
+        } else {
+            // 정렬 수행 (creationTime 대신 PostUI 리스트 순서를 기반으로 처리)
+            if ("popular".equals(filterType)) {
+                examplePosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
+            } else if ("recent".equals(filterType)) {
+                // PostUI에서 순서대로 정렬 (creationTime을 PostUI가 직접 제공하지 않을 경우 대체)
+                // 최신순 정렬은 postService에서 관리하는 데이터를 기준으로 이미 되어 있다고 가정
+            }
+
+            // 포스트를 메인 패널에 추가
+            for (PostUI post : examplePosts) {
+                mainPanel.add(post);
+
+                // 클릭 이벤트 추가 (확장된 화면으로 이동)
+                post.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // 클릭 시 필요한 데이터를 전달
+                        showExpandedPost(
+                                examplePosts.indexOf(post), // 리스트 인덱스를 ID처럼 사용
+                                post.getUserName(),
+                                post.getUserEmail(),
+                                post.getContentText(),
+                                post.getLikes(),
+                                post.getComments(),
+                                post.getBookmarks(),
+                                "N/A" // creationTime을 대신할 값 (임시)
+                        );
+                    }
+                });
+            }
         }
-        int postCount = mainPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
 
-        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
+        // 동적 크기 조정 및 레이아웃 갱신
+        int postCount = mainPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이
+        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
 
         mainPanel.revalidate(); // 레이아웃 업데이트
         mainPanel.repaint(); // 화면 갱신
 
-         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+        // 스크롤바 위치 초기화
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
     }
+
+
 
 
 
@@ -357,6 +401,27 @@ updatePostContent("recommend");
 
         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+    }
+
+    private void showExpandedPost(int postId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String createdAt) {
+        // 기존 메인 패널 숨기기
+        mainPanel.setVisible(false);
+
+        // ExpandedPostUI 생성
+        ExpandedPostUI expandedPostUI = new ExpandedPostUI(userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+
+        // 뒤로가기 버튼 동작 추가
+        JButton backButton = (JButton) ((JPanel) expandedPostUI.getComponent(0)).getComponent(0); // 상단 패널의 첫 번째 컴포넌트
+        backButton.addActionListener(e -> {
+            remove(expandedPostUI); // ExpandedPostUI 제거
+            mainPanel.setVisible(true); // 메인 패널 다시 표시
+            refreshMainPanel();
+        });
+
+        // ExpandedPostUI 추가
+        add(expandedPostUI, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
