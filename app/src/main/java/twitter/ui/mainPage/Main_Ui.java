@@ -94,8 +94,8 @@ public class Main_Ui extends JPanel {
         });
 
         bookmarkButton.addActionListener(e -> {
-            setBottomButtonSelected(bookmarkButton);
-            showPanel("BookmarkTop"); // 북마크 버튼 클릭 시 BookmarkTop 패널 표시
+            setBottomButtonSelected(bookmarkButton); // 버튼 상태 변경
+            showPanel("BookmarkTop"); // Bookmark 패널 표시
         });
         GeminiButton.addActionListener(e -> {
             setBottomButtonSelected(GeminiButton);
@@ -408,6 +408,35 @@ updatePostContent("recommend");
         selectedButton.setForeground(Color.WHITE);
     }
 
+    public void updateBookmarkContent() {
+        mainPanel.removeAll(); // 기존 콘텐츠 제거
+        mainPanel.setPreferredSize(null); // 크기 초기화
+
+        // 북마크된 포스트 추가
+        List<PostUI> bookmarkedPosts = new ArrayList<>();
+        bookmarkedPosts.add(new PostUI("User1", "@user1", "This is a bookmarked post", 20, 5, 2, "2024-11-01"));
+        bookmarkedPosts.add(new PostUI("User2", "@user2", "Another bookmarked content", 15, 3, 1, "2024-11-02"));
+        bookmarkedPosts.add(new PostUI("User3", "@user3", "Bookmarked message!", 10, 2, 0, "2024-11-03"));
+
+        for (PostUI post : bookmarkedPosts) {
+            mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
+        }
+
+        // 동적 크기 조정
+        int postCount = mainPanel.getComponentCount();
+        int postHeight = 150; // 각 포스트의 예상 높이
+        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
+
+        mainPanel.revalidate(); // 레이아웃 업데이트
+        mainPanel.repaint(); // 화면 갱신
+
+        // 스크롤바 위치 초기화
+        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
+    }
+
+
+
     private String currentSearchKeyword = "";
 
     public void showPanel(String panelName) {
@@ -444,8 +473,11 @@ updatePostContent("recommend");
                 SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
 
             });
+        } else if ("BookmarkTop".equals(panelName)) { // BookmarkTop 패널 처리 추가
+            updateBookmarkContent(); // Bookmark 콘텐츠 업데이트
 
-        } else {
+        }
+        else {
             mainPanel.removeAll(); // 다른 패널에서는 초기화
             mainPanel.revalidate();
             mainPanel.repaint();
