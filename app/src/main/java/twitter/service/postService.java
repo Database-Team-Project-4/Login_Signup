@@ -116,7 +116,7 @@ public class postService {
                 int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
 
                 // PostUI 객체 생성 및 리스트에 추가
-                PostUI postUI = new PostUI(userName, email, content, likes, comments, bookmarks, created_at);
+                PostUI postUI = new PostUI(postId, userName, email, content, likes, comments, bookmarks, created_at);
                 postUIs.add(postUI);
             }
         } catch (SQLException e) {

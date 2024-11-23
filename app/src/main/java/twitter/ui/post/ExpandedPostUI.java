@@ -2,12 +2,54 @@ package twitter.ui.post;
 
 import java.awt.*;
 import javax.swing.*;
+import java.sql.*;
+
+import twitter.main.MainFrame;
 
 public class ExpandedPostUI extends JPanel {
+    private MainFrame mainFrame;
 
-    public ExpandedPostUI(String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String createdAt) {
+    // 세 개의 인수를 받는 생성자
+    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        initializeUI(postId, connection);
+    }
+
+    // 두 개의 인수를 받는 생성자 (테스트용)
+    public ExpandedPostUI(int postId, Connection connection) {
+        this.mainFrame = null;
+        initializeUI(postId, connection);
+    }
+
+    // UI 초기화 메서드
+    private void initializeUI(int postId, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
+
+        // 데이터베이스에서 게시물 데이터 가져오기
+        String userName = "Unknown";
+        String userEmail = "unknown@example.com";
+        String contentText = "내용을 불러올 수 없습니다.";
+        String createdAt = "N/A";
+        int likes = 0;
+        int comments = 0;
+        int bookmarks = 0;
+
+        // Query the database using postId
+        String query = "SELECT u.name, u.email, p.content, p.created_at " +
+                "FROM Posts p JOIN Users u ON p.user_id = u.user_id WHERE p.post_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, postId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                userName = rs.getString("name");
+                userEmail = rs.getString("email");
+                contentText = rs.getString("content");
+                createdAt = rs.getString("created_at");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // 상단 뒤로가기 버튼 패널 추가
         JPanel backPanel = new JPanel();
@@ -27,7 +69,16 @@ public class ExpandedPostUI extends JPanel {
 
         // 뒤로가기 버튼 액션 추가
         backButton.addActionListener(e -> {
-            System.out.println("뒤로가기 버튼 클릭됨");
+            if (mainFrame != null) {
+                mainFrame.showTwitterMainUiPanel();
+            } else {
+                System.out.println("뒤로가기 버튼 클릭됨");
+                // 테스트용 동작 (필요에 따라 수정)
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                if (topFrame != null) {
+                    topFrame.dispose(); // 창 닫기
+                }
+            }
         });
 
         // "게시" 텍스트
@@ -48,7 +99,7 @@ public class ExpandedPostUI extends JPanel {
         add(backPanel, BorderLayout.NORTH);
 
         // 기존 PostUI를 확대하여 중앙에 배치
-        PostUI postUI = new PostUI(userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+        PostUI postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
 
         // 프로필 사진과 텍스트의 크기를 조정
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
@@ -59,23 +110,26 @@ public class ExpandedPostUI extends JPanel {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Expanded Post - Design Test");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 900);
+            try {
+                // 데이터베이스 연결 설정 (테스트용)
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                Connection connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
 
-            // 임시 데이터로 ExpandedPostUI 테스트
-            String userName = "John Doe";
-            String userEmail = "john.doe@example.com";
-            String contentText = "This is a detailed post content. It is designed to span multiple lines and test the layout.";
-            int likes = 123;
-            int comments = 45;
-            int bookmarks = 67;
-            String createdAt = "2024-11-19 14:35";
+                int testPostId = 1; // 테스트할 postId
 
-            ExpandedPostUI expandedPostUI = new ExpandedPostUI(userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
-            frame.add(expandedPostUI);
-            frame.pack();
-            frame.setVisible(true);
+                // 두 개의 인수를 받는 생성자 사용
+                ExpandedPostUI expandedPostUI = new ExpandedPostUI(testPostId, connection);
+
+                JFrame frame = new JFrame("Expanded Post - Design Test");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setSize(600, 900);
+                frame.add(expandedPostUI);
+                frame.pack();
+                frame.setVisible(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
 }

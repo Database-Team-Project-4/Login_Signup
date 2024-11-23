@@ -25,7 +25,7 @@ public class Main_Ui extends JPanel {
     private JPanel mainPanel;
     private JPanel bottomPanel;
     private MainFrame mainFrame;
-
+    private Connection connection; //
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -56,6 +56,7 @@ public class Main_Ui extends JPanel {
 
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
         this.mainFrame = mainframe;
+        this.connection = connection; // Initialize connection
         setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
@@ -216,14 +217,8 @@ updatePostContent("recommend");
                     public void mouseClicked(MouseEvent e) {
                         // 클릭 시 필요한 데이터를 전달
                         showExpandedPost(
-                                examplePosts.indexOf(post), // 리스트 인덱스를 ID처럼 사용
-                                post.getUserName(),
-                                post.getUserEmail(),
-                                post.getContentText(),
-                                post.getLikes(),
-                                post.getComments(),
-                                post.getBookmarks(),
-                                "N/A" // creationTime을 대신할 값 (임시)
+                                post.getPostId()// 리스트 인덱스를 ID처럼 사용
+
                         );
                     }
                 });
@@ -403,26 +398,10 @@ updatePostContent("recommend");
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
-    private void showExpandedPost(int postId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String createdAt) {
-        // 기존 메인 패널 숨기기
-        mainPanel.setVisible(false);
-
-        // ExpandedPostUI 생성
-        ExpandedPostUI expandedPostUI = new ExpandedPostUI(userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
-
-        // 뒤로가기 버튼 동작 추가
-        JButton backButton = (JButton) ((JPanel) expandedPostUI.getComponent(0)).getComponent(0); // 상단 패널의 첫 번째 컴포넌트
-        backButton.addActionListener(e -> {
-            remove(expandedPostUI); // ExpandedPostUI 제거
-            mainPanel.setVisible(true); // 메인 패널 다시 표시
-            refreshMainPanel();
-        });
-
-        // ExpandedPostUI 추가
-        add(expandedPostUI, BorderLayout.CENTER);
-        revalidate();
-        repaint();
+    private void showExpandedPost(int postId) {
+        mainFrame.showExpandedPostPanel(postId);
     }
+
 
     private JButton createIconButtonWithHover(String defaultIconPath, String hoverIconPath, String clickedIconPath) {
         ImageIcon defaultIcon = loadIcon(defaultIconPath);

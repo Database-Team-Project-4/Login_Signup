@@ -13,6 +13,7 @@ import twitter.ui.follow.follower.Follower_Ui;
 import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
+import twitter.ui.post.ExpandedPostUI;
 import twitter.ui.signup.SignUp_Ui;
 import twitter.ui.topic.Gemini_panel;
 import twitter.ui.mainPage.BookmarkTopPanel;
@@ -119,6 +120,16 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+    public void showExpandedPostPanel(int postId) {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+        currentPanel = new ExpandedPostUI(postId, connection, this);
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
 
     public void showFollowerPanel() {
         if (currentPanel != null) {
