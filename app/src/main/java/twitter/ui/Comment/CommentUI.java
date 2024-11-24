@@ -23,8 +23,7 @@ public class CommentUI extends JPanel {
         this.likes = likes;
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail,
-                new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png")));
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png")));
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (댓글 내용)
