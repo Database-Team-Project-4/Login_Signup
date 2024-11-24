@@ -1,5 +1,6 @@
 package twitter.ui.Comment;
 
+import twitter.main.MainFrame;
 import twitter.ui.module.CustomScrollbar;
 import twitter.ui.module.CustomSearchField;
 
@@ -11,8 +12,8 @@ import java.util.List;
 
 public class ExpandedCommentUI extends JPanel {
     private int postId; // Post ID 저장
-
-    public ExpandedCommentUI(int postId) {
+    private MainFrame mainFrame;
+    public ExpandedCommentUI(int postId, MainFrame mainFrame) {
         this.postId = postId; // postId 설정
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -30,8 +31,13 @@ public class ExpandedCommentUI extends JPanel {
         backButton.setForeground(Color.WHITE);
         backButton.setFont(new Font("Arial", Font.BOLD, 19));
 
+        // 뒤로가기 버튼 액션 추가
         backButton.addActionListener(e -> {
-            System.out.println("뒤로가기 버튼 클릭됨"); // 테스트용
+            if (mainFrame != null) {
+                mainFrame.showExpandedPostPanel(postId); // ExpandedPostUI로 돌아가기
+            } else {
+                System.out.println("MainFrame이 null입니다. 뒤로가기 동작을 수행할 수 없습니다.");
+            }
         });
 
         JLabel titleLabel = new JLabel("댓글", SwingConstants.CENTER);
@@ -183,7 +189,8 @@ public class ExpandedCommentUI extends JPanel {
             JFrame frame = new JFrame("Expanded Comment UI");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(600, 900);
-            frame.add(new ExpandedCommentUI(1)); // Post ID를 전달
+            MainFrame mainFrame = new MainFrame(null, null); // 필요에 따라 MainFrame 초기화
+            frame.add(new ExpandedCommentUI(1, mainFrame)); // 두 인수 생성자 호출
             frame.setVisible(true);
         });
     }
