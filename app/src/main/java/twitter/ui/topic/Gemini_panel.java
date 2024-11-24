@@ -18,7 +18,7 @@ import twitter.service.userService;
 
 public class Gemini_panel extends JPanel {
 
-    private User currentUser;
+    private User currentUser; // 활용 대기ㅣㅣㅣㅣㅣㅣㅣ
     private Connection connection;
     private userService userService;
 
