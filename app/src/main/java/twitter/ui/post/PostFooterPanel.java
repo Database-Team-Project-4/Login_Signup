@@ -6,14 +6,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class PostFooterPanel extends JPanel {
+    private JButton commentButton;
+
     public PostFooterPanel(int likes, int comments, int bookmarks) {
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
         setBackground(Color.BLACK);
-        /*
-        POSTUI 하단패널ㄴ
-         */
+
         // 댓글 버튼 (댓글 수 표시)
-        JButton commentButton = createIconButton("commentdef.png", "commenthover.png");
+        commentButton = createIconButton("commentdef.png", "commenthover.png");
         commentButton.setText(" " + comments);
 
         // 좋아요 버튼 (좋아요 수 표시, 토글 기능)
@@ -28,7 +28,13 @@ public class PostFooterPanel extends JPanel {
         add(bookmarkButton);
     }
 
-    // 댓글 버튼 생성 메서드
+    // 댓글 버튼 가져오기
+    // PostFooterPanel 클래스에 댓글 버튼 반환 메서드 추가
+    public JButton getCommentButton() {
+        return commentButton; // 댓글 버튼 반환
+    }
+
+
     private JButton createIconButton(String defaultIconPath, String hoverIconPath) {
         ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + defaultIconPath));
         ImageIcon hoverIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + hoverIconPath));
@@ -53,7 +59,6 @@ public class PostFooterPanel extends JPanel {
         return button;
     }
 
-    // 토글 가능한 아이콘 버튼 생성 메서드 (좋아요 및 북마크용, 수 증가/감소 기능 포함)
     private JButton createToggleIconButton(String defaultIconPath, String toggledIconPath, int initialCount) {
         ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + defaultIconPath));
         ImageIcon toggledIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + toggledIconPath));
@@ -63,7 +68,7 @@ public class PostFooterPanel extends JPanel {
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
-        button.setHorizontalTextPosition(SwingConstants.RIGHT); // 텍스트 오른쪽 배치
+        button.setHorizontalTextPosition(SwingConstants.RIGHT);
 
         button.addMouseListener(new MouseAdapter() {
             private boolean isToggled = false;

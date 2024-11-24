@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 
 import twitter.service.postService;
 import twitter.service.userService;
+import twitter.ui.Comment.ExpandedCommentUI;
 import twitter.ui.follow.follower.Follower_Ui;
 import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
@@ -128,6 +129,21 @@ public class MainFrame extends JFrame {
         add(currentPanel);
         revalidate();
         repaint();
+    }
+
+    public void showExpandedCommentUI(int postId) {
+        System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId); // 디버깅 메시지
+        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId);
+
+        if (currentPanel != null) {
+            remove(currentPanel); // 기존 패널 제거
+        }
+
+        currentPanel = expandedCommentUI;
+        add(currentPanel); // 새로운 패널 추가
+        revalidate(); // 레이아웃 갱신
+        repaint(); // 화면 갱신
+        System.out.println("ExpandedCommentUI로 전환 완료");
     }
 
 

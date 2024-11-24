@@ -57,7 +57,7 @@ public class ExpandedPostUI extends JPanel {
         // 상단 뒤로가기 버튼 패널 추가
         JPanel backPanel = new JPanel();
         backPanel.setLayout(new BorderLayout());
-        backPanel.setBackground(new Color(7,7,7)); // 배경색 검은색으로 설정
+        backPanel.setBackground(new Color(7, 7, 7)); // 배경색 검은색으로 설정
         backPanel.setPreferredSize(new Dimension(600, 50));
         backPanel.setOpaque(true); // 투명도 해제하여 배경색 적용
 
@@ -66,7 +66,7 @@ public class ExpandedPostUI extends JPanel {
         backButton.setPreferredSize(new Dimension(50, 40)); // 버튼 크기 조정
         backButton.setFocusPainted(false);
         backButton.setBorderPainted(false);
-        backButton.setBackground(new Color(7,7,7));
+        backButton.setBackground(new Color(7, 7, 7));
         backButton.setForeground(Color.WHITE);
         backButton.setFont(new Font("Arial", Font.BOLD, 19)); // 폰트 크기와 스타일 설정
 
@@ -76,7 +76,6 @@ public class ExpandedPostUI extends JPanel {
                 mainFrame.showTwitterMainUiPanel();
             } else {
                 System.out.println("뒤로가기 버튼 클릭됨");
-                // 테스트용 동작 (필요에 따라 수정)
                 JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 if (topFrame != null) {
                     topFrame.dispose(); // 창 닫기
@@ -92,7 +91,7 @@ public class ExpandedPostUI extends JPanel {
         // 왼쪽 빈 공간 (뒤로가기 버튼 오른쪽 여백)
         JPanel leftSpacePanel = new JPanel();
         leftSpacePanel.setPreferredSize(new Dimension(50, 40)); // 뒤로가기 버튼 크기만큼 여백
-        leftSpacePanel.setBackground(new Color(7,7,7));
+        leftSpacePanel.setBackground(new Color(7, 7, 7));
 
         // 상단바 구성
         backPanel.add(backButton, BorderLayout.WEST);
@@ -101,8 +100,12 @@ public class ExpandedPostUI extends JPanel {
 
         add(backPanel, BorderLayout.NORTH);
 
+        // 기존 하단 바 제거
+        removeExistingFooterPanel();
 
-        // 기존 PostUI를 확대하여 중앙에 배치
+
+
+        // 기존 PostUI를 중앙에 배치
         PostUI postUI;
         if (mainFrame != null && userId != -1) {
             postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
@@ -110,23 +113,43 @@ public class ExpandedPostUI extends JPanel {
             postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
         }
 
-        // 프로필 사진과 텍스트의 크기를 조정
+        Component[] components = postUI.getComponents();
+        for (Component component : components) {
+            if (component instanceof PostFooterPanel) {
+                PostFooterPanel footerPanel = (PostFooterPanel) component;
+                footerPanel.getCommentButton().addActionListener(e -> {
+                    System.out.println("댓글 버튼 클릭됨");
+                    if (mainFrame != null) {
+                        mainFrame.showExpandedCommentUI(postId); // 댓글 화면 전환
+                    }
+                });
+                break;
+            }
+        }
+
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
         postUI.setPreferredSize(new Dimension(600, 800)); // 크기 조정
 
         add(postUI, BorderLayout.CENTER);
     }
 
+    private void removeExistingFooterPanel() {
+        for (Component component : getComponents()) {
+            if (component instanceof PostFooterPanel) {
+                remove(component); // 기존 하단 바 제거
+                break;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // 데이터베이스 연결 설정 (테스트용)
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 Connection connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
 
-                int testPostId = 1; // 테스트할 postId
+                int testPostId = 1;
 
-                // 두 개의 인수를 받는 생성자 사용
                 ExpandedPostUI expandedPostUI = new ExpandedPostUI(testPostId, connection);
 
                 JFrame frame = new JFrame("Expanded Post - Design Test");
