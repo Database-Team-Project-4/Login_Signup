@@ -185,7 +185,7 @@ updatePostContent("recommend");
         Connection con = MainFrame.getConnection();
 
         // 모든 포스트 가져오기
-        List<PostUI> examplePosts = postService.getAllPosts(con);
+        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame);
 
         if (examplePosts.isEmpty()) {
             // 포스트가 없을 때 "게시글 없음" 메시지 출력
@@ -304,7 +304,7 @@ updatePostContent("recommend");
             postService postService = new postService();
             Connection con = MainFrame.getConnection();
 
-            List<PostUI> examplePosts = postService.getAllPosts(con); // 모든 포스트 가져오기
+            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()

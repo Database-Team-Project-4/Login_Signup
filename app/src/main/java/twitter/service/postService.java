@@ -1,5 +1,6 @@
 package twitter.service;
 
+import twitter.main.MainFrame;
 import twitter.model.Post;
 import twitter.model.User;
 import twitter.ui.post.PostUI;
@@ -95,7 +96,7 @@ public class postService {
 
 
     // 모든 게시물 조회 메서드
-    public List<PostUI> getAllPosts(Connection con) {
+    public List<PostUI> getAllPosts(Connection con, MainFrame mainFrame) {
         List<PostUI> postUIs = new ArrayList<>();
         String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, Posts.updated_at, " +
                 "Users.name, Users.email " +
@@ -106,6 +107,7 @@ public class postService {
             while (rs.next()) {
                 // ResultSet에서 데이터 읽기
                 int postId = rs.getInt("post_id");
+                int userId = rs.getInt("user_id");
                 String userName = rs.getString("name");
                 String email = rs.getString("email");
                 String content = rs.getString("content");
@@ -116,7 +118,7 @@ public class postService {
                 int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
 
                 // PostUI 객체 생성 및 리스트에 추가
-                PostUI postUI = new PostUI(postId, userName, email, content, likes, comments, bookmarks, created_at);
+                PostUI postUI = new PostUI(mainFrame, postId, userId,userName, email, content, likes, comments, bookmarks, created_at);
                 postUIs.add(postUI);
             }
         } catch (SQLException e) {

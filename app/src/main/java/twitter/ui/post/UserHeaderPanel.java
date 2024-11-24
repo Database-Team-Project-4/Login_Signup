@@ -4,8 +4,10 @@ import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseListener;
 
 public class UserHeaderPanel extends JPanel {
+    private JLabel profilePic;
     public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -21,7 +23,7 @@ public class UserHeaderPanel extends JPanel {
             (int) (profileImage.getIconHeight() * 1.8),
             Image.SCALE_SMOOTH
         );
-        JLabel profilePic = new JLabel(new ImageIcon(scaledImage));
+        profilePic = new JLabel(new ImageIcon(scaledImage));
         profilePic.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         // 사용자 정보 패널
@@ -55,5 +57,8 @@ public class UserHeaderPanel extends JPanel {
         add(profilePic, BorderLayout.WEST);
         add(userInfoPanel, BorderLayout.CENTER);
         add(followButtonWrapper, BorderLayout.EAST);
+    }
+    public void addProfileImageMouseListener(MouseListener listener) {
+        profilePic.addMouseListener(listener);
     }
 }

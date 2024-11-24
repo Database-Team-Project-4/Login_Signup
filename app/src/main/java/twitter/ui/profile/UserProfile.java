@@ -23,17 +23,28 @@ import java.sql.SQLException;
 //기본적인 프로필화면입니다. 다른 사용자의 프로필임을 상정하고 만들어 팔로우 버튼이 있으며 팔로우 버튼만 삭제하면 바로 나의 프로필로 사용할 수 있습니다.
 //추가로 나의 프로필에서 팔로우 버튼 위치에 사용자 정보 수정 버튼 등을 생성할수도 있습니다.
 public class UserProfile extends JPanel {
+    private int userId;
     private MainFrame mainframe;
     private JPanel mainPanel;
     private JButton postButton;
     private JButton replyButton;
     private JPanel postUnderline;
     private JPanel replyUnderline;
+    private JPanel profilePic;
+    private String userNameText;
+    private String userHandleText;
+    private ImageIcon profileImageIcon;
+    private Connection connection; // 데이터베이스 연결 객체
 
-    public UserProfile(MainFrame mainframe, Connection connection, userService userService) {
+
+    public UserProfile(MainFrame mainframe, Connection connection, userService userServicem, int userId) {
         this.mainframe = mainframe;
+        this.userId = userId;
+        this.connection = connection;
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
+
+        loadUserInfo();
 
         // 상단부 전체를 담을 패널 생성 (topBar와 centralPanel 포함)
         JPanel topContainer = new JPanel();
@@ -55,6 +66,30 @@ public class UserProfile extends JPanel {
         JScrollPane postScrollPane = createPostContentPanel();
         add(postScrollPane, BorderLayout.CENTER);
     }
+
+    private void loadUserInfo() {
+        try {
+            String query = "SELECT name, email FROM users WHERE user_id = ?";
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                userNameText = rs.getString("name");
+                userHandleText = rs.getString("email"); // 이메일을 핸들로 사용
+                // 프로필 이미지 로드 로직 추가 가능
+            } else {
+                userNameText = "Unknown";
+                userHandleText = "unknown@example.com";
+            }
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            userNameText = "Unknown";
+            userHandleText = "unknown@example.com";
+        }
+    }
+
 
     private JPanel createTopBar() {
         JPanel topBar = new JPanel(new BorderLayout());
@@ -161,17 +196,18 @@ private JButton createFollowButton() {
         userHeaderPanel.add(profileImage);
 
         // 사용자 이름
-        JLabel userName = new JLabel("Gachon");
+        JLabel userName = new JLabel(userNameText);
         userName.setForeground(Color.WHITE);
         userName.setFont(new Font("SansSerif", Font.BOLD, 16));
-        userName.setBounds(25, 100, 200, 20); // 이름을 프로필 이미지 바로 아래 배치
+        userName.setBounds(25, 100, 200, 20);
         userHeaderPanel.add(userName);
 
+
         // 사용자 핸들
-        JLabel userHandle = new JLabel("@gachon");
+        JLabel userHandle = new JLabel(userHandleText);
         userHandle.setForeground(Color.GRAY);
         userHandle.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        userHandle.setBounds(25, 125, 200, 20); // 핸들을 사용자 이름 바로 아래 배치
+        userHandle.setBounds(25, 125, 200, 20);
         userHeaderPanel.add(userHandle);
 
         // 팔로우/팔로잉 버튼
@@ -373,22 +409,38 @@ private JButton createFollowButton() {
         mainPanel.removeAll();
         List<PostUI> posts = new ArrayList<>();
 
-        try {
-            // 데이터베이스 연결
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
 
-            if ("posts".equals(type)) {
-                for (int i = 1; i <= 10; i++) { // 테스트용 10개의 포스트 생성
-                    posts.add(new PostUI(i, connection)); // postId를 기반으로 생성
-                }
-            } else if ("replies".equals(type)) {
-                for (int i = 11; i <= 15; i++) { // 테스트용 5개의 답글 생성
-                    posts.add(new PostUI(i, connection)); // postId를 기반으로 생성
-                }
+        try {
+            // 데이터베이스에서 현재 userId에 해당하는 게시물 가져오기
+            String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, " +
+                    "Users.name, Users.email " +
+                    "FROM Posts " +
+                    "JOIN Users ON Posts.user_id = Users.user_id " +
+                    "WHERE Posts.user_id = ?";
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setInt(1, userId); // 현재 프로필의 userId 사용
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int postId = rs.getInt("post_id");
+                int userId = rs.getInt("user_id");
+                String userName = rs.getString("name");
+                String email = rs.getString("email");
+                String content = rs.getString("content");
+                String created_at = rs.getString("created_at");
+
+                // 좋아요, 댓글, 북마크 수는 필요에 따라 가져오도록 수정
+                int likes = 0;
+                int comments = 0;
+                int bookmarks = 0;
+
+                // PostUI 객체 생성 시 mainFrame과 userId를 전달
+                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at);
+                posts.add(postUI);
             }
 
-            connection.close();
+            rs.close();
+            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,13 +1,14 @@
 package twitter.ui.post;
 
-import java.awt.*;
-import javax.swing.*;
-import java.sql.*;
-
 import twitter.main.MainFrame;
+
+import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
 
 public class ExpandedPostUI extends JPanel {
     private MainFrame mainFrame;
+    private int userId; // userId 변수 추가
 
     // 세 개의 인수를 받는 생성자
     public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame) {
@@ -34,14 +35,16 @@ public class ExpandedPostUI extends JPanel {
         int likes = 0;
         int comments = 0;
         int bookmarks = 0;
+        this.userId = -1; // 기본값 설정
 
         // Query the database using postId
-        String query = "SELECT u.name, u.email, p.content, p.created_at " +
+        String query = "SELECT u.user_id, u.name, u.email, p.content, p.created_at " +
                 "FROM Posts p JOIN Users u ON p.user_id = u.user_id WHERE p.post_id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, postId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
+                this.userId = rs.getInt("user_id"); // userId 저장
                 userName = rs.getString("name");
                 userEmail = rs.getString("email");
                 contentText = rs.getString("content");
@@ -98,8 +101,14 @@ public class ExpandedPostUI extends JPanel {
 
         add(backPanel, BorderLayout.NORTH);
 
+
         // 기존 PostUI를 확대하여 중앙에 배치
-        PostUI postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+        PostUI postUI;
+        if (mainFrame != null && userId != -1) {
+            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+        } else {
+            postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+        }
 
         // 프로필 사진과 텍스트의 크기를 조정
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가

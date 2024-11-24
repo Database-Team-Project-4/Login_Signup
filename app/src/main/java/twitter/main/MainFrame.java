@@ -185,12 +185,12 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
-    public void showUserProfilePanel() {
+    public void showUserProfilePanel(int userId) {
         if (currentPanel != null) {
             remove(currentPanel);
         }
 
-        currentPanel = new UserProfile(this, connection, userService); // UserProfile 클래스를 추가
+        currentPanel = new UserProfile(this, connection, userService, userId); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();
