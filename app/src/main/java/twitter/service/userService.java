@@ -10,7 +10,7 @@ import twitter.model.User; // User 클래스가 twitter 패키지에 있다고 �
 
 public class userService {
 
-    public User currentUser = null;
+    private User currentUser = null;
     private boolean isLoggedIn = false; // 로그인 상태를 나타내는 변수
 
 

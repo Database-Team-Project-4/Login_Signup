@@ -10,6 +10,8 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
+import twitter.model.User;
+import twitter.service.followService;
 import twitter.service.postService;
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
@@ -26,6 +28,7 @@ public class Main_Ui extends JPanel {
     private JPanel bottomPanel;
     private MainFrame mainFrame;
     private Connection connection; //
+    private userService userService;
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -48,7 +51,7 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconHover = "/TwitterIcons/bookmarkdef.png";
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
 
-    // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ 
+    // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ
     private final String GeminiIconDefault = "/TwitterIcons/aimessagebot.png";
     private final String GeminiIconHover = "/TwitterIcons/aimessagebothover.png";
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
@@ -56,7 +59,10 @@ public class Main_Ui extends JPanel {
 
     public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
         this.mainFrame = mainframe;
-        this.connection = connection; // Initialize connection
+        this.connection = connection;
+        this.userService = userService; // Initialize connection and userService
+
+
         setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
@@ -185,7 +191,7 @@ updatePostContent("recommend");
         Connection con = MainFrame.getConnection();
 
         // 모든 포스트 가져오기
-        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame);
+        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService);
 
         if (examplePosts.isEmpty()) {
             // 포스트가 없을 때 "게시글 없음" 메시지 출력
@@ -304,7 +310,7 @@ updatePostContent("recommend");
             postService postService = new postService();
             Connection con = MainFrame.getConnection();
 
-            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame); // 모든 포스트 가져오기
+            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
@@ -372,21 +378,40 @@ updatePostContent("recommend");
         /*
         DB에서 follow관련 데이터를 가져와야합니다.
          */
+
         List<String> userNames = new ArrayList<>();
         List<String> userHandles = new ArrayList<>();
 
         Connection connection = MainFrame.getConnection();
-        userService userService = new userService();
+        followService followService = new followService();
 
+        if(userService.getCurrentUser() == null){
+            System.out.println("test");
+            System.out.println("로그인이 필요합니다.");
+            // 여기에 로그인 안되어있으면, 로그인 X 이런식으로 뜨도록 조치 필요할 거 같아요!
+        }
+        else
+        {
+            ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
+            int id = userService.getCurrentUser().getId();
+            if (type.equals("follower")) {
+                System.out.println("follower화면으로 바꿨어요"); //debug code
 
+                List<User> followerList = followService.getFollowers(connection, userService.getCurrentUser());
 
-        ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
-        if (type.equals("follower")) {
-            System.out.println("follower화면으로 바꿨어요"); //debug code
-            mainPanel.add(new FollowerListPanel(userNames,userHandles,profileImage));
-        } else if (type.equals("following")){
-            System.out.println("following화면으로 바꿨어요"); //debug code
-            mainPanel.add(new FollowingListPanel(userNames,userHandles,profileImage));
+                userNames = followerList.stream().map(User::getName).toList();
+                userHandles = followerList.stream().map(User::getEmail).toList();
+                mainPanel.add(new FollowerListPanel(userNames,userHandles,profileImage));
+
+            } else if (type.equals("following")){
+                System.out.println("following화면으로 바꿨어요"); //debug code
+
+                List<User> followingList = followService.getFollowing(connection, userService.getCurrentUser());
+
+                userNames = followingList.stream().map(User::getName).toList();
+                userHandles = followingList.stream().map(User::getEmail).toList();
+                mainPanel.add(new FollowingListPanel(userNames,userHandles,profileImage));
+            }
         }
 
         //postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
@@ -456,27 +481,37 @@ updatePostContent("recommend");
         mainPanel.removeAll(); // 기존 콘텐츠 제거
         mainPanel.setPreferredSize(null); // 크기 초기화
 
-        // 북마크된 포스트 추가
-        List<PostUI> bookmarkedPosts = new ArrayList<>();
-        bookmarkedPosts.add(new PostUI("User1", "@user1", "This is a bookmarked post", 20, 5, 2, "2024-11-01"));
-        bookmarkedPosts.add(new PostUI("User2", "@user2", "Another bookmarked content", 15, 3, 1, "2024-11-02"));
-        bookmarkedPosts.add(new PostUI("User3", "@user3", "Bookmarked message!", 10, 2, 0, "2024-11-03"));
+        // 로그인 여부 확인 및 분기 처리
+        if (userService.getCurrentUser() == null) {
+            // 로그인되지 않은 경우
+            JLabel loginRequiredLabel = new JLabel("로그인이 필요합니다.");
+            loginRequiredLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            loginRequiredLabel.setVerticalAlignment(SwingConstants.CENTER);
+            mainPanel.add(loginRequiredLabel); // "로그인 필요" 메시지 추가
+            mainPanel.setPreferredSize(new Dimension(getWidth(), 200)); // 메시지 표시 영역 크기 설정
+        } else {
+            // 로그인된 경우 북마크된 포스트 추가
+            List<PostUI> bookmarkedPosts = new ArrayList<>();
+            postService postService = new postService();
 
-        for (PostUI post : bookmarkedPosts) {
-            mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
+            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService);
+
+            for (PostUI post : bookmarkedPosts) {
+                mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
+            }
+
+            // 동적 크기 조정
+            int postCount = mainPanel.getComponentCount();
+            int postHeight = 150; // 각 포스트의 예상 높이
+            mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
+
+            // 스크롤바 위치 초기화
+            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
         }
-
-        // 동적 크기 조정
-        int postCount = mainPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이
-        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
 
         mainPanel.revalidate(); // 레이아웃 업데이트
         mainPanel.repaint(); // 화면 갱신
-
-        // 스크롤바 위치 초기화
-        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
     }
 
 

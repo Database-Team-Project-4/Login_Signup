@@ -124,7 +124,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new ExpandedPostUI(postId, connection, this);
+        currentPanel = new ExpandedPostUI(postId, connection, this, userService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();

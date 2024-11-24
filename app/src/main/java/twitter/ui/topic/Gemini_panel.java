@@ -33,7 +33,7 @@ public class Gemini_panel extends JPanel {
 
         this.connection = connection;
         this.userService = userService;
-        this.currentUser = userService.currentUser; 
+        this.currentUser = userService.getCurrentUser();
 
         
         setLayout(new BorderLayout());

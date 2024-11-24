@@ -1,6 +1,7 @@
 package twitter.ui.post;
 
 import twitter.main.MainFrame;
+import twitter.service.userService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,19 +12,19 @@ public class ExpandedPostUI extends JPanel {
     private int userId; // userId 변수 추가
 
     // 세 개의 인수를 받는 생성자
-    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame) {
+    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userService userService) {
         this.mainFrame = mainFrame;
-        initializeUI(postId, connection);
+        initializeUI(postId, connection, mainFrame, userService);
     }
 
     // 두 개의 인수를 받는 생성자 (테스트용)
     public ExpandedPostUI(int postId, Connection connection) {
         this.mainFrame = null;
-        initializeUI(postId, connection);
+        initializeUI(postId, connection, null, null);
     }
 
     // UI 초기화 메서드
-    private void initializeUI(int postId, Connection connection) {
+    private void initializeUI(int postId, Connection connection, MainFrame mainFrame, userService userService) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -105,9 +106,9 @@ public class ExpandedPostUI extends JPanel {
         // 기존 PostUI를 확대하여 중앙에 배치
         PostUI postUI;
         if (mainFrame != null && userId != -1) {
-            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, connection);
         } else {
-            postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt);
+            postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, connection);
         }
 
         // 프로필 사진과 텍스트의 크기를 조정

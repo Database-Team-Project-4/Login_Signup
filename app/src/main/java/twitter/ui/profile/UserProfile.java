@@ -35,12 +35,15 @@ public class UserProfile extends JPanel {
     private String userHandleText;
     private ImageIcon profileImageIcon;
     private Connection connection; // 데이터베이스 연결 객체
+    private userService userService;
 
 
-    public UserProfile(MainFrame mainframe, Connection connection, userService userServicem, int userId) {
+    public UserProfile(MainFrame mainframe, Connection connection, userService userService, int userId) {
         this.mainframe = mainframe;
         this.userId = userId;
         this.connection = connection;
+        this.userService = userService;
+
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -69,7 +72,7 @@ public class UserProfile extends JPanel {
 
     private void loadUserInfo() {
         try {
-            String query = "SELECT name, email FROM users WHERE user_id = ?";
+            String query = "SELECT name, email FROM Users WHERE user_id = ?";
             PreparedStatement pstmt = connection.prepareStatement(query);
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
@@ -435,7 +438,7 @@ private JButton createFollowButton() {
                 int bookmarks = 0;
 
                 // PostUI 객체 생성 시 mainFrame과 userId를 전달
-                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at);
+                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, connection);
                 posts.add(postUI);
             }
 
