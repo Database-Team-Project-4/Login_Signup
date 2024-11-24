@@ -45,7 +45,7 @@ public class BookmarkTopPanel extends JPanel {
         topPanel.add(backButton, BorderLayout.WEST);
 
         // 북마크 텍스트
-        JLabel titleLabel = new JLabel("북마크", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("BookMark", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
         // 기존 Font 설정에서 Arial을 기본 폰트로 변경
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 14)); // Arial 대신 SansSerif 같은 기본 폰트를 사용

@@ -386,9 +386,38 @@ updatePostContent("recommend");
         followService followService = new followService();
 
         if(userService.getCurrentUser() == null){
-            System.out.println("test");
-            System.out.println("로그인이 필요합니다.");
-            // 여기에 로그인 안되어있으면, 로그인 X 이런식으로 뜨도록 조치 필요할 거 같아요!
+                // 로그인되지 문구 추가
+                JPanel loginPromptPanel = new JPanel(new GridBagLayout());
+                loginPromptPanel.setBackground(Color.BLACK);
+
+                JLabel loginRequiredLabel = new JLabel("Need to login.");
+                loginRequiredLabel.setForeground(Color.WHITE);
+                loginRequiredLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+                JButton loginButton = new JButton("Login");
+                loginButton.setBackground(new Color(0, 122, 255));
+                loginButton.setForeground(Color.WHITE);
+                loginButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
+                loginButton.setFocusPainted(false);
+                loginButton.setBorderPainted(false);
+                loginButton.setOpaque(true);
+                loginButton.setPreferredSize(new Dimension(150, 40));
+
+                loginButton.addActionListener(e -> {
+                    mainFrame.showLoginPanel(); // 로그인 화면으로 이동
+                });
+
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.insets = new Insets(10, 0, 10, 0);
+
+                gbc.gridy = 0;
+                loginPromptPanel.add(loginRequiredLabel, gbc);
+
+                gbc.gridy = 1;
+                loginPromptPanel.add(loginButton, gbc);
+
+                mainPanel.add(loginPromptPanel); // "로그인 필요" 메시지와 버튼 추가
+                mainPanel.setPreferredSize(new Dimension(getWidth(), 200)); // 메시지 표시 영역 크기 설정
         }
         else
         {
@@ -483,11 +512,37 @@ updatePostContent("recommend");
 
         // 로그인 여부 확인 및 분기 처리
         if (userService.getCurrentUser() == null) {
-            // 로그인되지 않은 경우
-            JLabel loginRequiredLabel = new JLabel("로그인이 필요합니다.");
-            loginRequiredLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            loginRequiredLabel.setVerticalAlignment(SwingConstants.CENTER);
-            mainPanel.add(loginRequiredLabel); // "로그인 필요" 메시지 추가
+            // 로그인되지 않은 경우 사용자 친화적인 메시지와 버튼 추가
+            JPanel loginPromptPanel = new JPanel(new GridBagLayout());
+            loginPromptPanel.setBackground(Color.BLACK);
+
+            JLabel loginRequiredLabel = new JLabel("Need to login.");
+            loginRequiredLabel.setForeground(Color.WHITE);
+            loginRequiredLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+
+            JButton loginButton = new JButton("Login");
+            loginButton.setBackground(new Color(0, 122, 255));
+            loginButton.setForeground(Color.WHITE);
+            loginButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            loginButton.setFocusPainted(false);
+            loginButton.setBorderPainted(false);
+            loginButton.setOpaque(true);
+            loginButton.setPreferredSize(new Dimension(150, 40));
+
+            loginButton.addActionListener(e -> {
+                mainFrame.showLoginPanel(); // 로그인 화면으로 이동
+            });
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 0, 10, 0);
+
+            gbc.gridy = 0;
+            loginPromptPanel.add(loginRequiredLabel, gbc);
+
+            gbc.gridy = 1;
+            loginPromptPanel.add(loginButton, gbc);
+
+            mainPanel.add(loginPromptPanel); // "로그인 필요" 메시지와 버튼 추가
             mainPanel.setPreferredSize(new Dimension(getWidth(), 200)); // 메시지 표시 영역 크기 설정
         } else {
             // 로그인된 경우 북마크된 포스트 추가

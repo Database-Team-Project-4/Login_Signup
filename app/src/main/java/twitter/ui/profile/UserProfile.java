@@ -14,7 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-
+import twitter.model.User;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,7 +23,8 @@ import java.sql.SQLException;
 //기본적인 프로필화면입니다. 다른 사용자의 프로필임을 상정하고 만들어 팔로우 버튼이 있으며 팔로우 버튼만 삭제하면 바로 나의 프로필로 사용할 수 있습니다.
 //추가로 나의 프로필에서 팔로우 버튼 위치에 사용자 정보 수정 버튼 등을 생성할수도 있습니다.
 public class UserProfile extends JPanel {
-    private int userId;
+    private int userId; //현재 프로필의 id
+    private int currentUserId; //접속중인 사용자의 id
     private MainFrame mainframe;
     private JPanel mainPanel;
     private JButton postButton;
@@ -43,6 +44,14 @@ public class UserProfile extends JPanel {
         this.userId = userId;
         this.connection = connection;
         this.userService = userService;
+
+        // 현재 로그인한 사용자 ID를 userService에서 가져옴
+        User currentUser = userService.getCurrentUser();
+        if (currentUser != null) {
+            this.currentUserId = currentUser.getId(); // 로그인한 사용자의 ID 설정
+        } else {
+            this.currentUserId = -1; // 로그인이 되어 있지 않다면 기본값
+        }
 
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -107,7 +116,13 @@ public class UserProfile extends JPanel {
         backButton.setFocusPainted(false);
         backButton.setFont(new Font("SansSerif", Font.BOLD, 18)); // 크기 조정
 
-
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 뒤로 가기 버튼 클릭 시 이전 화면으로 돌아가는 로직 추가
+                mainframe.showTwitterMainUiPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+            }
+        });
 
         // TopBar 구성
         topBar.add(backButton, BorderLayout.WEST);
@@ -127,26 +142,31 @@ private JButton createFollowButton() {
     followButton.setForeground(Color.BLACK);
     followButton.setFocusPainted(false);
 
-    // 호버 및 클릭 이벤트
-    followButton.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            followButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
-            followButton.setForeground(Color.WHITE);
-        }
+    // 자신의 프로필인 경우 버튼을 비활성화
+    if (userId == currentUserId) {
+        followButton.setEnabled(false); // 버튼을 비활성화
+        followButton.setVisible(false); // 버튼을 안보이게ㄴ
+    } else {
+        // 호버 및 클릭 이벤트
+        followButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                followButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
+                followButton.setForeground(Color.WHITE);
+            }
 
-        @Override
-        public void mouseExited(MouseEvent e) {
-            followButton.setBackground(Color.WHITE); // 기본 색상
-            followButton.setForeground(Color.BLACK);
-        }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                followButton.setBackground(Color.WHITE); // 기본 색상
+                followButton.setForeground(Color.BLACK);
+            }
 
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            followButton.setText(followButton.getText().equals("팔로우") ? "팔로우 취소" : "팔로우");
-        }
-    });
-
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                followButton.setText(followButton.getText().equals("팔로우") ? "팔로우 취소" : "팔로우");
+            }
+        });
+    }
     return followButton;
 }
 
