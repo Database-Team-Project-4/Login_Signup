@@ -3,7 +3,6 @@ package twitter.ui.mainPage;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +14,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import twitter.main.MainFrame;
-import twitter.ui.module.CustomSearchField;
 
 public class BookmarkTopPanel extends JPanel {
 
     private MainFrame mainframe;
-
 
     public BookmarkTopPanel() {
         setLayout(new BorderLayout());
@@ -50,7 +47,7 @@ public class BookmarkTopPanel extends JPanel {
         // 북마크 텍스트
         JLabel titleLabel = new JLabel("북마크", SwingConstants.CENTER);
         titleLabel.setForeground(Color.WHITE);
-       // 기존 Font 설정에서 Arial을 기본 폰트로 변경
+        // 기존 Font 설정에서 Arial을 기본 폰트로 변경
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 14)); // Arial 대신 SansSerif 같은 기본 폰트를 사용
 
         topPanel.add(titleLabel, BorderLayout.CENTER);
@@ -63,16 +60,5 @@ public class BookmarkTopPanel extends JPanel {
 
         // topPanel 추가
         add(topPanel, BorderLayout.NORTH);
-
-        // 검색 필드
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
-        searchPanel.setBackground(new Color(7, 7, 7));
-
-        CustomSearchField searchField = new CustomSearchField();
-        searchField.setPreferredSize(new Dimension(320, 30));  // 검색창 넓이 조정
-        searchPanel.add(searchField);
-
-        // 검색 패널 추가
-        add(searchPanel, BorderLayout.CENTER);
     }
 }

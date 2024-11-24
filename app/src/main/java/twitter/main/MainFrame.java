@@ -7,22 +7,28 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import twitter.service.postService;
 import twitter.service.userService;
+import twitter.ui.Comment.ExpandedCommentUI;
 import twitter.ui.follow.follower.Follower_Ui;
 import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
+import twitter.ui.post.ExpandedPostUI;
 import twitter.ui.signup.SignUp_Ui;
 import twitter.ui.topic.Gemini_panel;
 import twitter.ui.mainPage.BookmarkTopPanel;
 import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
 import twitter.ui.addPost.addPostUi;
+import twitter.ui.profile.UserProfile;
 
 public class MainFrame extends JFrame {
+
     private static Connection connection;
     private JPanel currentPanel;
     private userService userService = new userService();
+    private postService postService = new postService();
     private Main_Ui mainUi;
     private Follower_Ui followerUi;
 
@@ -32,13 +38,25 @@ public class MainFrame extends JFrame {
         mainUi = new Main_Ui(this, connection, userService);
         add(mainUi); // MainFrame에 Main_Ui 추가
 
+
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 700);
         
+        //showUserProfilePanel();
+        showTwitterMainUiPanel();
 
-        showTwitterMainUiPanel(); 
+    }
 
+    public static Connection getConnection() {
+        return connection;
+    }
+
+    public userService getUserService() {
+        return userService;
+    }
+    public postService getPostService() {
+        return postService;
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
@@ -97,11 +115,37 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new Gemini_panel();  // 임시 데이터 전달
+    
+        currentPanel = new Gemini_panel(this, connection, userService); // connection, userService 전달
         add(currentPanel);
         revalidate();
         repaint();
     }
+    public void showExpandedPostPanel(int postId) {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+        currentPanel = new ExpandedPostUI(postId, connection, this, userService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showExpandedCommentUI(int postId) {
+        System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId); // 디버깅 메시지
+        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId);
+
+        if (currentPanel != null) {
+            remove(currentPanel); // 기존 패널 제거
+        }
+
+        currentPanel = expandedCommentUI;
+        add(currentPanel); // 새로운 패널 추가
+        revalidate(); // 레이아웃 갱신
+        repaint(); // 화면 갱신
+        System.out.println("ExpandedCommentUI로 전환 완료");
+    }
+
 
     public void showFollowerPanel() {
         if (currentPanel != null) {
@@ -130,7 +174,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new addPostUi(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        currentPanel = new addPostUi(this, connection, userService, postService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -152,6 +196,17 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         currentPanel = new SignUp_Ui(this, connection, userService);  // SignUp_Ui 클래스로부터 UI 로직 실행
+        add(currentPanel);
+        revalidate();
+        repaint();
+    }
+
+    public void showUserProfilePanel(int userId) {
+        if (currentPanel != null) {
+            remove(currentPanel);
+        }
+
+        currentPanel = new UserProfile(this, connection, userService, userId); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();

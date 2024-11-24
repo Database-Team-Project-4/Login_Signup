@@ -33,12 +33,4 @@ public class Follower_Ui extends JPanel {
         FollowerListPanel followerListPanel = new FollowerListPanel(userNames, userHandles, profileImage);
         add(followerListPanel, BorderLayout.CENTER);
     }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("팔로워 목록");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 600);
-        frame.setContentPane(new Follower_Ui(null, null, null));
-        frame.setVisible(true);
-    }
 }

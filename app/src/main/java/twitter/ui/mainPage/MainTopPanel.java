@@ -26,7 +26,9 @@ public class MainTopPanel extends JPanel {
     private final ImageIcon writePostIconDefault = loadIcon("/TwitterIcons/writepostdef.png");
     private final ImageIcon writePostIconHover = loadIcon("/TwitterIcons/writepostcursor.png");
     private Main_Ui mainUI;  // MainUI 인스턴스 참조 추가
-
+    private int userId;
+    private userService userService;
+    private MainFrame mainframe;
     // 기존 기능 유지하며 아이콘 로드 기능
     private ImageIcon loadIcon(String path) {
         java.net.URL resource = getClass().getResource(path);
@@ -39,9 +41,17 @@ public class MainTopPanel extends JPanel {
     // MainUI 인스턴스를 추가하여 recommendButton, followButton 클릭 시 호출
     public MainTopPanel(Main_Ui mainUI, MainFrame mainframe, Connection connection, userService userService) {
         this.mainUI = mainUI;
+        this.mainframe = mainframe;
+        this.userService = userService;
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
+
+        if (userService.isLoggedIn()) {
+            this.userId = userService.getCurrentUser().getId(); // Get the current user's ID
+        } else {
+            this.userId = -1; // Or any default value indicating no user is logged in
+        }
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(new Color(7, 7, 7));
@@ -61,6 +71,17 @@ public class MainTopPanel extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 mainframe.showAddPostPanel();
+            }
+        });
+
+        profileButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (userService.isLoggedIn()) {
+                    mainframe.showUserProfilePanel(userId);
+                } else {
+                    mainframe.showLoginPanel();
+                }
             }
         });
 
@@ -133,24 +154,20 @@ public class MainTopPanel extends JPanel {
     }
 
     private JButton createIconButton(ImageIcon icon, userService userService, MainFrame mainFrame) {
-        JButton button;
-        if (!userService.isLoggedIn()) {
-            // 로그인되어 있지 않은 경우: "Login" 버튼 표시 => 임의로 이렇게 설정해두었습니다! 디자인 알맞게 수정해주시면 될 거 같아요
-            button = new JButton("Login");
-            button.setForeground(Color.WHITE);
-            button.setFocusPainted(false);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-            button.addActionListener(e -> mainFrame.showLoginPanel());
-        } else {
-            button = new JButton(icon);
-            button.setFocusPainted(false);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-            button.addActionListener(e -> System.out.println("Go to Profile Page"));
-        }
+        JButton button = new JButton(icon);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.addActionListener(e -> {
+            if (userService.isLoggedIn()) {
+                mainFrame.showUserProfilePanel(userId);
+            } else {
+                mainFrame.showLoginPanel();
+            }
+        });
         return button;
     }
+
 
     private JButton createIconButtonWithHover(ImageIcon defaultIcon, ImageIcon hoverIcon, ImageIcon clickedIcon) {
         JButton button = new JButton(defaultIcon);

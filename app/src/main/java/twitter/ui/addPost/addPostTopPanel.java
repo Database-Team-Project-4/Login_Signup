@@ -1,12 +1,14 @@
 package twitter.ui.addPost;
 
 import twitter.main.MainFrame;
+import twitter.service.userService;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 public class addPostTopPanel extends JPanel {
     private JButton backButton;
@@ -18,7 +20,7 @@ public class addPostTopPanel extends JPanel {
     private static final Color BUTTON_COLOR = new Color(0, 122, 255);
     private final String imageIconPath = "/TwitterIcons/X.png";
 
-    public addPostTopPanel(MainFrame mainframe) {
+    public addPostTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
         setPreferredSize(new Dimension(getWidth(), 40)); // 상단바 높이 설정
@@ -49,6 +51,15 @@ public class addPostTopPanel extends JPanel {
         postButton = new RoundedRectangleButton("POST");
         postButton.setPreferredSize(new Dimension(70, 20));
         postButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
+
+        postButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainframe.showTwitterMainUiPanel(); // 게시하기 버튼을 누르면 메인화면으로 갑니다.
+            }
+        });
+
+
 
         // 왼쪽 패널 (뒤로 가기 버튼)
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
