@@ -96,7 +96,7 @@ public class postService {
 
 
     // 모든 게시물 조회 메서드
-    public List<PostUI> getAllPosts(Connection con, MainFrame mainFrame) {
+    public List<PostUI> getAllPosts(Connection con, MainFrame mainFrame, userService userService) {
         List<PostUI> postUIs = new ArrayList<>();
         String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, Posts.updated_at, " +
                 "Users.name, Users.email " +
@@ -118,7 +118,7 @@ public class postService {
                 int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
 
                 // PostUI 객체 생성 및 리스트에 추가
-                PostUI postUI = new PostUI(mainFrame, postId, userId,userName, email, content, likes, comments, bookmarks, created_at);
+                PostUI postUI = new PostUI(mainFrame,postId,userId,userName, email, content, likes, comments, bookmarks, created_at,userService,con);
                 postUIs.add(postUI);
             }
         } catch (SQLException e) {
@@ -126,6 +126,43 @@ public class postService {
         }
         return postUIs;
     }
+
+    // 현재 로그인한 사용자의 북마크된 게시물 반환 메서드
+    public List<PostUI> getBookmarkedPostsByUser(Connection con, MainFrame mainFrame, userService userService) {
+        List<PostUI> postUIs = new ArrayList<>();
+        String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, Posts.updated_at, " +
+                "Users.name, Users.email " +
+                "FROM Posts " +
+                "JOIN Bookmarks ON Posts.post_id = Bookmarks.post_id " +
+                "JOIN Users ON Posts.user_id = Users.user_id " +
+                "WHERE Bookmarks.user_id = ?";
+        try (PreparedStatement pstmt = con.prepareStatement(query)) {
+            pstmt.setInt(1, userService.getCurrentUser().getId());
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    // ResultSet에서 데이터 읽기
+                    int postId = rs.getInt("post_id");
+                    int userId = rs.getInt("user_id");
+                    String userName = rs.getString("name");
+                    String email = rs.getString("email");
+                    String content = rs.getString("content");
+                    String createdAt = rs.getString("created_at");
+
+                    int likes = getLikeCount(con, postId); // 게시물 좋아요 수 가져오기
+                    int comments = getCommentCount(con, postId); // 게시물 댓글 수 가져오기
+                    int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
+
+                    // PostUI 객체 생성 및 리스트에 추가
+                    PostUI postUI = new PostUI(mainFrame, postId, userId, userName, email, content, likes, comments, bookmarks, createdAt, userService, con);
+                    postUIs.add(postUI);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching bookmarked posts: " + e.getMessage());
+        }
+        return postUIs;
+    }
+
 
 
 
@@ -172,4 +209,6 @@ public class postService {
         }
         return 0; // 기본값 반환
     }
+
+
 }

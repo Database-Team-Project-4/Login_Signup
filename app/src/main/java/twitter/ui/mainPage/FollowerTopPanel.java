@@ -37,7 +37,7 @@ public class FollowerTopPanel extends JPanel {
 
         JButton backButton = createHoverButton("<");
 
-        String usernameText = (userService.currentUser != null) ? userService.currentUser.getName() : "Need to Login";
+        String usernameText = (userService.getCurrentUser() != null) ? userService.getCurrentUser().getName() : "Need to Login";
         JLabel usernameLabel = new JLabel(usernameText, SwingConstants.CENTER);
 
         usernameLabel.setForeground(Color.WHITE);

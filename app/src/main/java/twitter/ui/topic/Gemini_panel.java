@@ -18,7 +18,7 @@ import twitter.service.userService;
 
 public class Gemini_panel extends JPanel {
 
-    private User currentUser;
+    private User currentUser; // 활용 대기ㅣㅣㅣㅣㅣㅣㅣ
     private Connection connection;
     private userService userService;
 
@@ -33,7 +33,7 @@ public class Gemini_panel extends JPanel {
 
         this.connection = connection;
         this.userService = userService;
-        this.currentUser = userService.currentUser; 
+        this.currentUser = userService.getCurrentUser();
 
         
         setLayout(new BorderLayout());
