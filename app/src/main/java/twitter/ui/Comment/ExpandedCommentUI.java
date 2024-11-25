@@ -67,8 +67,23 @@ public class ExpandedCommentUI extends JPanel {
 
         // 하드코딩된 댓글 추가
         List<CommentUI> comments = getHardcodedComments();
-        for (CommentUI comment : comments) {
-            commentListPanel.add(comment);
+        for (int i = 0; i < comments.size(); i++) {
+            commentListPanel.add(comments.get(i));
+
+            // 마지막 댓글이 아니면 구분선 추가
+            if (i < comments.size() - 1) {
+                JPanel separator = new JPanel() {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillRect(0, 0, getWidth(), 1); // 높이 1px의 선 그리기
+                    }
+                };
+                separator.setPreferredSize(new Dimension(600, 1)); // 선의 크기 설정
+                separator.setBackground(Color.BLACK); // 배경색 설정
+                commentListPanel.add(separator); // 구분선 추가
+            }
         }
 
         /*
