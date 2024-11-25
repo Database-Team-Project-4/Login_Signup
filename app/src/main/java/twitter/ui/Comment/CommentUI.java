@@ -1,7 +1,7 @@
 package twitter.ui.Comment;
 
 import twitter.ui.post.UserHeaderPanel;
-
+import twitter.ui.Comment.CommentUI;
 import javax.swing.*;
 import java.awt.*;
 

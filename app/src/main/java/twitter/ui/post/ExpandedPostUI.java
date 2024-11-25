@@ -2,6 +2,7 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;
+import twitter.ui.Comment.CommentUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -135,28 +136,32 @@ public class ExpandedPostUI extends JPanel {
         }
 
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
-        postUI.setPreferredSize(new Dimension(600, 500)); // 크기 조정
+        postUI.setPreferredSize(new Dimension(600, 400)); // 크기 조정
 
         add(postUI, BorderLayout.CENTER);
 
         // Separator 패널 생성
-        JPanel separatorPanel = new JPanel() {
+        JPanel separatorPanel = new JPanel(new BorderLayout());
+        separatorPanel.setPreferredSize(new Dimension(600, 40)); // 높이를 늘려서 레이블을 아래로 배치
+        separatorPanel.setBackground(Color.BLACK);
+
+// 회색 줄 패널 생성
+        JPanel linePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                int y = getHeight() / 2;
-                g.setColor(Color.LIGHT_GRAY);
+                int y = getHeight() - 1; // 패널의 맨 아래에 그리기
+                g.setColor(Color.GRAY);
                 g.drawLine(0, y, getWidth(), y);
             }
         };
-        separatorPanel.setPreferredSize(new Dimension(600, 20));
-        separatorPanel.setBackground(Color.BLACK);
-        separatorPanel.setLayout(null);
+        linePanel.setPreferredSize(new Dimension(600, 5)); // 높이를 1로 설정하여 선만 그리도록 함
+        linePanel.setBackground(Color.lightGray);
 
 // 'Comment' 레이블 생성
         JLabel commentLabel = new JLabel("Comment");
-        commentLabel.setForeground(Color.LIGHT_GRAY);
-        commentLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
+        commentLabel.setForeground(Color.GRAY);
+        commentLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
 
 // 레이블을 중앙에 배치
         Dimension labelSize = commentLabel.getPreferredSize();
@@ -181,7 +186,35 @@ public class ExpandedPostUI extends JPanel {
                 );
             }
         });
+        String commentUserName = "Test User";
+        String commentUserEmail = "testuser@example.com";
+        String commentContent = "이것은 테스트 댓글입니다. 디자인을 확인하기 위한 내용입니다.";
+        int commentLikes = 42;
 
+        // CommentUI 인스턴스 생성
+        CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent, commentLikes);
+
+        // CommentUI의 크기 조정 (필요에 따라)
+        commentUI.setPreferredSize(new Dimension(600, 250)); // 높이와 너비를 원하는 대로 설정
+
+        // 구성 요소를 담을 메인 패널 생성
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.BLACK);
+
+       // 구성 요소 추가
+        contentPanel.add(postUI);
+
+       // 경계선 및 'Comment' 텍스트 추가
+       // 아래에서 경계선 패널 생성 코드를 추가합니다.
+
+        contentPanel.add(separatorPanel);
+
+     // CommentUI 추가
+        contentPanel.add(commentUI);
+
+// 메인 패널에 추가
+        add(contentPanel, BorderLayout.CENTER);
 
 
     }
@@ -194,6 +227,39 @@ public class ExpandedPostUI extends JPanel {
             }
         }
     }
+    // ExpandedPostUI.java 파일의 마지막에 추가
+    class Comment {
+        private int commentId;
+        private int postId;
+        private int userId;
+        private String content;
+        private String createdAt;
+        private String userName;
+        private String userEmail;
+        private int likeCount;
+
+        public Comment(int commentId, int postId, int userId, String content, String createdAt, String userName, String userEmail, int likeCount) {
+            this.commentId = commentId;
+            this.postId = postId;
+            this.userId = userId;
+            this.content = content;
+            this.createdAt = createdAt;
+            this.userName = userName;
+            this.userEmail = userEmail;
+            this.likeCount = likeCount;
+        }
+
+        // Getter 메서드들
+        public int getCommentId() { return commentId; }
+        public int getPostId() { return postId; }
+        public int getUserId() { return userId; }
+        public String getContent() { return content; }
+        public String getCreatedAt() { return createdAt; }
+        public String getUserName() { return userName; }
+        public String getUserEmail() { return userEmail; }
+        public int getLikeCount() { return likeCount; }
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

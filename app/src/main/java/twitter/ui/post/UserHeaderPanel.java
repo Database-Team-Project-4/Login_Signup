@@ -135,22 +135,12 @@ public class UserHeaderPanel extends JPanel {
         userInfoPanel.add(userName);
         userInfoPanel.add(userHandle);
 
-        // 팔로우 버튼을 감싸는 패널 추가
-        JPanel followButtonWrapper = new JPanel(new BorderLayout());
-        followButtonWrapper.setBackground(Color.BLACK);
-        followButtonWrapper.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); // 상하 여백 설정
 
-        // 팔로우 버튼
-        JButton followButton = new RoundedRectangleButton("팔로우");
-        followButton.setPreferredSize(new Dimension(70, 20));
-        followButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
-
-        followButtonWrapper.add(followButton, BorderLayout.CENTER);
 
         // 구성
         add(profilePic, BorderLayout.WEST);
         add(userInfoPanel, BorderLayout.CENTER);
-        add(followButtonWrapper, BorderLayout.EAST);
+
     }
 
     public void addProfileImageMouseListener(MouseListener listener) {
