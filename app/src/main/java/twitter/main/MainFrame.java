@@ -3,6 +3,7 @@ package twitter.main;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -22,6 +23,8 @@ import twitter.ui.mainPage.Main_Ui;
 import twitter.ui.mainPage.SearchTopPanel;
 import twitter.ui.addPost.addPostUi;
 import twitter.ui.profile.UserProfile;
+import twitter.ui.post.PostUI;
+import java.awt.*; 
 
 public class MainFrame extends JFrame {
 
@@ -33,6 +36,10 @@ public class MainFrame extends JFrame {
     private Follower_Ui followerUi;
     private boolean profileView;
 
+    public void refreshLikeCount(int postId, int likeCount, JButton likeButton)
+    {
+        mainUi.refreshLikeCount(postId, likeCount, likeButton);
+    }
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
         this.userService = userService;
