@@ -3,6 +3,7 @@ package twitter.ui.post;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.Comment.CommentUI;
+import twitter.ui.module.custombutton.MoreButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -136,56 +137,35 @@ public class ExpandedPostUI extends JPanel {
         }
 
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
-        postUI.setPreferredSize(new Dimension(600, 400)); // 크기 조정
+        postUI.setPreferredSize(new Dimension(600, 350)); // 크기 조정
 
         add(postUI, BorderLayout.CENTER);
 
-        // Separator 패널 생성
+        // Separator 패널 생성 (수정된 코드 적용)
         JPanel separatorPanel = new JPanel(new BorderLayout());
-        separatorPanel.setPreferredSize(new Dimension(600, 40)); // 높이를 늘려서 레이블을 아래로 배치
+        separatorPanel.setPreferredSize(new Dimension(600, 40));
         separatorPanel.setBackground(Color.BLACK);
 
-// 회색 줄 패널 생성
         JPanel linePanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                int y = getHeight() - 1; // 패널의 맨 아래에 그리기
+                int y = getHeight() / 2;
                 g.setColor(Color.GRAY);
                 g.drawLine(0, y, getWidth(), y);
             }
         };
-        linePanel.setPreferredSize(new Dimension(600, 5)); // 높이를 1로 설정하여 선만 그리도록 함
-        linePanel.setBackground(Color.lightGray);
+        linePanel.setOpaque(false);
+        linePanel.setPreferredSize(new Dimension(600, 1));
 
-// 'Comment' 레이블 생성
-        JLabel commentLabel = new JLabel("Comment");
-        commentLabel.setForeground(Color.GRAY);
-        commentLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        JLabel commentLabel = new JLabel("댓글", SwingConstants.CENTER);
+        commentLabel.setForeground(Color.WHITE);
+        commentLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
 
-// 레이블을 중앙에 배치
-        Dimension labelSize = commentLabel.getPreferredSize();
-        commentLabel.setBounds(
-                (separatorPanel.getWidth() - labelSize.width) / 2,
-                (separatorPanel.getHeight() - labelSize.height) / 2 - 1,
-                labelSize.width,
-                labelSize.height
-        );
-        separatorPanel.add(commentLabel);
+        separatorPanel.add(linePanel, BorderLayout.CENTER);
+        separatorPanel.add(commentLabel, BorderLayout.SOUTH);
 
-// 패널 크기 변경 시 레이블 위치 조정
-        separatorPanel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                Dimension labelSize = commentLabel.getPreferredSize();
-                commentLabel.setBounds(
-                        (separatorPanel.getWidth() - labelSize.width) / 2,
-                        (separatorPanel.getHeight() - labelSize.height) / 2 - 1,
-                        labelSize.width,
-                        labelSize.height
-                );
-            }
-        });
+        // 하드코딩된 댓글 데이터 생성
         String commentUserName = "Test User";
         String commentUserEmail = "testuser@example.com";
         String commentContent = "이것은 테스트 댓글입니다. 디자인을 확인하기 위한 내용입니다.";
@@ -193,30 +173,35 @@ public class ExpandedPostUI extends JPanel {
 
         // CommentUI 인스턴스 생성
         CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent, commentLikes);
+        commentUI.setPreferredSize(new Dimension(600, 150));
 
-        // CommentUI의 크기 조정 (필요에 따라)
-        commentUI.setPreferredSize(new Dimension(600, 250)); // 높이와 너비를 원하는 대로 설정
+        // '댓글 더보기' 버튼 생성 및 추가
+        MoreButton moreCommentsButton = new MoreButton("댓글 더보기");
+        moreCommentsButton.setPreferredSize(new Dimension(170, 40));
+        moreCommentsButton.setBackground(new Color(8, 8, 8)); // 하늘색
+        moreCommentsButton.setForeground(Color.LIGHT_GRAY);
+        moreCommentsButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        moreCommentsButton.setFocusPainted(false);
+        moreCommentsButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY)); // 테두리 설정
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0)); // 아래쪽에 10픽셀 패딩 추가
+        buttonPanel.add(moreCommentsButton);
 
         // 구성 요소를 담을 메인 패널 생성
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBackground(Color.BLACK);
 
-       // 구성 요소 추가
+        // 구성 요소 추가
         contentPanel.add(postUI);
-
-       // 경계선 및 'Comment' 텍스트 추가
-       // 아래에서 경계선 패널 생성 코드를 추가합니다.
-
         contentPanel.add(separatorPanel);
-
-     // CommentUI 추가
         contentPanel.add(commentUI);
+        contentPanel.add(buttonPanel);
 
-// 메인 패널에 추가
+        // 메인 패널에 추가
         add(contentPanel, BorderLayout.CENTER);
-
-
     }
 
     private void removeExistingFooterPanel() {

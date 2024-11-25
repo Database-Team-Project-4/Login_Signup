@@ -105,7 +105,7 @@ public class UserHeaderPanel extends JPanel {
     public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
-        setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
+        setBorder(BorderFactory.createEmptyBorder(15, 10, 5, 10));
 
         /*
         POSTUI에 사용되는 header panel
