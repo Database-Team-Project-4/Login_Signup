@@ -55,6 +55,13 @@ public class PostUI extends JPanel {
         UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
         add(userHeaderPanel, BorderLayout.NORTH);
 
+        // 팔로우 버튼 숨김 처리 (프로필 화면인 경우)
+        if (mainFrame != null && mainFrame.isProfileView()) {
+            userHeaderPanel.hideFollowButton();
+        }
+
+        add(userHeaderPanel, BorderLayout.NORTH);
+
         if (mainFrame != null && userId != -1) {
             userHeaderPanel.addProfileImageMouseListener(new MouseAdapter() {
                 @Override
@@ -177,6 +184,7 @@ public class PostUI extends JPanel {
         return likes;
     }
     public int getPostId() {return postId;}
+
 
     public void addProfileImageMouseListener(MouseAdapter listener) {
         userHeaderPanel.addProfileImageMouseListener(listener);

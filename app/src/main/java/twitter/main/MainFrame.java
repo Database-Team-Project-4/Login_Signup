@@ -31,6 +31,7 @@ public class MainFrame extends JFrame {
     private postService postService = new postService();
     private Main_Ui mainUi;
     private Follower_Ui followerUi;
+    private boolean profileView;
 
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
@@ -42,7 +43,7 @@ public class MainFrame extends JFrame {
         setTitle("Twitter");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(450, 700);
-        
+
         //showUserProfilePanel();
         showTwitterMainUiPanel();
 
@@ -65,7 +66,7 @@ public class MainFrame extends JFrame {
        if (currentPanel != null) {
            remove(currentPanel);
       }
-    
+
     currentPanel = new BookmarkTopPanel();  // BookmarkTopPanel로 설정
     add(currentPanel);
     revalidate();
@@ -77,7 +78,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-
+        profileView = false;
         currentPanel = new SearchTopPanel(this, connection, userService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
@@ -99,7 +100,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-
+        profileView = false;
         mainUi = new Main_Ui(this, connection, userService);
         currentPanel = new Main_Ui(this, connection, userService);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
@@ -115,7 +116,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-    
+
         currentPanel = new Gemini_panel(this, connection, userService); // connection, userService 전달
         add(currentPanel);
         revalidate();
@@ -125,6 +126,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
+        profileView = false;
         currentPanel = new ExpandedPostUI(postId, connection, this, userService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
@@ -162,7 +164,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-
+        profileView = false;
         currentPanel = new Following_Ui(this, connection, userService);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
@@ -205,11 +207,14 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-
+        profileView = true;
         currentPanel = new UserProfile(this, connection, userService, userId); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();
+    }
+    public boolean isProfileView() {
+        return profileView;
     }
 
     public static void main(String[] args) {
