@@ -2,10 +2,18 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.service.userService;
+import twitter.ui.Comment.CommentUI;
+import twitter.ui.module.custombutton.MoreButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 
 public class ExpandedPostUI extends JPanel {
     private MainFrame mainFrame;
@@ -129,9 +137,80 @@ public class ExpandedPostUI extends JPanel {
         }
 
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
-        postUI.setPreferredSize(new Dimension(600, 800)); // 크기 조정
+        postUI.setPreferredSize(new Dimension(600, 350)); // 크기 조정
 
         add(postUI, BorderLayout.CENTER);
+
+        // Separator 패널 생성 (수정된 코드 적용)
+        JPanel separatorPanel = new JPanel(new BorderLayout());
+        separatorPanel.setPreferredSize(new Dimension(600, 40));
+        separatorPanel.setBackground(Color.BLACK);
+
+        JPanel linePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                int y = getHeight() / 2;
+                g.setColor(Color.GRAY);
+                g.drawLine(0, y, getWidth(), y);
+            }
+        };
+        linePanel.setOpaque(false);
+        linePanel.setPreferredSize(new Dimension(600, 1));
+
+        JLabel commentLabel = new JLabel("댓글", SwingConstants.CENTER);
+        commentLabel.setForeground(Color.WHITE);
+        commentLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
+
+        separatorPanel.add(linePanel, BorderLayout.CENTER);
+        separatorPanel.add(commentLabel, BorderLayout.SOUTH);
+
+        // 하드코딩된 댓글 데이터 생성
+        String commentUserName = "Test User";
+        String commentUserEmail = "testuser@example.com";
+        String commentContent = "이것은 테스트 댓글입니다. 디자인을 확인하기 위한 내용입니다.";
+        int commentLikes = 42;
+
+        // CommentUI 인스턴스 생성
+        CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent, commentLikes);
+        commentUI.setPreferredSize(new Dimension(600, 150));
+
+        // '댓글 더보기' 버튼 생성 및 추가
+        MoreButton moreCommentsButton = new MoreButton("댓글 더보기");
+        moreCommentsButton.setPreferredSize(new Dimension(170, 40));
+        moreCommentsButton.setBackground(new Color(8, 8, 8)); // 하늘색
+        moreCommentsButton.setForeground(Color.LIGHT_GRAY);
+        moreCommentsButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        moreCommentsButton.setFocusPainted(false);
+        moreCommentsButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY)); // 테두리 설정
+
+        moreCommentsButton.addActionListener(e -> {
+            System.out.println("댓글 더보기 버튼 클릭됨");
+            if (mainFrame != null) {
+                mainFrame.showExpandedCommentUI(postId); // 댓글 화면 전환
+            } else {
+                System.out.println("MainFrame이 null입니다. 댓글 화면을 표시할 수 없습니다.");
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0)); // 아래쪽에 10픽셀 패딩 추가
+        buttonPanel.add(moreCommentsButton);
+
+        // 구성 요소를 담을 메인 패널 생성
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBackground(Color.BLACK);
+
+        // 구성 요소 추가
+        contentPanel.add(postUI);
+        contentPanel.add(separatorPanel);
+        contentPanel.add(commentUI);
+        contentPanel.add(buttonPanel);
+
+        // 메인 패널에 추가
+        add(contentPanel, BorderLayout.CENTER);
     }
 
     private void removeExistingFooterPanel() {
@@ -142,6 +221,39 @@ public class ExpandedPostUI extends JPanel {
             }
         }
     }
+    // ExpandedPostUI.java 파일의 마지막에 추가
+    class Comment {
+        private int commentId;
+        private int postId;
+        private int userId;
+        private String content;
+        private String createdAt;
+        private String userName;
+        private String userEmail;
+        private int likeCount;
+
+        public Comment(int commentId, int postId, int userId, String content, String createdAt, String userName, String userEmail, int likeCount) {
+            this.commentId = commentId;
+            this.postId = postId;
+            this.userId = userId;
+            this.content = content;
+            this.createdAt = createdAt;
+            this.userName = userName;
+            this.userEmail = userEmail;
+            this.likeCount = likeCount;
+        }
+
+        // Getter 메서드들
+        public int getCommentId() { return commentId; }
+        public int getPostId() { return postId; }
+        public int getUserId() { return userId; }
+        public String getContent() { return content; }
+        public String getCreatedAt() { return createdAt; }
+        public String getUserName() { return userName; }
+        public String getUserEmail() { return userEmail; }
+        public int getLikeCount() { return likeCount; }
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

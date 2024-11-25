@@ -1,7 +1,7 @@
 package twitter.ui.Comment;
 
 import twitter.ui.post.UserHeaderPanel;
-
+import twitter.ui.Comment.CommentUI;
 import javax.swing.*;
 import java.awt.*;
 
@@ -24,10 +24,14 @@ public class CommentUI extends JPanel {
 
         // 상단 패널 (작성자 정보)
         UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png")));
+        Dimension originalSize = userHeaderPanel.getPreferredSize();
+        userHeaderPanel.setPreferredSize(new Dimension((int) (originalSize.width * 1.0), (int) (originalSize.height *1.0))); // 크기를 4/5로 줄임
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (댓글 내용)
         CommentContentPanel contentPanel = new CommentContentPanel(contentText);
+        add(contentPanel, BorderLayout.CENTER);
+        contentPanel.setPreferredSize(new Dimension(originalSize.width, (int) (originalSize.height * 0.6))); // 높이를 4/3로 줄임
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요 버튼만 포함)
