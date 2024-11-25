@@ -3,6 +3,8 @@ package twitter.ui.mainPage;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,8 +52,6 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconDefault = "/TwitterIcons/bookmarkdef.png";
     private final String BookmarkIconHover = "/TwitterIcons/bookmarkdef.png";
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
-
-    // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ
     private final String GeminiIconDefault = "/TwitterIcons/aimessagebot.png";
     private final String GeminiIconHover = "/TwitterIcons/aimessagebothover.png";
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
@@ -74,6 +74,17 @@ public class Main_Ui extends JPanel {
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
         completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
+
+        addPropertyChangeListener(new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if ("likeCount".equals(evt.getPropertyName())) {
+                    int postId = (int) evt.getOldValue();
+                    int likeCount = (int) evt.getNewValue();
+                    mainFrame.refreshLikeCount(postId, likeCount, null);
+                }
+            }
+        });
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));
@@ -182,7 +193,30 @@ updatePostContent("recommend");
 
 }
 
+public void refreshLikeCount(int postId, int likeCount, JButton likeButton) {
+    for (Component component : mainPanel.getComponents()) {
+        if (component instanceof PostUI) {
+            PostUI postUI = (PostUI) component;
+            if (postUI.getPostId() == postId) {
+                postUI.setLikes(likeCount); // PostUI에 setLikes 메서드 추가 필요
+                break;
+            }
+        }
+    }
+    mainPanel.revalidate();
+    mainPanel.repaint();
+}
 
+    public void findPostUIAndFireEvent(int postId, int likeCount){
+        for (Component component : mainPanel.getComponents()){
+            if (component instanceof PostUI){
+                PostUI postUI = (PostUI) component;
+                if(postUI.getPostId() == postId){
+                    postUI.firePropertyChange("likeCount", postUI.getLikes(), likeCount); // 이벤트 발생
+                }
+            }
+        }
+    }
     public void updatePostContent(String filterType) {
         mainPanel.removeAll(); // 기존 콘텐츠 제거
         mainPanel.setPreferredSize(null); // 크기 초기화
