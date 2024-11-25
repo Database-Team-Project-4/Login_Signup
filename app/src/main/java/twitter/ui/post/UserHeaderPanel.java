@@ -60,75 +60,78 @@ public class UserHeaderPanel extends JPanel {
         followButton.setPreferredSize(new Dimension(70, 20));
         followButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
 
-        // 로그인 상태 확인
-        if (userService.getCurrentUser() == null) {
-            followButton.setEnabled(false); // 로그인되지 않은 경우 버튼 비활성화
-            followButton.setText("로그인 필요");
+        if (userService.getCurrentUser() != null && userService.getCurrentUser().getId() == displayedUser) {
+            hideFollowButton(); // 팔로우 버튼 숨기기
         } else {
-            // 현재 로그인된 사용자와 표시된 사용자의 팔로우 상태 확인
-            this.isFollowing = followService.isAlreadyFollowing(conn, userService.getCurrentUser().getId(), displayedUser);
-            updateFollowButtonStyle(); // 초기 스타일 설정
+            // 로그인 상태 확인
+            if (userService.getCurrentUser() == null) {
+                followButton.setEnabled(false); // 로그인되지 않은 경우 버튼 비활성화
+                followButton.setText("로그인 필요");
+            } else {
+                // 현재 로그인된 사용자와 표시된 사용자의 팔로우 상태 확인
+                this.isFollowing = followService.isAlreadyFollowing(conn, userService.getCurrentUser().getId(), displayedUser);
+                updateFollowButtonStyle(); // 초기 스타일 설정
 
-            // 버튼 클릭 이벤트 추가
-            followButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (isFollowing) {
-                        // 언팔로우 동작
-                        String result = followService.unfollowUser(conn, userService.getCurrentUser(), displayedUser);
-                        JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
-                        isFollowing = false;
-                    } else {
-                        // 팔로우 동작
-                        String result = followService.followUser(conn, userService.getCurrentUser(), displayedUser);
-                        JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
-                        isFollowing = true;
+                // 버튼 클릭 이벤트 추가
+                followButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (isFollowing) {
+                            // 언팔로우 동작
+                            String result = followService.unfollowUser(conn, userService.getCurrentUser(), displayedUser);
+                            JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
+                            isFollowing = false;
+                        } else {
+                            // 팔로우 동작
+                            String result = followService.followUser(conn, userService.getCurrentUser(), displayedUser);
+                            JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
+                            isFollowing = true;
+                        }
+                        updateFollowButtonStyle(); // 스타일 업데이트
                     }
-                    updateFollowButtonStyle(); // 스타일 업데이트
-                }
-            });
+                });
 
-            followButton.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseEntered(java.awt.event.MouseEvent e) {
-                    if (isFollowing) {
-                        // 팔로잉 상태에서 호버
-                        followButton.setBackground(Color.GRAY); // 배경색 회색
-                        followButton.setForeground(Color.BLACK); // 텍스트 색상 검정
-                    } else {
-                        // 팔로우 상태에서 호버
-                        followButton.setBackground(new Color(180, 180, 180)); // 밝은 회색
+                followButton.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseEntered(java.awt.event.MouseEvent e) {
+                        if (isFollowing) {
+                            // 팔로잉 상태에서 호버
+                            followButton.setBackground(Color.GRAY); // 배경색 회색
+                            followButton.setForeground(Color.BLACK); // 텍스트 색상 검정
+                        } else {
+                            // 팔로우 상태에서 호버
+                            followButton.setBackground(new Color(180, 180, 180)); // 밝은 회색
+                        }
+                        followButton.repaint();
                     }
-                    followButton.repaint();
-                }
 
-                @Override
-                public void mouseExited(java.awt.event.MouseEvent e) {
-                    // 마우스가 버튼을 벗어나면 기본 스타일로 복원
-                    updateFollowButtonStyle();
-                }
-
-                @Override
-                public void mousePressed(java.awt.event.MouseEvent e) {
-                    // 클릭 시 스타일 변경
-                    if (isFollowing) {
-                        followButton.setBackground(new Color(100, 100, 100)); // 어두운 회색
-                        followButton.setForeground(Color.WHITE); // 텍스트 색상 흰색
-                    } else {
-                        followButton.setBackground(new Color(150, 150, 150)); // 중간 회색
+                    @Override
+                    public void mouseExited(java.awt.event.MouseEvent e) {
+                        // 마우스가 버튼을 벗어나면 기본 스타일로 복원
+                        updateFollowButtonStyle();
                     }
-                    followButton.repaint();
-                }
 
-                @Override
-                public void mouseReleased(java.awt.event.MouseEvent e) {
-                    // 클릭 해제 시 기본 스타일 복원
-                    updateFollowButtonStyle();
-                }
-            });
+                    @Override
+                    public void mousePressed(java.awt.event.MouseEvent e) {
+                        // 클릭 시 스타일 변경
+                        if (isFollowing) {
+                            followButton.setBackground(new Color(100, 100, 100)); // 어두운 회색
+                            followButton.setForeground(Color.WHITE); // 텍스트 색상 흰색
+                        } else {
+                            followButton.setBackground(new Color(150, 150, 150)); // 중간 회색
+                        }
+                        followButton.repaint();
+                    }
 
+                    @Override
+                    public void mouseReleased(java.awt.event.MouseEvent e) {
+                        // 클릭 해제 시 기본 스타일 복원
+                        updateFollowButtonStyle();
+                    }
+                });
+
+            }
         }
-
         // 팔로우 버튼을 감싸는 패널 추가
         JPanel followButtonWrapper = new JPanel(new BorderLayout());
         followButtonWrapper.setBackground(Color.BLACK);
