@@ -133,7 +133,7 @@ public class MainFrame extends JFrame {
 
     public void showExpandedCommentUI(int postId) {
         System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId); // 디버깅 메시지
-        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId);
+        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId,this);
 
         if (currentPanel != null) {
             remove(currentPanel); // 기존 패널 제거

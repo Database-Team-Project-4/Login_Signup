@@ -5,7 +5,13 @@ import twitter.service.userService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 
 public class ExpandedPostUI extends JPanel {
     private MainFrame mainFrame;
@@ -129,9 +135,55 @@ public class ExpandedPostUI extends JPanel {
         }
 
         postUI.setFont(new Font("SansSerif", Font.PLAIN, 40)); // 기본 폰트 크기 증가
-        postUI.setPreferredSize(new Dimension(600, 800)); // 크기 조정
+        postUI.setPreferredSize(new Dimension(600, 500)); // 크기 조정
 
         add(postUI, BorderLayout.CENTER);
+
+        // Separator 패널 생성
+        JPanel separatorPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                int y = getHeight() / 2;
+                g.setColor(Color.LIGHT_GRAY);
+                g.drawLine(0, y, getWidth(), y);
+            }
+        };
+        separatorPanel.setPreferredSize(new Dimension(600, 20));
+        separatorPanel.setBackground(Color.BLACK);
+        separatorPanel.setLayout(null);
+
+// 'Comment' 레이블 생성
+        JLabel commentLabel = new JLabel("Comment");
+        commentLabel.setForeground(Color.LIGHT_GRAY);
+        commentLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
+
+// 레이블을 중앙에 배치
+        Dimension labelSize = commentLabel.getPreferredSize();
+        commentLabel.setBounds(
+                (separatorPanel.getWidth() - labelSize.width) / 2,
+                (separatorPanel.getHeight() - labelSize.height) / 2 - 1,
+                labelSize.width,
+                labelSize.height
+        );
+        separatorPanel.add(commentLabel);
+
+// 패널 크기 변경 시 레이블 위치 조정
+        separatorPanel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Dimension labelSize = commentLabel.getPreferredSize();
+                commentLabel.setBounds(
+                        (separatorPanel.getWidth() - labelSize.width) / 2,
+                        (separatorPanel.getHeight() - labelSize.height) / 2 - 1,
+                        labelSize.width,
+                        labelSize.height
+                );
+            }
+        });
+
+
+
     }
 
     private void removeExistingFooterPanel() {
