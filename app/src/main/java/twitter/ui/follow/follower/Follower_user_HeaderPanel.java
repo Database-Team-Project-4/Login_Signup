@@ -42,7 +42,7 @@ public class Follower_user_HeaderPanel extends JPanel {
 
         userInfoPanel.add(userName);
         userInfoPanel.add(userHandle);
-
+        /*
         // 팔로우 버튼을 감싸는 패널 추가
         JPanel followButtonWrapper = new JPanel(new BorderLayout());
         followButtonWrapper.setBackground(Color.BLACK);
@@ -62,10 +62,10 @@ public class Follower_user_HeaderPanel extends JPanel {
         });
 
         followButtonWrapper.add(followButton, BorderLayout.CENTER);
-
+        */
         // 구성
         add(profilePic, BorderLayout.WEST);
         add(userInfoPanel, BorderLayout.CENTER);
-        add(followButtonWrapper, BorderLayout.EAST);
+        //add(followButtonWrapper, BorderLayout.EAST);
     }
 }

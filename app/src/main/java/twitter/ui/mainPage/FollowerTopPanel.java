@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -23,9 +25,11 @@ public class FollowerTopPanel extends JPanel {
     private JPanel followerUnderline, followingUnderline;
     private JButton followerButton, followingButton;
     private Main_Ui mainUi;
+    private MainFrame mainFrame;
 
     public FollowerTopPanel(MainFrame mainFrame, Connection connection, userService userService, Main_Ui mainui) {
         this.mainUi = mainui;
+        this.mainFrame = mainFrame;
 
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
@@ -47,6 +51,14 @@ public class FollowerTopPanel extends JPanel {
         topPanel.add(backButton, BorderLayout.WEST);
         topPanel.add(usernameLabel, BorderLayout.CENTER);
         topPanel.add(addFriendButton, BorderLayout.EAST);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 뒤로 가기 버튼 클릭 시 이전 화면으로 돌아가는 로직 추가
+                mainFrame.showTwitterMainUiPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+            }
+        });
 
         JPanel subTopPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 100, 10));
         subTopPanel.setBackground(new Color(7, 7, 7));
