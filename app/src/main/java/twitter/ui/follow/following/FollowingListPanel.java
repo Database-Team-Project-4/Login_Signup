@@ -13,7 +13,7 @@ public class FollowingListPanel extends JPanel {
     public FollowingListPanel(List<String> userNames, List<String> userHandles, ImageIcon profileImage) {
         setLayout(new BorderLayout());
 
-        // 팔로워 목록을 담을 메인 패널 설정
+        // 메인 패널 설정
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBackground(Color.BLACK);
@@ -24,14 +24,36 @@ public class FollowingListPanel extends JPanel {
             mainPanel.add(userPanel);
         }
 
-        // 스크롤 가능하게 설정
-        scrollPane = new JScrollPane(mainPanel);
+        // 팔로워 목록의 전체 높이를 계산
+        int itemCount = userNames.size();
+        int itemHeight = 70; // 각 항목의 예상 높이
+        int maxVisibleHeight = 540; // 최대 표시 가능한 높이
+        int totalHeight = itemCount * itemHeight;
+
+        // 스크롤 필요 여부 결정
+        boolean scrollNeeded = totalHeight > maxVisibleHeight;
+
+        mainPanel.setPreferredSize(new Dimension(400, totalHeight));
+
+        // 메인 패널을 감싸는 래퍼 패널
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
+        wrapperPanel.setPreferredSize(new Dimension(400, Math.min(totalHeight, maxVisibleHeight)));
+        wrapperPanel.setMaximumSize(new Dimension(400, Math.min(totalHeight, maxVisibleHeight)));
+        wrapperPanel.setMinimumSize(new Dimension(400, Math.min(totalHeight, maxVisibleHeight)));
+        wrapperPanel.setBackground(Color.BLACK);
+        wrapperPanel.add(mainPanel, BorderLayout.CENTER);
+
+        // 스크롤 패널 생성
+        scrollPane = new JScrollPane(wrapperPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setVerticalScrollBarPolicy(scrollNeeded ? JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED : JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUI(new CustomScrollbar());
 
         add(scrollPane, BorderLayout.CENTER);
     }
 }
+
+
+
 

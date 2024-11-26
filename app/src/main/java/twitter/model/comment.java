@@ -1,3 +1,4 @@
+/*
 package twitter.model;
 
 import java.time.LocalDateTime;
@@ -51,3 +52,4 @@ public class comment {
         return createdAt;
     }
 }
+*/

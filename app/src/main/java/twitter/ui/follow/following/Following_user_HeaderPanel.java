@@ -12,7 +12,7 @@ public class Following_user_HeaderPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
-
+        setMaximumSize(new Dimension(400, 70));
         /*
         Following에 사용되는 중간패널입니다, 버튼 눌렀을때 event를 넣기 편하기위해 post의
         UserHeaderPanel과 분리했습니다

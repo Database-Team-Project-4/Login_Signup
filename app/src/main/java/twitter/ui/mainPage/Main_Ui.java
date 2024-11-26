@@ -51,7 +51,6 @@ public class Main_Ui extends JPanel {
     private final String BookmarkIconHover = "/TwitterIcons/bookmarkdef.png";
     private final String BookmarkIconClicked = "/TwitterIcons/bookmarkClicked.png";
 
-    // 아이콘 변경 부탁드립니다!! 어디서 퍼오신건지 모르겠어요 .. ㅠㅠ
     private final String GeminiIconDefault = "/TwitterIcons/aimessagebot.png";
     private final String GeminiIconHover = "/TwitterIcons/aimessagebothover.png";
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
@@ -375,9 +374,6 @@ updatePostContent("recommend");
 
     public void updateFollowContent(String type) {
         mainPanel.removeAll();
-        /*
-        DB에서 follow관련 데이터를 가져와야합니다.
-         */
 
         List<String> userNames = new ArrayList<>();
         List<String> userHandles = new ArrayList<>();
@@ -386,7 +382,7 @@ updatePostContent("recommend");
         followService followService = new followService();
 
         if(userService.getCurrentUser() == null){
-                // 로그인되지 문구 추가
+                // 로그인X 문구 추가
                 JPanel loginPromptPanel = new JPanel(new GridBagLayout());
                 loginPromptPanel.setBackground(Color.BLACK);
 
@@ -421,6 +417,7 @@ updatePostContent("recommend");
         }
         else
         {
+
             ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
             int id = userService.getCurrentUser().getId();
             if (type.equals("follower")) {
@@ -439,17 +436,19 @@ updatePostContent("recommend");
 
                 userNames = followingList.stream().map(User::getName).toList();
                 userHandles = followingList.stream().map(User::getEmail).toList();
+
+                int itemCount = userNames.size();
+                int itemHeight = 70; // 각 항목의 예상 높이
+                int maxVisibleHeight = 540; // 최대 표시 가능한 높이
+                int totalHeight = itemCount * itemHeight;
+                mainPanel.setPreferredSize(new Dimension(400, totalHeight));
                 mainPanel.add(new FollowingListPanel(userNames,userHandles,profileImage));
             }
         }
 
-        //postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
 
         mainPanel.revalidate(); // 레이아웃 업데이트
         mainPanel.repaint(); // 화면 갱신
-
-        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
 
     private void showExpandedPost(int postId) {
