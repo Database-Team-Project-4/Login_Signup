@@ -134,19 +134,22 @@ public class MainFrame extends JFrame {
     }
 
     public void showExpandedCommentUI(int postId) {
-        System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId); // 디버깅 메시지
-        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId,this);
+        System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId);
+
+        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId, this, userService, connection);
 
         if (currentPanel != null) {
             remove(currentPanel); // 기존 패널 제거
         }
 
-        currentPanel = expandedCommentUI;
-        add(currentPanel); // 새로운 패널 추가
+        currentPanel = expandedCommentUI; // 새 패널로 교체
+        add(currentPanel);
         revalidate(); // 레이아웃 갱신
         repaint(); // 화면 갱신
+
         System.out.println("ExpandedCommentUI로 전환 완료");
     }
+
 
 
     public void showFollowerPanel() {

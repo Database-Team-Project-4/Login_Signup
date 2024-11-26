@@ -1,18 +1,18 @@
 package twitter.ui.post;
 
 import twitter.main.MainFrame;
+import twitter.service.commentService;
 import twitter.service.userService;
 import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.MoreButton;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 
 public class ExpandedPostUI extends JPanel {
@@ -23,12 +23,6 @@ public class ExpandedPostUI extends JPanel {
     public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userService userService) {
         this.mainFrame = mainFrame;
         initializeUI(postId, connection, mainFrame, userService);
-    }
-
-    // 두 개의 인수를 받는 생성자 (테스트용)
-    public ExpandedPostUI(int postId, Connection connection) {
-        this.mainFrame = null;
-        initializeUI(postId, connection, null, null);
     }
 
     // UI 초기화 메서드
@@ -113,7 +107,6 @@ public class ExpandedPostUI extends JPanel {
         removeExistingFooterPanel();
 
 
-
         // 기존 PostUI를 중앙에 배치
         PostUI postUI;
         if (mainFrame != null && userId != -1) {
@@ -166,10 +159,31 @@ public class ExpandedPostUI extends JPanel {
         separatorPanel.add(commentLabel, BorderLayout.SOUTH);
 
         // 하드코딩된 댓글 데이터 생성
-        String commentUserName = "Test User";
-        String commentUserEmail = "testuser@example.com";
-        String commentContent = "이것은 테스트 댓글입니다. 디자인을 확인하기 위한 내용입니다.";
+
+        String commentUserName = "Unknown";
+        String commentUserEmail = "";
+        String commentContent = "댓글 내용을 불러올 수 없습니다.";
         int commentLikes = 42;
+
+
+        // 데이터베이스에서 댓글 데이터 가져오기
+        commentService commentService = new commentService();
+
+        try {
+            List<CommentUI> comment = commentService.getCommentsByPostId(postId, connection);
+            if (!comment.isEmpty()) {
+                commentUserName = comment.get(0).getUserName();
+                commentUserEmail = comment.get(0).getUserEmail();
+                commentContent = comment.get(0).getContentText();
+            } else {
+                commentUserName = "Unknown";
+                commentUserEmail = "";
+                commentContent = "달린 댓글이 없습니다";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
         // CommentUI 인스턴스 생성
         CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent, commentLikes);
@@ -220,61 +234,5 @@ public class ExpandedPostUI extends JPanel {
                 break;
             }
         }
-    }
-    // ExpandedPostUI.java 파일의 마지막에 추가
-    class Comment {
-        private int commentId;
-        private int postId;
-        private int userId;
-        private String content;
-        private String createdAt;
-        private String userName;
-        private String userEmail;
-        private int likeCount;
-
-        public Comment(int commentId, int postId, int userId, String content, String createdAt, String userName, String userEmail, int likeCount) {
-            this.commentId = commentId;
-            this.postId = postId;
-            this.userId = userId;
-            this.content = content;
-            this.createdAt = createdAt;
-            this.userName = userName;
-            this.userEmail = userEmail;
-            this.likeCount = likeCount;
-        }
-
-        // Getter 메서드들
-        public int getCommentId() { return commentId; }
-        public int getPostId() { return postId; }
-        public int getUserId() { return userId; }
-        public String getContent() { return content; }
-        public String getCreatedAt() { return createdAt; }
-        public String getUserName() { return userName; }
-        public String getUserEmail() { return userEmail; }
-        public int getLikeCount() { return likeCount; }
-    }
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                Connection connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
-
-                int testPostId = 1;
-
-                ExpandedPostUI expandedPostUI = new ExpandedPostUI(testPostId, connection);
-
-                JFrame frame = new JFrame("Expanded Post - Design Test");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(600, 900);
-                frame.add(expandedPostUI);
-                frame.pack();
-                frame.setVisible(true);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

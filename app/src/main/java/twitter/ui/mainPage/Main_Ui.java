@@ -243,49 +243,6 @@ updatePostContent("recommend");
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
     }
 
-
-
-
-
-
-    // 추천 및 팔로우 중에 따른 포스트 내용 갱신 메서드 -> 데이터베이스에서 불러옴
-    /**public void updatePostContent(String type) {
-        postPanel.removeAll();
-
-        String query;
-        if (type.equals("recommend")) {
-            // 전체 게시글을 순서대로 가져오기
-            query = "SELECT post_id FROM posts ORDER BY created_at DESC";
-        } else {
-            // 특정 유저들의 게시글만 가져오기 (Tom과 Lud의 게시글만)
-            query = "SELECT post_id FROM posts WHERE user_id IN " +
-                    "(SELECT user_id FROM users WHERE name IN ('Tom', 'Lud')) ORDER BY created_at DESC";
-        }
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int postId = rs.getInt("post_id");
-                postPanel.add(new PostUI(postId, connection));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-             int postCount = postPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
-
-        postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
-
-        postPanel.revalidate(); // 레이아웃 업데이트
-        postPanel.repaint(); // 화면 갱신
-
-         JScrollPane scrollPane = (JScrollPane) postPanel.getParent().getParent();
-         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
-
-
-    }
-        **/
-
     public void updateSearchContent(String keyword, String filterType) {
 
         mainPanel.removeAll(); // 기존 콘텐츠 제거

@@ -1,6 +1,7 @@
 package twitter.ui.post;
 
 import twitter.service.bookmarkService;
+import twitter.service.commentService;
 import twitter.service.likeService;
 import twitter.service.userService;
 
@@ -22,8 +23,21 @@ public class PostFooterPanel extends JPanel {
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
         setBackground(Color.BLACK);
 
+
+        int commentCount = 0;
+        try {
+            commentService commentService = new commentService();
+            commentCount = commentService.getCommentCount(postId, connection); // 댓글 수 가져오기
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "댓글 수를 가져오는 중 오류가 발생했습니다.");
+            // 에러 발생 시 기본값 설정
+            commentCount = 0;
+        }
+
         commentButton = createIconButton("commentdef.png", "commenthover.png");
-        commentButton.setText(" " + 0); // 초기값 0으로 설정
+        commentButton.setText(" " + commentCount); // 댓글 수로 텍스트 설정
+
 
         JPanel likePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         likePanel.setBackground(Color.BLACK);
