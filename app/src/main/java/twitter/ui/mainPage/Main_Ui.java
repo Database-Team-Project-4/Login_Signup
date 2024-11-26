@@ -3,24 +3,25 @@ package twitter.ui.mainPage;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.model.User;
 import twitter.service.followService;
+import twitter.service.imgService;
 import twitter.service.postService;
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
-import twitter.ui.post.ExpandedPostUI;
 
 
 public class Main_Ui extends JPanel {
@@ -31,6 +32,7 @@ public class Main_Ui extends JPanel {
     private MainFrame mainFrame;
     private Connection connection; //
     private userService userService;
+    private imgService imageService;
 
     public JPanel getMainPanel() {
         return mainPanel;

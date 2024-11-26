@@ -42,8 +42,11 @@ public class postService {
         // 1. 게시물 작성 및 Post 객체 생성
         Post post = writePost(connection, currentUser, content);
 
-        // 2. 생성된 postId로 이미지를 저장
-        imgService.saveImagesWithPostId(connection, post.getPostId(), images);
+        // 2. 생성된 postId로 이미지를 데이터베이스에 저장 (BLOB 사용)
+        if (images != null && !images.isEmpty()) {
+            imgService.saveImagesWithPostId(connection, post.getPostId(), images);
+        }
+
         return post;
     }
 

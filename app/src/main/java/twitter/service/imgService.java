@@ -2,38 +2,43 @@ package twitter.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
 import java.sql.Connection;
-import java.sql.Timestamp;
-import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class imgService {
 
-    private static final String SERVER_IMAGE_DIRECTORY = "http://58.121.110.129:8000/var/lib/img/"; // 임시작성
+    // 이미지를 DB에 BLOB으로 저장
+    public void saveImagesWithPostId(Connection connection, int postId, List<byte[]> images) throws SQLException {
+        String query = "INSERT INTO Images (post_id, image_data) VALUES (?, ?)";
 
-    // 이미지를 서버 경로에 저장하고 해당 경로를 DB에 저장
-    public void saveImagesWithPostId(Connection connection, int postId, List<byte[]> images) throws SQLException, IOException {
         for (byte[] imageBytes : images) {
-            // 서버에 저장할 이미지 경로 생성
-            String imagePath = SERVER_IMAGE_DIRECTORY + "post_" + postId + "_" + System.currentTimeMillis() + ".jpg";
-
-            // 서버 경로에 이미지 파일 저장
-            File imageFile = new File(imagePath);
-            try (FileOutputStream fos = new FileOutputStream(imageFile)) {
-                fos.write(imageBytes);
-            }
-
-            // DB에 이미지 경로와 post_id 저장
-            String query = "INSERT INTO images (post_id, image_url, created_at) VALUES (?, ?, CURRENT_TIMESTAMP)";
             try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                 pstmt.setInt(1, postId);
-                pstmt.setString(2, imagePath);
+                pstmt.setBytes(2, imageBytes); // BLOB 데이터 설정
                 pstmt.executeUpdate();
             }
         }
     }
+
+    // DB에서 특정 post_id에 연결된 모든 이미지를 가져오기
+    public List<byte[]> retrieveImagesByPostId(Connection connection, int postId) throws SQLException {
+        String query = "SELECT image_data FROM Images WHERE post_id = ?";
+        List<byte[]> images = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, postId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    byte[] imageBytes = rs.getBytes("image_data");
+                    images.add(imageBytes);
+                }
+            }
+        }
+        return images; // 연결된 모든 이미지 데이터를 반환
+    }
 }
-
-
