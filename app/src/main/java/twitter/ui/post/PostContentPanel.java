@@ -32,7 +32,4 @@ public class PostContentPanel extends JPanel {
         add(contentArea);
         add(postInfoLabel);
     }
-
-
-    
 }

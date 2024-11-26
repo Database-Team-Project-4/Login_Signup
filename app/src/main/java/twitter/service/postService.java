@@ -60,33 +60,39 @@ public class postService {
 
     // 게시물 좋아요 메서드
     public void likePost(Connection con, User currentUser, int postId) throws SQLException {
-        String insertQuery = "INSERT INTO Post_Likes (user_id, post_id) VALUES (?, ?)";
+        // 이미 좋아요를 눌렀는지 확인
+        String checkQuery = "SELECT * FROM like_post WHERE user_id = ? AND post_id = ?";
+        try (PreparedStatement checkStmt = con.prepareStatement(checkQuery)) {
+            checkStmt.setInt(1, currentUser.getId());
+            checkStmt.setInt(2, postId);
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("이미 이 게시물에 좋아요를 눌렀습니다.");
+                return;
+            }
+        }
+
+        // 좋아요가 없으면 새로 추가
+        String insertQuery = "INSERT INTO like_post (user_id, post_id) VALUES (?, ?)";
         try (PreparedStatement pstmt = con.prepareStatement(insertQuery)) {
             pstmt.setInt(1, currentUser.getId());
             pstmt.setInt(2, postId);
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows == 0) {
-                // 이미 좋아요를 눌렀거나, 다른 오류 발생 (중복 키 위반일 가능성 높음)
-                throw new SQLException("이미 좋아요를 눌렀습니다."); //  더 명확한 에러 메시지
-            }
+            pstmt.executeUpdate();
             System.out.println("게시물에 좋아요를 눌렀습니다.");
         }
-    }
 
-
-    // 좋아요 취소 메서드
-    public void unlikePost(Connection con, User currentUser, int postId) throws SQLException {
-        String deleteQuery = "DELETE FROM Post_Likes WHERE user_id = ? AND post_id = ?";
-        try (PreparedStatement pstmt = con.prepareStatement(deleteQuery)) {
-            pstmt.setInt(1, currentUser.getId());
-            pstmt.setInt(2, postId);
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("이미 좋아요를 취소했습니다."); // 더 명확한 에러 메시지
+        // 업데이트된 좋아요 개수 가져오기
+        String likeCountQuery = "SELECT COUNT(*) AS like_count FROM like_post WHERE post_id = ?";
+        try (PreparedStatement countStmt = con.prepareStatement(likeCountQuery)) {
+            countStmt.setInt(1, postId);
+            ResultSet rs = countStmt.executeQuery();
+            if (rs.next()) {
+                int likeCount = rs.getInt("like_count");
+                System.out.println("이제 게시물 ID " + postId + "의 좋아요 수는 " + likeCount + "개입니다.");
             }
-            System.out.println("게시물 좋아요 취소");
         }
     }
+
 
 
     // 모든 게시물 조회 메서드
@@ -160,18 +166,16 @@ public class postService {
 
 
 
-    public int getLikeCount(Connection con, int postId) { // public 접근 제한자 추가
+    private int getLikeCount(Connection con, int postId) {
         String query = "SELECT COUNT(*) AS like_count FROM Post_Likes WHERE post_id = ?";
         try (PreparedStatement pstmt = con.prepareStatement(query)) {
             pstmt.setInt(1, postId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("like_count");
-                }
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("like_count");
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching like count: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error fetching like count: " + e.getMessage());
         }
         return 0; // 기본값 반환
     }
