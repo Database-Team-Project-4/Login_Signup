@@ -271,6 +271,10 @@ updatePostContent("recommend");
 
                 // 포스트 추가
                 for (PostUI post : examplePosts) {
+
+                    Runnable refreshCallback = () -> updatePostContent(filterType);
+                    post.addRefreshCallback(refreshCallback);
+
                     mainPanel.add(post);
 
                     // 포스트 클릭 이벤트 추가

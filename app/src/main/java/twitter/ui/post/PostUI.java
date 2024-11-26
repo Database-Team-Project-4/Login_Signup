@@ -32,6 +32,11 @@ public class PostUI extends JPanel {
     private int userId;
     private MainFrame mainFrame;
     private String createdAt;
+    private Runnable refreshCallback;
+
+    public void addRefreshCallback(Runnable refreshCallback) {
+        this.refreshCallback = refreshCallback;
+    }
 
     public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, Connection connection) {
         setLayout(new BorderLayout());
@@ -53,7 +58,7 @@ public class PostUI extends JPanel {
         String postInfo = String.format("%s", created_at);
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 팔로우 버튼 숨김 처리 (프로필 화면인 경우)
@@ -105,7 +110,7 @@ public class PostUI extends JPanel {
         String postInfo = String.format("%s", createdAt);
 
         // 상단 패널 (작성자 정보)
-        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
+        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (게시글 본문 및 작성 정보)

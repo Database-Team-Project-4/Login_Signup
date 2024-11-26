@@ -17,10 +17,13 @@ public class UserHeaderPanel extends JPanel {
     private JButton followButton; // 팔로우 버튼
     private boolean isFollowing; // 팔로잉 여부
     private followService followService; // 팔로우/언팔로우 처리 서비스 객체
+    private Runnable refreshCallback; // 팔로우 상태 변경 시 새로고침 콜백
 
 
-    public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage, int displayedUser, userService userService, Connection conn) {
+    public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage, int displayedUser, userService userService, Connection conn, Runnable refreshCallback) {
         this.followService = new followService(); // 팔로우 서비스 객체 초기화
+        this.refreshCallback = refreshCallback;
+
 
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -77,19 +80,26 @@ public class UserHeaderPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (isFollowing) {
-                            // 언팔로우 동작
                             String result = followService.unfollowUser(conn, userService.getCurrentUser(), displayedUser);
-                            JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
+                            JOptionPane.showMessageDialog(null, result);
                             isFollowing = false;
                         } else {
-                            // 팔로우 동작
                             String result = followService.followUser(conn, userService.getCurrentUser(), displayedUser);
-                            JOptionPane.showMessageDialog(null, result); // 결과 메시지 출력
+                            JOptionPane.showMessageDialog(null, result);
                             isFollowing = true;
                         }
-                        updateFollowButtonStyle(); // 스타일 업데이트
+                        updateFollowButtonStyle();
+                        if (refreshCallback != null) {
+                            System.out.println("refreshCallback 실행!");
+                            refreshCallback.run();
+                        } else {
+                            System.out.println("refreshCallback이 null입니다!");
+                        }
                     }
                 });
+
+
+
 
                 followButton.addMouseListener(new java.awt.event.MouseAdapter() {
                     @Override
