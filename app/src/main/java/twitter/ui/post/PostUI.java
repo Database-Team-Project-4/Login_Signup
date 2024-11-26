@@ -76,7 +76,7 @@ public class PostUI extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
-        PostFooterPanel postFooterPanel = new PostFooterPanel(likes, comments, postId, userId, userService, connection);
+        PostFooterPanel postFooterPanel = new PostFooterPanel(postId, userId , userService, connection);
         add(postFooterPanel, BorderLayout.SOUTH);
 
         // 전체 크기 조정
@@ -148,7 +148,7 @@ public class PostUI extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
-        PostFooterPanel postFooterPanel = new PostFooterPanel(likes, comments, postId,userId, userService, connection);
+        PostFooterPanel postFooterPanel = new PostFooterPanel(postId,userId, userService, connection);
         add(postFooterPanel, BorderLayout.SOUTH);
 
         // 전체 크기 조정
