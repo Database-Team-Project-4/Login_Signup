@@ -111,14 +111,14 @@ public class postService {
                 String userName = rs.getString("name");
                 String email = rs.getString("email");
                 String content = rs.getString("content");
-                String created_at =rs.getString("created_at");
+                String created_at = rs.getString("created_at");
 
                 int likes = getLikeCount(con, postId); // 게시물 좋아요 수 가져오기
                 int comments = getCommentCount(con, postId); // 게시물 댓글 수 가져오기
                 int bookmarks = getBookmarkCount(con, postId); // 게시물 북마크 수 가져오기
 
                 // PostUI 객체 생성 및 리스트에 추가
-                PostUI postUI = new PostUI(mainFrame,postId,userId,userName, email, content, likes, comments, bookmarks, created_at,userService,con);
+                PostUI postUI = new PostUI(mainFrame,postId,userId,userName, email, content, likes, comments, bookmarks, created_at, userService,con);
                 postUIs.add(postUI);
             }
         } catch (SQLException e) {

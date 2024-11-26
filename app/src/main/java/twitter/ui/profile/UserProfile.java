@@ -3,6 +3,7 @@ package twitter.ui.profile;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.service.followService;
+import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 import twitter.ui.post.PostUI;
 import twitter.ui.module.CustomScrollbar;
@@ -351,7 +352,7 @@ private JButton createFollowButton() {
         replyButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                updatePostContent("replies");
+                updateCommentContent("replies");
                 postUnderline.setBackground(new Color(7,7,7));
                 replyUnderline.setBackground(new Color(0, 122, 255));
                 updateTabButtonColors();
@@ -400,7 +401,6 @@ private JButton createFollowButton() {
     private void updatePostContent(String type) {
         mainPanel.removeAll();
         List<PostUI> posts = new ArrayList<>();
-
 
         try {
             // 데이터베이스에서 현재 userId에 해당하는 게시물 가져오기
@@ -452,6 +452,58 @@ private JButton createFollowButton() {
             }
         });
     }
+
+    private void updateCommentContent(String type) {
+        mainPanel.removeAll();
+        List<CommentUI> comments = new ArrayList<>();
+
+        try {
+            // 데이터베이스에서 현재 userId에 해당하는 댓글 가져오기
+            String query = "SELECT Comments.comment_id, Comments.post_id, Comments.user_id, Comments.content, Comments.created_at, " +
+                    "Users.name, Users.email, COUNT(Comment_Likes.user_id) AS likes " +
+                    "FROM Comments " +
+                    "JOIN Users ON Comments.user_id = Users.user_id " +
+                    "LEFT JOIN Comment_Likes ON Comments.comment_id = Comment_Likes.comment_id " +
+                    "WHERE Comments.user_id = ? " +
+                    "GROUP BY Comments.comment_id, Comments.post_id, Comments.user_id, Comments.content, Comments.created_at, Users.name, Users.email";
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setInt(1, userId); // 현재 프로필의 userId 사용
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String userName = rs.getString("name");
+                String email = rs.getString("email");
+                String content = rs.getString("content");
+                int likes = rs.getInt("likes");
+
+                // CommentUI 객체 생성
+                CommentUI commentUI = new CommentUI(userName, email, content, likes);
+                comments.add(commentUI);
+            }
+
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for (CommentUI comment : comments) {
+            mainPanel.add(comment);
+        }
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        // 스크롤 위치 강제로 맨 위로 설정
+        SwingUtilities.invokeLater(() -> {
+            JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, mainPanel);
+            if (scrollPane != null) {
+                scrollPane.getVerticalScrollBar().setValue(0);
+            }
+        });
+    }
+
+
 
     private JPanel createDynamicUnderlinePanel(JButton button) {
         JPanel underline = new JPanel();

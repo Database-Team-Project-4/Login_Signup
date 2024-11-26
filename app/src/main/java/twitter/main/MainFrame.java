@@ -30,7 +30,6 @@ public class MainFrame extends JFrame {
     private userService userService = new userService();
     private postService postService = new postService();
     private Main_Ui mainUi;
-    private Follower_Ui followerUi;
     private boolean profileView;
 
     public MainFrame(Connection connection, userService userService) {
