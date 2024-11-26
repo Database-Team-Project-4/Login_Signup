@@ -1,6 +1,9 @@
 package twitter.ui.Comment;
 
+import org.checkerframework.checker.units.qual.C;
 import twitter.main.MainFrame;
+import twitter.service.commentService;
+import twitter.service.userService;
 import twitter.ui.module.CustomScrollbar;
 import twitter.ui.module.CustomSearchField;
 
@@ -13,8 +16,16 @@ import java.util.List;
 public class ExpandedCommentUI extends JPanel {
     private int postId; // Post ID 저장
     private MainFrame mainFrame;
-    public ExpandedCommentUI(int postId, MainFrame mainFrame) {
+
+    private userService userService;
+
+
+    public ExpandedCommentUI(int postId, MainFrame mainFrame, userService userService, Connection connection) {
         this.postId = postId; // postId 설정
+        this.mainFrame = mainFrame;
+
+        this.userService = userService;
+
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -65,23 +76,15 @@ public class ExpandedCommentUI extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(null);
 
-        // 하드코딩된 댓글 추가
-        List<CommentUI> comments = getHardcodedComments();
-        for (CommentUI comment : comments) {
-            commentListPanel.add(comment);
-        }
+        List<CommentUI> comments = getHardcodedComments(postId, connection);
+        for (int i = 0; i < comments.size(); i++) {
+            commentListPanel.add(comments.get(i));
 
-        /*
-        // 데이터베이스에서 댓글을 로드하는 코드 (각주 처리)
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://your-database-url", "username", "password")) {
-            List<CommentUI> dbComments = getCommentsFromDatabase(postId, connection);
-            for (CommentUI comment : dbComments) {
-                commentListPanel.add(comment);
+            // 마지막 댓글이 아니면 구분선 추가
+            if (i < comments.size() - 1) {
+                commentListPanel.add(createSeparator()); // 구분선 추가
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        */
 
         add(scrollPane, BorderLayout.CENTER);
 
@@ -113,33 +116,35 @@ public class ExpandedCommentUI extends JPanel {
         sendButton.setForeground(Color.WHITE);
         sendButton.setFont(new Font("SansSerif", Font.BOLD, 12));
 
-        sendButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                sendButton.setForeground(new Color(200, 200, 200)); // 호버 시 색상
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                sendButton.setForeground(Color.WHITE); // 기본 색상
-            }
-
-            @Override
-            public void mousePressed(java.awt.event.MouseEvent e) {
-                sendButton.setForeground(new Color(150, 150, 150)); // 클릭 시 색상
-            }
-
-            @Override
-            public void mouseReleased(java.awt.event.MouseEvent e) {
-                sendButton.setForeground(new Color(200, 200, 200)); // 클릭 후 색상
-            }
-        });
-
         sendButton.addActionListener(e -> {
+            if (!userService.isLoggedIn()) {
+                JOptionPane.showMessageDialog(this, "로그인이 필요합니다.", "로그인 필요", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             String commentText = commentInputField.getSearchText();
+
             if (!commentText.isEmpty()) {
-                System.out.println("댓글 입력됨: " + commentText); // 테스트용
-                commentInputField.setSearchText(""); // 입력창 초기화
+                try {
+                    if (connection == null || connection.isClosed()) {
+                        // 연결 재시도 로직 추가 또는 예외 처리
+                    }
+                    // 댓글 추가
+                    commentService commentService = new commentService();
+                    commentService.addComment(postId, commentText, null, connection, userService.getCurrentUser().getId());
+
+                    // 입력창 초기화
+                    commentInputField.setSearchText("댓글을 입력하세요...");
+
+                    // UI 새로고침
+                    SwingUtilities.invokeLater(() -> {
+                        mainFrame.showExpandedCommentUI(postId);
+                    });
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "댓글 추가 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -150,48 +155,29 @@ public class ExpandedCommentUI extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
 
-    private List<CommentUI> getHardcodedComments() {
-        List<CommentUI> comments = new ArrayList<>();
-        comments.add(new CommentUI("User1", "user1@example.com", "이것은 첫 번째 댓글입니다.", 10));
-        comments.add(new CommentUI("User2", "user2@example.com", "두 번째 댓글이에요!", 5));
-        comments.add(new CommentUI("User3", "user3@example.com", "좋은 정보 감사합니다!", 8));
-        comments.add(new CommentUI("User4", "user4@example.com", "정말 유용한 정보네요!", 15));
-        comments.add(new CommentUI("User5", "user5@example.com", "이 글에 공감합니다.", 12));
-        return comments;
+    private JPanel createSeparator() {
+        JPanel separator = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(Color.DARK_GRAY);
+                g.fillRect(0, 0, getWidth(), 1);
+            }
+        };
+        separator.setPreferredSize(new Dimension(600, 1));
+        separator.setBackground(Color.BLACK);
+        return separator;
     }
 
-    /*
-    // 데이터베이스에서 댓글을 가져오는 메서드
-    private List<CommentUI> getCommentsFromDatabase(int postId, Connection connection) {
+
+    private List<CommentUI> getHardcodedComments(int postId, Connection connection) {
         List<CommentUI> comments = new ArrayList<>();
-        String query = "SELECT u.name, u.email, c.content, c.likes " +
-                       "FROM comments c JOIN users u ON c.user_id = u.user_id " +
-                       "WHERE c.post_id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setInt(1, postId);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                String userName = rs.getString("name");
-                String userEmail = rs.getString("email");
-                String content = rs.getString("content");
-                int likes = rs.getInt("likes");
-                comments.add(new CommentUI(userName, userEmail, content, likes));
-            }
+        try {
+            commentService commentService = new commentService();
+            comments = commentService.getCommentsByPostId(postId, connection); // 댓글 데이터 가져오기
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // 예외 로그 출력
         }
         return comments;
-    }
-    */
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Expanded Comment UI");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(600, 900);
-            MainFrame mainFrame = new MainFrame(null, null); // 필요에 따라 MainFrame 초기화
-            frame.add(new ExpandedCommentUI(1, mainFrame)); // 두 인수 생성자 호출
-            frame.setVisible(true);
-        });
     }
 }

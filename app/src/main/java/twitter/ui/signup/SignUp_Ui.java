@@ -14,11 +14,27 @@ import java.sql.SQLException;
 public class SignUp_Ui extends JPanel {
     private Connection connection;
     private userService userService;
-    private final String xLogoPath = getClass().getClassLoader().getResource("TwitterIcons/X_logo.png").getPath();
-    // 생성자
+    private final ImageIcon xLogoIcon = loadIcon("/TwitterIcons/X_logo.png");
+
+    // 기존 기능 유지하며 아이콘 로드 기능
+    private ImageIcon loadIcon(String path) {
+        java.net.URL resource = getClass().getResource(path);
+        if (resource == null) {
+            return null;
+        }
+        return new ImageIcon(resource);
+    }
     public SignUp_Ui(MainFrame mainframe, Connection connection, userService userService) {
         this.connection = connection;
         this.userService = userService;
+
+        Image scaledImage = xLogoIcon.getImage().getScaledInstance(
+                (int) (xLogoIcon.getIconWidth() * 1.3),
+                (int) (xLogoIcon.getIconHeight() * 1.3),
+                Image.SCALE_SMOOTH
+        );
+
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
         setSize(400, 600);
         setLayout(new BorderLayout());
@@ -26,10 +42,17 @@ public class SignUp_Ui extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.BLACK);
 
-        JLabel titleLabel = new JLabel("X", JLabel.CENTER);
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 60));
-        mainPanel.add(titleLabel, BorderLayout.NORTH);
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(Color.BLACK);
+        titlePanel.setLayout(new BorderLayout()); // 라벨 중앙 배치
+
+        // 여백 추가
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0)); // 위, 좌, 아래, 우 여백 설정
+
+        JLabel titleLabel = new JLabel(scaledIcon, SwingConstants.CENTER);
+
+        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
 
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setBackground(Color.BLACK);

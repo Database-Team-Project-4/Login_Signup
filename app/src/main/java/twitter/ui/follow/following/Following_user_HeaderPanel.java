@@ -12,7 +12,7 @@ public class Following_user_HeaderPanel extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
         setBorder(BorderFactory.createEmptyBorder(15, 10, 10, 10));
-
+        setMaximumSize(new Dimension(400, 70));
         /*
         Following에 사용되는 중간패널입니다, 버튼 눌렀을때 event를 넣기 편하기위해 post의
         UserHeaderPanel과 분리했습니다
@@ -41,7 +41,7 @@ public class Following_user_HeaderPanel extends JPanel {
 
         userInfoPanel.add(userName);
         userInfoPanel.add(userHandle);
-
+        /*
         // 팔로우 버튼을 감싸는 패널 추가
         JPanel followButtonWrapper = new JPanel(new BorderLayout());
         followButtonWrapper.setBackground(Color.BLACK);
@@ -65,10 +65,10 @@ public class Following_user_HeaderPanel extends JPanel {
         });
 
         followButtonWrapper.add(followButton, BorderLayout.CENTER);
-
+        */
         // 구성
         add(profilePic, BorderLayout.WEST);
         add(userInfoPanel, BorderLayout.CENTER);
-        add(followButtonWrapper, BorderLayout.EAST);
+        //add(followButtonWrapper, BorderLayout.EAST);
     }
 }

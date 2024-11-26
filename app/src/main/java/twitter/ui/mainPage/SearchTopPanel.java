@@ -6,6 +6,8 @@ import twitter.ui.module.CustomSearchField;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
@@ -16,11 +18,13 @@ public class SearchTopPanel extends JPanel {
     private CustomSearchField searchField; // 인스턴스 변수로 수정
     private JComboBox<String> filterCombo;
     private String currentFilter = "popular";
+    private MainFrame mainFrame;
 
 
     public SearchTopPanel(MainFrame mainframe, Connection connection, userService userService) {
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
+        this.mainFrame = mainframe;
 
         // 뒤로가기 버튼
         JButton backButton = new JButton("<");
@@ -28,6 +32,14 @@ public class SearchTopPanel extends JPanel {
         backButton.setFocusPainted(false);
         backButton.setBorderPainted(false);
         backButton.setContentAreaFilled(false);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // 뒤로 가기 버튼 클릭 시 이전 화면으로 돌아가는 로직 추가
+                mainFrame.showTwitterMainUiPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+            }
+        });
 
         // 검색창 - 여기에서 CustomSearchField를 사용합니다.
         // CustomSearchField 생성 시 파라미터 없이 생성 (내부에서 placeholderText와 iconPath 정의)
@@ -83,29 +95,30 @@ public class SearchTopPanel extends JPanel {
 
         // 각 버튼 클릭 시 이벤트
         popularButton.addActionListener(e -> {
-            currentFilter = "popular";
-            triggerSearch(mainframe);
+            currentFilter = "popular"; // 필터를 인기순으로 설정
+            triggerSearch(mainframe);  // mainframe을 파라미터로 전달
         });
 
         recentButton.addActionListener(e -> {
-            currentFilter = "recent";
-            triggerSearch(mainframe);
+            currentFilter = "recent"; // 필터를 최신순으로 설정
+            triggerSearch(mainframe); // mainframe을 파라미터로 전달
         });
+
 
         /**searchField.addActionListener(e -> {
-            String keyword = searchField.getSearchText(); // 검색 키워드 가져오기
-            mainframe.getMainUi().updateSearchContent(keyword, "recent"); // 기본값: '최근' 정렬
-        });// 수정된 부분: 파라미터 없이 생성
+         String keyword = searchField.getSearchText(); // 검색 키워드 가져오기
+         mainframe.getMainUi().updateSearchContent(keyword, "recent"); // 기본값: '최근' 정렬
+         });// 수정된 부분: 파라미터 없이 생성
 
-        popularButton.addActionListener(e -> {
-            String keyword = searchField.getSearchText();
-            mainframe.getMainUi().updateSearchContent(keyword, "popular"); // '인기' 정렬
-        });
+         popularButton.addActionListener(e -> {
+         String keyword = searchField.getSearchText();
+         mainframe.getMainUi().updateSearchContent(keyword, "popular"); // '인기' 정렬
+         });
 
-        recentButton.addActionListener(e -> {
-            String keyword = searchField.getSearchText();
-            mainframe.getMainUi().updateSearchContent(keyword, "recent"); // '최근' 정렬
-        }); **/
+         recentButton.addActionListener(e -> {
+         String keyword = searchField.getSearchText();
+         mainframe.getMainUi().updateSearchContent(keyword, "recent"); // '최근' 정렬
+         }); **/
 
         // 레이아웃에 상단바와 하단부 버튼 패널 추가
         add(topBar, BorderLayout.NORTH);
@@ -125,22 +138,23 @@ public class SearchTopPanel extends JPanel {
         searchField.addActionListener(e -> listener.run());
     }
 
-    private void triggerSearch(MainFrame mainframe) {
-        String keyword = searchField.getSearchText(); // 검색어 가져오기
-        mainframe.getMainUi().updateSearchContent(keyword, currentFilter); // 검색 결과 갱신
+    private void triggerSearch(MainFrame mainFrame) {
+        String keyword = searchField.getSearchText().trim(); // 검색어 가져오기
 
-        // mainPanel 즉시 갱신 및 출력
-        JPanel mainPanel = mainframe.getMainUi().getMainPanel();
-        mainPanel.revalidate();
-        mainPanel.repaint();
+        // 검색 텍스트가 비어 있는 경우 처리
+        if (keyword.isEmpty()) {
+            mainFrame.getMainUi().updateSearchContent("", currentFilter);
+        } else {
+            mainFrame.getMainUi().updateSearchContent(keyword, currentFilter);
+        }
 
         // 스크롤 초기화
+        JPanel mainPanel = mainFrame.getMainUi().getMainPanel();
         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
 
-        // 디버깅 로그
-        System.out.println("Searching executed: " + keyword + ", filter: " + currentFilter);
-        System.out.println("mainPanel 컴포넌트 수: " + mainPanel.getComponentCount());
+        // 디버그 로그
+        System.out.println("검색 실행: 키워드 = " + keyword + ", 필터 = " + currentFilter);
     }
 
 

@@ -1,7 +1,10 @@
 package twitter.ui.profile;
 
 import twitter.main.MainFrame;
+import twitter.service.postService;
 import twitter.service.userService;
+import twitter.service.followService;
+import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 import twitter.ui.post.PostUI;
 import twitter.ui.module.CustomScrollbar;
@@ -37,13 +40,15 @@ public class UserProfile extends JPanel {
     private ImageIcon profileImageIcon;
     private Connection connection; // 데이터베이스 연결 객체
     private userService userService;
+    private postService postService;
+    private followService followService;
 
-
-    public UserProfile(MainFrame mainframe, Connection connection, userService userService, int userId) {
+    public UserProfile(MainFrame mainframe, Connection connection, userService userService, postService postService, int userId) {
         this.mainframe = mainframe;
         this.userId = userId;
         this.connection = connection;
         this.userService = userService;
+        this.postService = postService;
 
         // 현재 로그인한 사용자 ID를 userService에서 가져옴
         User currentUser = userService.getCurrentUser();
@@ -145,7 +150,7 @@ private JButton createFollowButton() {
     // 자신의 프로필인 경우 버튼을 비활성화
     if (userId == currentUserId) {
         followButton.setEnabled(false); // 버튼을 비활성화
-        followButton.setVisible(false); // 버튼을 안보이게ㄴ
+        followButton.setVisible(false); // 버튼을 안보이게
     } else {
         // 호버 및 클릭 이벤트
         followButton.addMouseListener(new MouseAdapter() {
@@ -188,6 +193,7 @@ private JButton createFollowButton() {
     }
 
     private JPanel createUserHeaderPanel() {
+        followService followService = new followService();
         JPanel userHeaderPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -235,58 +241,25 @@ private JButton createFollowButton() {
 
         // 팔로우/팔로잉 버튼
         JPanel followInfoPanel = new JPanel();
-        followInfoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0)); // 버튼 간 간격을 5px로 설정
+        followInfoPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 0)); // 버튼 간 간격을 5px로 설정
         followInfoPanel.setBackground(new Color(7, 7, 7));
         followInfoPanel.setBounds(8, 155, 200, 30); // 핸들 아래 위치
 
-        //자신의 팔로잉 ui로 들어가는 버튼
-        JButton followingButton = createHoverableButton("4 팔로잉");
-        followingButton.setPreferredSize(new Dimension(70, 25)); // 버튼 크기 조정
-        followingButton.setMargin(new Insets(0, 0, 0, 0)); // 버튼 내부 패딩 축소
+        List<User> followingList = followService.getFollowing(connection, userService.getCurrentUser());
+        List<User> followerList = followService.getFollowers(connection, userService.getCurrentUser());
 
-        // following 버튼 호버 및 클릭 이벤트
-        followingButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                followingButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
-                followingButton.setForeground(Color.WHITE);
-            }
+        // 자신의 팔로잉 수 확인 라벨
+        JLabel followingLabel = new JLabel("팔로잉 " + followingList.size());
+        followingLabel.setForeground(Color.GRAY);
+        followingLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        followingLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                followingButton.setBackground(Color.BLACK); // 기본 색상
-                followingButton.setForeground(Color.WHITE);
-            }
+        // 자신의 팔로워 수 확인 라벨
+        JLabel followerLabel = new JLabel("팔로워 " + followerList.size());
+        followerLabel.setForeground(Color.GRAY);
+        followerLabel.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        followerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                mainframe.showFollowingPanel();  // 이전 화면으로 돌아가는 메서드를 호출
-            }
-        });
-        //자신의 팔로우 ui로 들어가는 버튼
-        JButton followerButton = createHoverableButton("2 팔로우");
-        followerButton.setPreferredSize(new Dimension(70, 25)); // 버튼 크기 조정
-        followerButton.setMargin(new Insets(0, 0, 0, 0)); // 버튼 내부 패딩 축소
-
-        // following 버튼 호버 및 클릭 이벤트
-        followerButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                followerButton.setBackground(Color.LIGHT_GRAY); // 호버 시 색상
-                followerButton.setForeground(Color.WHITE);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                followerButton.setBackground(Color.BLACK); // 기본 색상
-                followerButton.setForeground(Color.WHITE);
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                mainframe.showFollowerPanel();  // 이전 화면으로 돌아가는 메서드를 호출
-            }
-        });
         // 팔로우 버튼
         JButton followButton = createFollowButton();
         followButton.setBounds(340, 55, 80, 30);  // 패널 오른쪽 경계 근처에 위치
@@ -298,8 +271,8 @@ private JButton createFollowButton() {
         paddedFollowButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10)); // 오른쪽에 10px 유격 추가
         paddedFollowButton.add(followButton);
 
-        followInfoPanel.add(followingButton);
-        followInfoPanel.add(followerButton);
+        followInfoPanel.add(followingLabel);
+        followInfoPanel.add(followerLabel);
         userHeaderPanel.add(followInfoPanel);
         userHeaderPanel.add(followButton);
 
@@ -382,7 +355,7 @@ private JButton createFollowButton() {
         replyButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                updatePostContent("replies");
+                updateCommentContent("replies");
                 postUnderline.setBackground(new Color(7,7,7));
                 replyUnderline.setBackground(new Color(0, 122, 255));
                 updateTabButtonColors();
@@ -432,7 +405,6 @@ private JButton createFollowButton() {
         mainPanel.removeAll();
         List<PostUI> posts = new ArrayList<>();
 
-
         try {
             // 데이터베이스에서 현재 userId에 해당하는 게시물 가져오기
             String query = "SELECT Posts.post_id, Posts.user_id, Posts.content, Posts.created_at, " +
@@ -458,7 +430,7 @@ private JButton createFollowButton() {
                 int bookmarks = 0;
 
                 // PostUI 객체 생성 시 mainFrame과 userId를 전달
-                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, connection);
+                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, postService, connection);
                 posts.add(postUI);
             }
 
@@ -483,6 +455,58 @@ private JButton createFollowButton() {
             }
         });
     }
+
+    private void updateCommentContent(String type) {
+        mainPanel.removeAll();
+        List<CommentUI> comments = new ArrayList<>();
+
+        try {
+            // 데이터베이스에서 현재 userId에 해당하는 댓글 가져오기
+            String query = "SELECT Comments.comment_id, Comments.post_id, Comments.user_id, Comments.content, Comments.created_at, " +
+                    "Users.name, Users.email, COUNT(Comment_Likes.user_id) AS likes " +
+                    "FROM Comments " +
+                    "JOIN Users ON Comments.user_id = Users.user_id " +
+                    "LEFT JOIN Comment_Likes ON Comments.comment_id = Comment_Likes.comment_id " +
+                    "WHERE Comments.user_id = ? " +
+                    "GROUP BY Comments.comment_id, Comments.post_id, Comments.user_id, Comments.content, Comments.created_at, Users.name, Users.email";
+            PreparedStatement pstmt = connection.prepareStatement(query);
+            pstmt.setInt(1, userId); // 현재 프로필의 userId 사용
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String userName = rs.getString("name");
+                String email = rs.getString("email");
+                String content = rs.getString("content");
+                int likes = rs.getInt("likes");
+
+                // CommentUI 객체 생성
+                CommentUI commentUI = new CommentUI(userName, email, content, likes);
+                comments.add(commentUI);
+            }
+
+            rs.close();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        for (CommentUI comment : comments) {
+            mainPanel.add(comment);
+        }
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        // 스크롤 위치 강제로 맨 위로 설정
+        SwingUtilities.invokeLater(() -> {
+            JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, mainPanel);
+            if (scrollPane != null) {
+                scrollPane.getVerticalScrollBar().setValue(0);
+            }
+        });
+    }
+
+
 
     private JPanel createDynamicUnderlinePanel(JButton button) {
         JPanel underline = new JPanel();

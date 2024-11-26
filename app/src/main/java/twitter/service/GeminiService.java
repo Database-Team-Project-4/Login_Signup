@@ -9,10 +9,11 @@ import java.net.URI;
 import java.net.URL;
 public class GeminiService {
 
-    public static String callGeminiApi(String prompt, JTextArea responseArea) throws Exception 
+    public static String callGeminiApi(String prompt, String information ,  JTextArea responseArea) throws Exception 
     {
         String encodedPrompt = new URI(null, null, prompt, null).toASCIIString();
-        String urlString = "http://58.121.110.129:8000/" + encodedPrompt;
+        String encodedinformation = new URI(null, null, information, null).toASCIIString();
+        String urlString = "http://58.121.110.129:8000/" + encodedinformation+encodedPrompt;
         
         URL url = new URL(urlString);
         System.out.println("URL: " + url);
