@@ -28,7 +28,7 @@ public class Gemini_panel extends JPanel {
     private JPanel chatArea;
     private List<ChatMessage> messages;
     private JButton runButton;
-    private int chatAreaWidth = 150; // 채팅 영역 너비 증가
+    private int chatAreaWidth = 160; // 채팅 영역 너비 증가
 
 
     public Gemini_panel(MainFrame mainframe, Connection connection, userService userService) {
@@ -126,11 +126,11 @@ public class Gemini_panel extends JPanel {
             String prompt = promptField.getText();
             
             String information = currentUser.getName(); // currentUser의 프롬프트 정보 던져주기.
-
+            //System.out.println("======================================================" + information);
             Thread apiThread = new Thread(() -> {
                 try {
                     String response = GeminiService.callGeminiApi(prompt, information, null); // null은 추가적인 매개변수를 위한 자리입니다. 필요에 따라 수정하세요.
-
+                
                     SwingUtilities.invokeLater(() -> {
                         addMessage("사용자", prompt);
                         addMessage("Gemini", response);
