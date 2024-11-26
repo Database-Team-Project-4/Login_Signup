@@ -35,7 +35,7 @@ public class MainFrame extends JFrame {
     public MainFrame(Connection connection, userService userService) {
         MainFrame.connection = connection;
         this.userService = userService;
-        mainUi = new Main_Ui(this, connection, userService);
+        mainUi = new Main_Ui(this, connection, userService, postService);
         add(mainUi); // MainFrame에 Main_Ui 추가
 
 
@@ -99,8 +99,8 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = false;
-        mainUi = new Main_Ui(this, connection, userService);
-        currentPanel = new Main_Ui(this, connection, userService);  // TwitterMainUI 클래스로부터 UI 로직 실행
+        mainUi = new Main_Ui(this, connection, userService , postService);
+        currentPanel = new Main_Ui(this, connection, userService, postService);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -125,7 +125,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = false;
-        currentPanel = new ExpandedPostUI(postId, connection, this, userService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
+        currentPanel = new ExpandedPostUI(postId, connection, this, userService, postService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -209,7 +209,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = true;
-        currentPanel = new UserProfile(this, connection, userService, userId); // UserProfile 클래스를 추가
+        currentPanel = new UserProfile(this, connection, userService, postService, userId); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();

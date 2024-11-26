@@ -2,6 +2,7 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.service.commentService;
+import twitter.service.postService;
 import twitter.service.userService;
 import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.MoreButton;
@@ -20,13 +21,13 @@ public class ExpandedPostUI extends JPanel {
     private int userId; // userId 변수 추가
 
     // 세 개의 인수를 받는 생성자
-    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userService userService) {
+    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userService userService, postService postService) {
         this.mainFrame = mainFrame;
-        initializeUI(postId, connection, mainFrame, userService);
+        initializeUI(postId, connection, mainFrame, userService, postService);
     }
 
     // UI 초기화 메서드
-    private void initializeUI(int postId, Connection connection, MainFrame mainFrame, userService userService) {
+    private void initializeUI(int postId, Connection connection, MainFrame mainFrame, userService userService, postService postService) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -110,7 +111,7 @@ public class ExpandedPostUI extends JPanel {
         // 기존 PostUI를 중앙에 배치
         PostUI postUI;
         if (mainFrame != null && userId != -1) {
-            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, connection);
+            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, postService, connection);
         } else {
             postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, connection);
         }

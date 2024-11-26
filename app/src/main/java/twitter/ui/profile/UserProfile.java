@@ -1,6 +1,7 @@
 package twitter.ui.profile;
 
 import twitter.main.MainFrame;
+import twitter.service.postService;
 import twitter.service.userService;
 import twitter.service.followService;
 import twitter.ui.Comment.CommentUI;
@@ -39,13 +40,15 @@ public class UserProfile extends JPanel {
     private ImageIcon profileImageIcon;
     private Connection connection; // 데이터베이스 연결 객체
     private userService userService;
+    private postService postService;
     private followService followService;
 
-    public UserProfile(MainFrame mainframe, Connection connection, userService userService, int userId) {
+    public UserProfile(MainFrame mainframe, Connection connection, userService userService, postService postService, int userId) {
         this.mainframe = mainframe;
         this.userId = userId;
         this.connection = connection;
         this.userService = userService;
+        this.postService = postService;
 
         // 현재 로그인한 사용자 ID를 userService에서 가져옴
         User currentUser = userService.getCurrentUser();
@@ -427,7 +430,7 @@ private JButton createFollowButton() {
                 int bookmarks = 0;
 
                 // PostUI 객체 생성 시 mainFrame과 userId를 전달
-                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, connection);
+                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, postService, connection);
                 posts.add(postUI);
             }
 

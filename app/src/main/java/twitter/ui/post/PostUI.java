@@ -2,6 +2,7 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.model.User;
+import twitter.service.postService;
 import twitter.service.userService;
 
 import java.awt.BorderLayout;
@@ -10,15 +11,12 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class PostUI extends JPanel {
     private UserHeaderPanel userHeaderPanel; // 멤버 변수로 선언
@@ -33,12 +31,13 @@ public class PostUI extends JPanel {
     private MainFrame mainFrame;
     private String createdAt;
     private Runnable refreshCallback;
+    private postService postService;
 
     public void addRefreshCallback(Runnable refreshCallback) {
         this.refreshCallback = refreshCallback;
     }
 
-    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, Connection connection) {
+    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, postService postService, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -52,6 +51,7 @@ public class PostUI extends JPanel {
         this.comments = comments;
         this.bookmarks = bookmarks;
         this.createdAt = created_at;
+        this.postService = postService;
 
         // 프로필 아이콘 설정
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
@@ -77,8 +77,17 @@ public class PostUI extends JPanel {
             });
         }
 
+        List<byte[]> images = null;
+        try {
+            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+
         // 중간 패널 (게시글 본문 및 작성 정보)
-        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
+        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks, images);
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
@@ -88,6 +97,7 @@ public class PostUI extends JPanel {
         // 전체 크기 조정
         setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
     }
+
 
     public PostUI(int postId, String userName, String userEmail, String contentText,
                   int likes, int comments, int bookmarks, String createdAt, userService userService, Connection connection) {
@@ -113,8 +123,16 @@ public class PostUI extends JPanel {
         userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
+
+        List<byte[]> images = null;
+        try {
+            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         // 중간 패널 (게시글 본문 및 작성 정보)
-        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
+        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks, images);
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)

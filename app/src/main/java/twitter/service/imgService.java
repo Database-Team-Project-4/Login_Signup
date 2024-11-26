@@ -24,6 +24,7 @@ public class imgService {
         }
     }
 
+
     // DB에서 특정 post_id에 연결된 모든 이미지를 가져오기
     public List<byte[]> retrieveImagesByPostId(Connection connection, int postId) throws SQLException {
         String query = "SELECT image_data FROM Images WHERE post_id = ?";

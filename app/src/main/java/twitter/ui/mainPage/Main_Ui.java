@@ -60,7 +60,7 @@ public class Main_Ui extends JPanel {
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
 
 
-    public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
+    public Main_Ui(MainFrame mainframe, Connection connection, userService userService, postService postService) {
         this.mainFrame = mainframe;
         this.connection = connection;
         this.userService = userService; // Initialize connection and userService
@@ -193,7 +193,7 @@ updatePostContent("recommend");
         Connection con = MainFrame.getConnection();
 
         // 모든 포스트 가져오기
-        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService);
+        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService);
 
         if ("following".equals(filterType)) {
             // 로그인 상태 확인
@@ -326,7 +326,7 @@ updatePostContent("recommend");
             postService postService = new postService();
             Connection con = MainFrame.getConnection();
 
-            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService); // 모든 포스트 가져오기
+            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
@@ -571,7 +571,7 @@ updatePostContent("recommend");
             List<PostUI> bookmarkedPosts = new ArrayList<>();
             postService postService = new postService();
 
-            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService);
+            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService, postService);
 
             for (PostUI post : bookmarkedPosts) {
                 mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
