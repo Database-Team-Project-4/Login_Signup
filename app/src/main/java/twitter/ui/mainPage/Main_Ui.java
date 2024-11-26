@@ -68,8 +68,6 @@ public class Main_Ui extends JPanel {
         completeTopPanel.add(new MainTopPanel(this, mainframe, connection, userService), "MainTop");
         completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
 
-        //completeTopPanel.add(new FollowerTopPanel("강동호/AIㆍ소프트웨어학부(인공지능전공)"), "FollowerTop"); //시현용입니다.
-
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
         completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
