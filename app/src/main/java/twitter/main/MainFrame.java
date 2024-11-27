@@ -148,6 +148,7 @@ public class MainFrame extends JFrame {
     }
 
 
+    /*
     public void showFollowerPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
@@ -158,7 +159,9 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+     */
 
+    /*
     public void showFollowingPanel() {
         if (currentPanel != null) {
             remove(currentPanel);
@@ -169,6 +172,7 @@ public class MainFrame extends JFrame {
         revalidate();
         repaint();
     }
+     */
 
     public void showAddPostPanel() {
         if (currentPanel != null) {

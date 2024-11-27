@@ -2,6 +2,7 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.model.User;
+import twitter.service.imgService;
 import twitter.service.userService;
 
 import java.awt.BorderLayout;
@@ -14,6 +15,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -32,6 +35,7 @@ public class PostUI extends JPanel {
     private int userId;
     private MainFrame mainFrame;
     private String createdAt;
+    private List<byte[]> images; // 이미지 리스트 추가
 
     public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, Connection connection) {
         setLayout(new BorderLayout());
@@ -46,10 +50,13 @@ public class PostUI extends JPanel {
         this.likes = likes;
         this.comments = comments;
         this.bookmarks = bookmarks;
+        // 이미지 가져오기
+        this.images = getImagesForPost(connection, postId);
 
         // 프로필 아이콘 설정
         ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
         String postInfo = String.format("%s", created_at);
+
 
         // 상단 패널 (작성자 정보)
         UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
@@ -71,8 +78,8 @@ public class PostUI extends JPanel {
             });
         }
 
-        // 중간 패널 (게시글 본문 및 작성 정보)
-        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
+        // 중단 패널
+        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks, images);
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
@@ -144,8 +151,8 @@ public class PostUI extends JPanel {
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 중간 패널 (게시글 본문 및 작성 정보)
-        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
-        add(contentPanel, BorderLayout.CENTER);
+        //PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
+        //add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
         PostFooterPanel postFooterPanel = new PostFooterPanel(postId,userId, userService, connection);
@@ -153,7 +160,7 @@ public class PostUI extends JPanel {
 
         // 전체 크기 조정
         setPreferredSize(new Dimension(400,
-                contentPanel.getPreferredSize().height +
+                //contentPanel.getPreferredSize().height +
                         userHeaderPanel.getPreferredSize().height +
                         postFooterPanel.getPreferredSize().height + 30));
     }
@@ -188,5 +195,17 @@ public class PostUI extends JPanel {
 
     public void addProfileImageMouseListener(MouseAdapter listener) {
         userHeaderPanel.addProfileImageMouseListener(listener);
+    }
+
+    // 이미지 데이터 가져오는 메서드 추가
+    private List<byte[]> getImagesForPost(Connection connection, int postId) {
+        List<byte[]> images = new ArrayList<>();
+        try {
+            imgService imgService = new imgService();
+            images = imgService.retrieveImagesByPostId(connection, postId);
+        } catch (SQLException e) {
+            System.out.println("이미지 로딩 중 오류 발생: " + e.getMessage());
+        }
+        return images;
     }
 }
