@@ -19,6 +19,7 @@ public class SearchTopPanel extends JPanel {
     private JComboBox<String> filterCombo;
     private String currentFilter = "popular";
     private MainFrame mainFrame;
+    private Runnable searchListener;
 
 
     public SearchTopPanel(MainFrame mainframe, Connection connection, userService userService) {
@@ -99,29 +100,18 @@ public class SearchTopPanel extends JPanel {
         // 각 버튼 클릭 시 이벤트
         popularButton.addActionListener(e -> {
             currentFilter = "popular"; // 필터를 인기순으로 설정
+            searchField.setSearchText(searchField.getSearchText());
             triggerSearch(mainframe);  // mainframe을 파라미터로 전달
         });
 
         recentButton.addActionListener(e -> {
             currentFilter = "recent"; // 필터를 최신순으로 설정
+            searchField.setSearchText(searchField.getSearchText());
             triggerSearch(mainframe); // mainframe을 파라미터로 전달
         });
 
 
-        /**searchField.addActionListener(e -> {
-         String keyword = searchField.getSearchText(); // 검색 키워드 가져오기
-         mainframe.getMainUi().updateSearchContent(keyword, "recent"); // 기본값: '최근' 정렬
-         });// 수정된 부분: 파라미터 없이 생성
-
-         popularButton.addActionListener(e -> {
-         String keyword = searchField.getSearchText();
-         mainframe.getMainUi().updateSearchContent(keyword, "popular"); // '인기' 정렬
-         });
-
-         recentButton.addActionListener(e -> {
-         String keyword = searchField.getSearchText();
-         mainframe.getMainUi().updateSearchContent(keyword, "recent"); // '최근' 정렬
-         }); **/
+        searchField.addActionListener(e -> triggerSearch(mainframe));
 
         // 레이아웃에 상단바와 하단부 버튼 패널 추가
         add(topBar, BorderLayout.NORTH);
@@ -141,6 +131,8 @@ public class SearchTopPanel extends JPanel {
         searchField.addActionListener(e -> listener.run());
     }
 
+    
+
     private void triggerSearch(MainFrame mainFrame) {
         String keyword = searchField.getSearchText().trim(); // 검색어 가져오기
 
@@ -149,6 +141,7 @@ public class SearchTopPanel extends JPanel {
             mainFrame.getMainUi().updateSearchContent("", currentFilter);
         } else {
             mainFrame.getMainUi().updateSearchContent(keyword, currentFilter);
+
         }
 
         // 스크롤 초기화

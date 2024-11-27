@@ -7,6 +7,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -22,6 +23,7 @@ import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
+import twitter.service.likeService;
 
 
 public class Main_Ui extends JPanel {
@@ -33,6 +35,8 @@ public class Main_Ui extends JPanel {
     private Connection connection; //
     private userService userService;
     private imgService imageService;
+    private likeService likeService;
+    private followService followService;
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -64,7 +68,7 @@ public class Main_Ui extends JPanel {
         this.mainFrame = mainframe;
         this.connection = connection;
         this.userService = userService; // Initialize connection and userService
-
+        this.likeService = new likeService(connection); // likeService 초기화
 
         setLayout(new BorderLayout());
 
@@ -194,7 +198,8 @@ updatePostContent("recommend");
 
         // 모든 포스트 가져오기
         List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService);
-
+// 리스트를 역순으로 뒤집기
+        Collections.reverse(examplePosts);
         if ("following".equals(filterType)) {
             // 로그인 상태 확인
             if (userService.getCurrentUser() == null) {
@@ -343,6 +348,7 @@ updatePostContent("recommend");
         mainPanel.removeAll(); // 기존 콘텐츠 제거
         mainPanel.setPreferredSize(null); // 크기 초기화
 
+
         if (keyword == null || keyword.trim().isEmpty()) {
             JPanel noKeywordPanel = new JPanel(new GridBagLayout());
             noKeywordPanel.setBackground(Color.BLACK);
@@ -394,16 +400,21 @@ updatePostContent("recommend");
             } else {
                 // 인기순/최신순 정렬
                 if ("popular".equals(filterType)) {
-                    filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
-                } else if ("recent".equals(filterType)) {
-                    // DateTimeFormatter를 사용하여 문자열을 LocalDateTime으로 파싱
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
                     filteredPosts.sort((p1, p2) -> {
-                        LocalDateTime time1 = LocalDateTime.parse(p1.getCreatedAt(), formatter);
-                        LocalDateTime time2 = LocalDateTime.parse(p2.getCreatedAt(), formatter);
-                        return time2.compareTo(time1); // 최신순 정렬
+                        try {
+                            int likes1 = likeService.getLikeCount(p1.getPostId());
+                            int likes2 = likeService.getLikeCount(p2.getPostId());
+                            return Integer.compare(likes2, likes1); // 좋아요 순 정렬
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            return 0; // 오류 시 변경하지 않음
+                        }
                     });
+                } else if ("recent".equals(filterType)) {
+                    Collections.reverse(filteredPosts);
+
+
+
                 }
 
                 // 필터링된 포스트를 메인 패널에 추가
@@ -600,7 +611,7 @@ updatePostContent("recommend");
             postService postService = new postService();
 
             bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService, postService);
-
+            Collections.reverse(bookmarkedPosts);
             for (PostUI post : bookmarkedPosts) {
                 mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
             }
