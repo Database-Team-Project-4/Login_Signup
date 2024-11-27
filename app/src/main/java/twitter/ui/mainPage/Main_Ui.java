@@ -3,22 +3,25 @@ package twitter.ui.mainPage;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.model.User;
 import twitter.service.followService;
+import twitter.service.imgService;
 import twitter.service.postService;
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
 import twitter.service.userService;
 import twitter.ui.post.PostUI;
-import twitter.ui.post.ExpandedPostUI;
 
 
 public class Main_Ui extends JPanel {
@@ -29,6 +32,7 @@ public class Main_Ui extends JPanel {
     private MainFrame mainFrame;
     private Connection connection; //
     private userService userService;
+    private imgService imageService;
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -56,7 +60,7 @@ public class Main_Ui extends JPanel {
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
 
 
-    public Main_Ui(MainFrame mainframe, Connection connection, userService userService) {
+    public Main_Ui(MainFrame mainframe, Connection connection, userService userService, postService postService) {
         this.mainFrame = mainframe;
         this.connection = connection;
         this.userService = userService; // Initialize connection and userService
@@ -181,50 +185,108 @@ updatePostContent("recommend");
 
 
     public void updatePostContent(String filterType) {
-        mainPanel.removeAll(); // 기존 콘텐츠 제거
-        mainPanel.setPreferredSize(null); // 크기 초기화
+        // 기존 콘텐츠 제거
+        mainPanel.removeAll();
+        mainPanel.setPreferredSize(null);
 
         postService postService = new postService();
         Connection con = MainFrame.getConnection();
 
         // 모든 포스트 가져오기
-        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService);
+        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService);
 
-        if (examplePosts.isEmpty()) {
-            // 포스트가 없을 때 "게시글 없음" 메시지 출력
-            JPanel noResultPanel = new JPanel(new GridBagLayout());
-            noResultPanel.setBackground(Color.BLACK);
+        if ("following".equals(filterType)) {
+            // 로그인 상태 확인
+            if (userService.getCurrentUser() == null) {
+                // 로그인하지 않은 경우 "로그인 필요" 메시지 출력
+                JPanel noResultPanel = new JPanel(new GridBagLayout());
+                noResultPanel.setBackground(Color.BLACK);
 
-            JLabel noResultLabel = new JLabel("게시글 없음");
-            noResultLabel.setForeground(Color.WHITE);
-            noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-            noResultPanel.add(noResultLabel);
+                JLabel noResultLabel = new JLabel("로그인 필요");
+                noResultLabel.setForeground(Color.WHITE);
+                noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+                noResultPanel.add(noResultLabel);
 
-            mainPanel.add(noResultPanel); // 메인 패널에 추가
-        } else {
-            // 정렬 수행 (creationTime 대신 PostUI 리스트 순서를 기반으로 처리)
-            if ("popular".equals(filterType)) {
-                examplePosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
-            } else if ("recent".equals(filterType)) {
-                // PostUI에서 순서대로 정렬 (creationTime을 PostUI가 직접 제공하지 않을 경우 대체)
-                // 최신순 정렬은 postService에서 관리하는 데이터를 기준으로 이미 되어 있다고 가정
-            }
+                mainPanel.add(noResultPanel);
+            } else {
+                // 로그인한 경우, 팔로우한 사용자의 게시물 필터링
+                User currentUser = userService.getCurrentUser();
+                followService followService = new followService();
 
-            // 포스트를 메인 패널에 추가
-            for (PostUI post : examplePosts) {
-                mainPanel.add(post);
+                List<User> followingList = followService.getFollowing(con, currentUser);
 
-                // 클릭 이벤트 추가 (확장된 화면으로 이동)
-                post.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        // 클릭 시 필요한 데이터를 전달
-                        showExpandedPost(
-                                post.getPostId()// 리스트 인덱스를 ID처럼 사용
+                // 팔로우한 사용자의 ID 목록 추출
+                List<Integer> followedUserIds = followingList.stream()
+                        .map(User::getId)
+                        .toList();
 
-                        );
+                // 팔로우한 사용자의 게시물만 필터링
+                List<PostUI> filteredPosts = examplePosts.stream()
+                        .filter(post -> followedUserIds.contains(post.getUserId()))
+                        .toList();
+
+                if (filteredPosts.isEmpty()) {
+                    // 팔로우한 사용자의 게시물이 없는 경우 "게시물 없음" 메시지 출력
+                    JPanel noResultPanel = new JPanel(new GridBagLayout());
+                    noResultPanel.setBackground(Color.BLACK);
+
+                    JLabel noResultLabel = new JLabel("게시물 없음");
+                    noResultLabel.setForeground(Color.WHITE);
+                    noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+                    noResultPanel.add(noResultLabel);
+
+                    mainPanel.add(noResultPanel);
+                } else {
+                    // 필터링된 게시물 추가
+                    for (PostUI post : filteredPosts) {
+                        mainPanel.add(post);
+
+                        // 포스트 클릭 이벤트 추가 (확장된 화면으로 이동)
+                        post.addMouseListener(new MouseAdapter() {
+                            @Override
+                            public void mouseClicked(MouseEvent e) {
+                                showExpandedPost(post.getPostId());
+                            }
+                        });
                     }
-                });
+                }
+            }
+        } else {
+            // "popular" 또는 "recent" 필터 처리
+            if (examplePosts.isEmpty()) {
+                // 게시물이 없을 때 "게시물 없음" 메시지 출력
+                JPanel noResultPanel = new JPanel(new GridBagLayout());
+                noResultPanel.setBackground(Color.BLACK);
+
+                JLabel noResultLabel = new JLabel("게시물 없음");
+                noResultLabel.setForeground(Color.WHITE);
+                noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+                noResultPanel.add(noResultLabel);
+
+                mainPanel.add(noResultPanel);
+            } else {
+                // 게시물이 존재할 때 정렬 처리
+                if ("popular".equals(filterType)) {
+                    examplePosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
+                }
+                // 최신순 정렬은 PostService에서 관리하는 데이터 순서를 그대로 사용
+
+                // 포스트 추가
+                for (PostUI post : examplePosts) {
+
+                    Runnable refreshCallback = () -> updatePostContent(filterType);
+                    post.addRefreshCallback(refreshCallback);
+
+                    mainPanel.add(post);
+
+                    // 포스트 클릭 이벤트 추가
+                    post.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                            showExpandedPost(post.getPostId());
+                        }
+                    });
+                }
             }
         }
 
@@ -238,51 +300,8 @@ updatePostContent("recommend");
 
         // 스크롤바 위치 초기화
         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
+        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
     }
-
-
-
-
-
-
-    // 추천 및 팔로우 중에 따른 포스트 내용 갱신 메서드 -> 데이터베이스에서 불러옴
-    /**public void updatePostContent(String type) {
-        postPanel.removeAll();
-
-        String query;
-        if (type.equals("recommend")) {
-            // 전체 게시글을 순서대로 가져오기
-            query = "SELECT post_id FROM posts ORDER BY created_at DESC";
-        } else {
-            // 특정 유저들의 게시글만 가져오기 (Tom과 Lud의 게시글만)
-            query = "SELECT post_id FROM posts WHERE user_id IN " +
-                    "(SELECT user_id FROM users WHERE name IN ('Tom', 'Lud')) ORDER BY created_at DESC";
-        }
-
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int postId = rs.getInt("post_id");
-                postPanel.add(new PostUI(postId, connection));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-             int postCount = postPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이 (150px 예시)
-
-        postPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 80));
-
-        postPanel.revalidate(); // 레이아웃 업데이트
-        postPanel.repaint(); // 화면 갱신
-
-         JScrollPane scrollPane = (JScrollPane) postPanel.getParent().getParent();
-         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
-
-
-    }
-        **/
 
     public void updateSearchContent(String keyword, String filterType) {
 
@@ -307,7 +326,7 @@ updatePostContent("recommend");
             postService postService = new postService();
             Connection con = MainFrame.getConnection();
 
-            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService); // 모든 포스트 가져오기
+            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
@@ -322,7 +341,7 @@ updatePostContent("recommend");
                 JPanel noResultPanel = new JPanel(new GridBagLayout());
                 noResultPanel.setBackground(Color.BLACK);
 
-                JLabel noResultLabel = new JLabel(keyword+"에 해당하는 검색 결과 없음");
+                JLabel noResultLabel = new JLabel(keyword + "에 해당하는 검색 결과 없음");
                 noResultLabel.setForeground(Color.WHITE);
                 noResultLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
                 noResultPanel.add(noResultLabel);
@@ -345,28 +364,34 @@ updatePostContent("recommend");
                 if ("popular".equals(filterType)) {
                     filteredPosts.sort((p1, p2) -> Integer.compare(p2.getLikes(), p1.getLikes())); // 좋아요 수로 정렬
                 } else if ("recent".equals(filterType)) {
-                    //filteredPosts.sort((p1, p2) -> p2.getCreationTime().compareTo(p1.getCreationTime())); // 최신순 정렬
+                    // DateTimeFormatter를 사용하여 문자열을 LocalDateTime으로 파싱
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                    filteredPosts.sort((p1, p2) -> {
+                        LocalDateTime time1 = LocalDateTime.parse(p1.getCreatedAt(), formatter);
+                        LocalDateTime time2 = LocalDateTime.parse(p2.getCreatedAt(), formatter);
+                        return time2.compareTo(time1); // 최신순 정렬
+                    });
                 }
 
                 // 필터링된 포스트를 메인 패널에 추가
                 for (PostUI post : filteredPosts) {
                     mainPanel.add(post);
-
                 }
             }
+
+            // 동적 크기 조정 및 레이아웃 갱신
+            int postCount = mainPanel.getComponentCount();
+            int postHeight = 150; // 각 포스트의 예상 높이
+            mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
+
+            mainPanel.revalidate(); // 레이아웃 업데이트
+            mainPanel.repaint(); // 화면 갱신
+
+            // 스크롤바 위치 초기화
+            JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
+            SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
         }
-
-        // 동적 크기 조정 및 레이아웃 갱신
-        int postCount = mainPanel.getComponentCount();
-        int postHeight = 150; // 각 포스트의 예상 높이
-        mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
-
-        mainPanel.revalidate(); // 레이아웃 업데이트
-        mainPanel.repaint(); // 화면 갱신
-
-        // 스크롤바 위치 초기화
-        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기화
     }
 
 
@@ -546,7 +571,7 @@ updatePostContent("recommend");
             List<PostUI> bookmarkedPosts = new ArrayList<>();
             postService postService = new postService();
 
-            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService);
+            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService, postService);
 
             for (PostUI post : bookmarkedPosts) {
                 mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가
@@ -585,7 +610,7 @@ updatePostContent("recommend");
         } else if ("SearchTop".equals(panelName)) {
             System.out.println("SearchTop 패널 표시");
             currentSearchKeyword = "";
-            updateSearchContent(currentSearchKeyword, "default");
+            updateSearchContent(currentSearchKeyword, "popular");
 
             SearchTopPanel searchTopPanel = (SearchTopPanel) completeTopPanel.getComponent(1); // SearchTopPanel 가져오기
             searchTopPanel.addSearchListener(() -> {

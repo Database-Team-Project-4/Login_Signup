@@ -2,6 +2,7 @@ package twitter.ui.post;
 
 import twitter.main.MainFrame;
 import twitter.model.User;
+import twitter.service.postService;
 import twitter.service.imgService;
 import twitter.service.userService;
 
@@ -11,17 +12,12 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 public class PostUI extends JPanel {
     private UserHeaderPanel userHeaderPanel; // 멤버 변수로 선언
@@ -35,9 +31,15 @@ public class PostUI extends JPanel {
     private int userId;
     private MainFrame mainFrame;
     private String createdAt;
+    private Runnable refreshCallback;
+    private postService postService;
     private List<byte[]> images; // 이미지 리스트 추가
 
-    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, Connection connection) {
+    public void addRefreshCallback(Runnable refreshCallback) {
+        this.refreshCallback = refreshCallback;
+    }
+
+    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, postService postService, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -50,6 +52,8 @@ public class PostUI extends JPanel {
         this.likes = likes;
         this.comments = comments;
         this.bookmarks = bookmarks;
+        this.createdAt = created_at;
+        this.postService = postService;
         // 이미지 가져오기
         this.images = getImagesForPost(connection, postId);
 
@@ -59,7 +63,7 @@ public class PostUI extends JPanel {
 
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 팔로우 버튼 숨김 처리 (프로필 화면인 경우)
@@ -78,6 +82,13 @@ public class PostUI extends JPanel {
             });
         }
 
+        List<byte[]> images = null;
+        try {
+            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         // 중단 패널
         PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks, images);
         add(contentPanel, BorderLayout.CENTER);
@@ -91,41 +102,6 @@ public class PostUI extends JPanel {
     }
 
 
-
-
-    // 새로운 생성자 (테스트 데이터를 위한 생성자)
-//     public PostUI(MainFrame mainFrame, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at) {
-//        setLayout(new BorderLayout());
-//        setBackground(Color.BLACK);
-//
-//         this.postId = postId;
-//         this.userName = userName;
-//         this.userEmail = userEmail;
-//         this.contentText = contentText;
-//         this.likes = likes;
-//         this.comments = comments;
-//         this.bookmarks = bookmarks;
-//
-//        // 임시 데이터 초기화
-//        ImageIcon profileIcon = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
-//        String postInfo = String.format("%s", created_at); // createdAt 포함
-//
-//        // 상단 패널 (작성자 정보)
-//        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon);
-//        add(userHeaderPanel, BorderLayout.NORTH);
-//
-//        // 중간 패널 (게시글 본문 및 작성 정보)
-//        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
-//        add(contentPanel, BorderLayout.CENTER);
-//
-//        // 하단 패널 (좋아요, 댓글, 북마크 버튼)
-//        PostFooterPanel postFooterPanel = new PostFooterPanel(likes, comments, bookmarks);
-//        add(postFooterPanel, BorderLayout.SOUTH);
-//
-//        // 전체 크기 조정
-//        setPreferredSize(new Dimension(400, contentPanel.getPreferredSize().height + userHeaderPanel.getPreferredSize().height + postFooterPanel.getPreferredSize().height + 30));
-
-//}
     public PostUI(int postId, String userName, String userEmail, String contentText,
                   int likes, int comments, int bookmarks, String createdAt, userService userService, Connection connection) {
         setLayout(new BorderLayout());
@@ -147,12 +123,22 @@ public class PostUI extends JPanel {
         String postInfo = String.format("%s", createdAt);
 
         // 상단 패널 (작성자 정보)
-        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection);
+        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
+
+
+        List<byte[]> images = null;
+        try {
+            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // 중간 패널 (게시글 본문 및 작성 정보)
         //PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks);
         //add(contentPanel, BorderLayout.CENTER);
+        PostContentPanel contentPanel = new PostContentPanel(contentText, postInfo, likes, comments, bookmarks, images);
+        add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
         PostFooterPanel postFooterPanel = new PostFooterPanel(postId,userId, userService, connection);
@@ -164,14 +150,6 @@ public class PostUI extends JPanel {
                         userHeaderPanel.getPreferredSize().height +
                         postFooterPanel.getPreferredSize().height + 30));
     }
-
-    public PostUI(String gachon, String s, String s1, int i, int i1, int i2) {
-    }
-
-    public PostUI(String user1, String s, String thisIsABookmarkedPost, int likes, int comments, int bookmarks, String date, boolean b) {
-    }
-
-
     public String getUserName() {
         return userName;
     }
@@ -191,6 +169,8 @@ public class PostUI extends JPanel {
         return likes;
     }
     public int getPostId() {return postId;}
+    public int getUserId() {return userId;}
+    public String getCreatedAt() {return createdAt;}
 
 
     public void addProfileImageMouseListener(MouseAdapter listener) {
