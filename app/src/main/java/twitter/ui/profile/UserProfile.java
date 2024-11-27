@@ -480,7 +480,7 @@ private JButton createFollowButton() {
                 int likes = rs.getInt("likes");
 
                 // CommentUI 객체 생성
-                CommentUI commentUI = new CommentUI(userName, email, content, likes);
+                CommentUI commentUI = new CommentUI(userName, email, content);
                 comments.add(commentUI);
             }
 

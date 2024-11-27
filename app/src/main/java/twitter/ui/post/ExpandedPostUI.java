@@ -187,7 +187,7 @@ public class ExpandedPostUI extends JPanel {
 
 
         // CommentUI 인스턴스 생성
-        CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent, commentLikes);
+        CommentUI commentUI = new CommentUI(commentUserName, commentUserEmail, commentContent);
         commentUI.setPreferredSize(new Dimension(600, 150));
 
         // '댓글 더보기' 버튼 생성 및 추가

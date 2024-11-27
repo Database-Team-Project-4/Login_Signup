@@ -55,7 +55,7 @@ public class commentService {
                     String content = rs.getString("content");
                     int likes = rs.getInt("likes");
 
-                    CommentUI commentUI = new CommentUI(userName, userEmail, content, likes);
+                    CommentUI commentUI = new CommentUI(userName, userEmail, content);
                     commentUIList.add(commentUI);
                 }
             }
