@@ -6,7 +6,6 @@ import java.util.List;
 
 public class PostContentPanel extends JPanel {
     public PostContentPanel(String contentText, String postInfo, int likes, int comments, int bookmarks, List<byte[]> images) {
-        // BoxLayout을 Y_AXIS로 설정하여 수직으로 컴포넌트 배치
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.BLACK);
 

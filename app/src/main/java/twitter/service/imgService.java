@@ -18,7 +18,7 @@ public class imgService {
         for (byte[] imageBytes : images) {
             try (PreparedStatement pstmt = connection.prepareStatement(query)) {
                 pstmt.setInt(1, postId);
-                pstmt.setBytes(2, imageBytes); // BLOB 데이터 설정
+                pstmt.setBytes(2, imageBytes); // BLOB 데이터로 이미지 저장
                 pstmt.executeUpdate();
             }
         }
@@ -27,7 +27,7 @@ public class imgService {
 
     // DB에서 특정 post_id에 연결된 모든 이미지를 가져오기
     public List<byte[]> retrieveImagesByPostId(Connection connection, int postId) throws SQLException {
-        String query = "SELECT image_data FROM Images WHERE post_id = ?";
+        String query = "SELECT image_data FROM Images WHERE post_id = ?"; //Images에서 해당하는 post_id의 image_data를 가져옴
         List<byte[]> images = new ArrayList<>();
 
         try (PreparedStatement pstmt = connection.prepareStatement(query)) {
