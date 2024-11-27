@@ -324,17 +324,17 @@ updatePostContent("recommend");
         }
     }
 
-    // 동적으로 mainPanel의 높이 조정
+
     private void adjustMainPanelHeight() {
         int totalHeight = 0;
 
-        // 모든 컴포넌트의 높이 합산
+
         for (Component component : mainPanel.getComponents()) {
             totalHeight += component.getPreferredSize().height;
         }
-        // 최소 높이를 보장하거나 동적으로 계산된 높이를 사용
+
         int calculatedHeight = Math.max(totalHeight, getHeight() - 72); // 72은 하단바 높이
-        // 높이 조정 및 적용
+
         mainPanel.setPreferredSize(new Dimension(getWidth(), totalHeight));
     }
 
@@ -344,9 +344,6 @@ updatePostContent("recommend");
         mainPanel.setPreferredSize(null); // 크기 초기화
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            // 검색어가 없을 때 "검색어 없음" 메시지 출력
-            System.out.println("empty keyword.");
-
             JPanel noKeywordPanel = new JPanel(new GridBagLayout());
             noKeywordPanel.setBackground(Color.BLACK);
 
@@ -479,8 +476,6 @@ updatePostContent("recommend");
             ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
             int id = userService.getCurrentUser().getId();
             if (type.equals("follower")) {
-                System.out.println("follower화면으로 바꿨어요"); //debug code
-
                 List<User> followerList = followService.getFollowers(connection, userService.getCurrentUser());
 
                 userNames = followerList.stream().map(User::getName).toList();
@@ -488,8 +483,6 @@ updatePostContent("recommend");
                 mainPanel.add(new FollowerListPanel(userNames,userHandles,profileImage));
 
             } else if (type.equals("following")){
-                System.out.println("following화면으로 바꿨어요"); //debug code
-
                 List<User> followingList = followService.getFollowing(connection, userService.getCurrentUser());
 
                 userNames = followingList.stream().map(User::getName).toList();
@@ -643,7 +636,6 @@ updatePostContent("recommend");
         } else if ("FollowerTop".equals(panelName)) {
             updateFollowContent("follower");
         } else if ("SearchTop".equals(panelName)) {
-            System.out.println("SearchTop 패널 표시");
             currentSearchKeyword = "";
             updateSearchContent(currentSearchKeyword, "popular");
 
@@ -678,15 +670,6 @@ updatePostContent("recommend");
 
     }
 
-
-    public void refreshMainPanel() {
-        mainPanel.revalidate();
-        mainPanel.repaint();
-
-        JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
-        SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0)); // 스크롤 초기
-        System.out.println("mainPanel Refreshed!!");
-    }
 
 
     private class IconButtonMouseAdapter extends MouseAdapter {

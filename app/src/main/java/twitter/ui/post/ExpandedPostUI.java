@@ -79,7 +79,6 @@ public class ExpandedPostUI extends JPanel {
             if (mainFrame != null) {
                 mainFrame.showTwitterMainUiPanel();
             } else {
-                System.out.println("뒤로가기 버튼 클릭됨");
                 JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 if (topFrame != null) {
                     topFrame.dispose(); // 창 닫기
@@ -121,7 +120,6 @@ public class ExpandedPostUI extends JPanel {
             if (component instanceof PostFooterPanel) {
                 PostFooterPanel footerPanel = (PostFooterPanel) component;
                 footerPanel.getCommentButton().addActionListener(e -> {
-                    System.out.println("댓글 버튼 클릭됨");
                     if (mainFrame != null) {
                         mainFrame.showExpandedCommentUI(postId); // 댓글 화면 전환
                     }
@@ -200,11 +198,10 @@ public class ExpandedPostUI extends JPanel {
         moreCommentsButton.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY)); // 테두리 설정
 
         moreCommentsButton.addActionListener(e -> {
-            System.out.println("댓글 더보기 버튼 클릭됨");
             if (mainFrame != null) {
                 mainFrame.showExpandedCommentUI(postId); // 댓글 화면 전환
             } else {
-                System.out.println("MainFrame이 null입니다. 댓글 화면을 표시할 수 없습니다.");
+
             }
         });
 
