@@ -295,12 +295,47 @@ updatePostContent("recommend");
         int postHeight = 150; // 각 포스트의 예상 높이
         mainPanel.setPreferredSize(new Dimension(getWidth(), postCount * postHeight + 72));
 
+        adjustMainPanelHeight(); // 높이 조정
         mainPanel.revalidate(); // 레이아웃 업데이트
         mainPanel.repaint(); // 화면 갱신
 
         // 스크롤바 위치 초기화
         JScrollPane scrollPane = (JScrollPane) mainPanel.getParent().getParent();
         SwingUtilities.invokeLater(() -> scrollPane.getVerticalScrollBar().setValue(0));
+    }
+    // 메시지 패널 생성
+
+
+    // 게시물을 메인 패널에 추가
+    private void addPostsToMainPanel(List<PostUI> posts, String filterType) {
+        for (PostUI post : posts) {
+            mainPanel.add(post);
+
+            // 포스트 클릭 이벤트
+            post.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    showExpandedPost(post.getPostId());
+                }
+            });
+
+            // 새로고침 콜백 추가
+            post.addRefreshCallback(() -> updatePostContent(filterType));
+        }
+    }
+
+    // 동적으로 mainPanel의 높이 조정
+    private void adjustMainPanelHeight() {
+        int totalHeight = 0;
+
+        // 모든 컴포넌트의 높이 합산
+        for (Component component : mainPanel.getComponents()) {
+            totalHeight += component.getPreferredSize().height;
+        }
+        // 최소 높이를 보장하거나 동적으로 계산된 높이를 사용
+        int calculatedHeight = Math.max(totalHeight, getHeight() - 72); // 72은 하단바 높이
+        // 높이 조정 및 적용
+        mainPanel.setPreferredSize(new Dimension(getWidth(), totalHeight));
     }
 
     public void updateSearchContent(String keyword, String filterType) {
