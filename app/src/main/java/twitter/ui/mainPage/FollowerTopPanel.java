@@ -39,7 +39,18 @@ public class FollowerTopPanel extends JPanel {
         topPanel.setBackground(new Color(7, 7, 7));
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
+        // 뒤로가기 버튼
         JButton backButton = createHoverButton("<");
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (mainFrame != null) {
+                    mainFrame.showTwitterMainUiPanel(); // 뒤로가기 동작
+                } else {
+                    System.err.println("Error: MainFrame is null in FollowerTopPanel.");
+                }
+            }
+        });
 
         String usernameText = (userService.getCurrentUser() != null) ? userService.getCurrentUser().getName() : "Need to Login";
         JLabel usernameLabel = new JLabel(usernameText, SwingConstants.CENTER);

@@ -36,8 +36,11 @@ public class SearchTopPanel extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // 뒤로 가기 버튼 클릭 시 이전 화면으로 돌아가는 로직 추가
-                mainFrame.showTwitterMainUiPanel();  // 이전 화면으로 돌아가는 메서드를 호출
+                if (mainFrame != null) {  // mainFrame이 null인지 확인
+                    mainFrame.showTwitterMainUiPanel();  // 뒤로가기 동작
+                } else {
+                    System.err.println("Error: MainFrame is null in SearchTopPanel.");
+                }
             }
         });
 

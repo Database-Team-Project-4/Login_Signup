@@ -74,7 +74,7 @@ public class Main_Ui extends JPanel {
 
         completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
-        completeTopPanel.add(new BookmarkTopPanel(), "BookmarkTop");
+        completeTopPanel.add(new BookmarkTopPanel(mainFrame), "BookmarkTop");
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setBackground(new Color(7, 7, 7));

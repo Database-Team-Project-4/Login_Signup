@@ -17,9 +17,10 @@ import twitter.main.MainFrame;
 
 public class BookmarkTopPanel extends JPanel {
 
-    private MainFrame mainframe;
+    private MainFrame mainFrame;
 
-    public BookmarkTopPanel() {
+    public BookmarkTopPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame; // MainFrame 초기화
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(400, 80));
@@ -39,7 +40,11 @@ public class BookmarkTopPanel extends JPanel {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainframe.showTwitterMainUiPanel(); // 이전 화면으로 돌아가는 메서드를 호출
+                if (mainFrame != null) {
+                    mainFrame.showTwitterMainUiPanel(); // MainFrame의 메서드 호출
+                } else {
+                    System.err.println("Error: MainFrame is null in BookmarkTopPanel.");
+                }
             }
         });
         topPanel.add(backButton, BorderLayout.WEST);

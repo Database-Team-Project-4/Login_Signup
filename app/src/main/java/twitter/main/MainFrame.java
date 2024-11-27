@@ -65,7 +65,7 @@ public class MainFrame extends JFrame {
            remove(currentPanel);
       }
 
-    currentPanel = new BookmarkTopPanel();  // BookmarkTopPanel로 설정
+    currentPanel = new BookmarkTopPanel(this);  // BookmarkTopPanel로 설정
     add(currentPanel);
     revalidate();
     repaint();
