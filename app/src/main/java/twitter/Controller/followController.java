@@ -1,4 +1,4 @@
-package twitter.service;
+package twitter.Controller;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import twitter.model.User;
 
-public class followService {
+public class followController {
 
     // 팔로우 기능: 팔로우할 사용자의 ID를 인수로 받아 처리
     public String followUser(Connection conn, User currentUser, int followeeId) {

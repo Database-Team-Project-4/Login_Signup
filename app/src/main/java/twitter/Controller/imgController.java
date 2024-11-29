@@ -1,7 +1,5 @@
-package twitter.service;
+package twitter.Controller;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class imgService {
+public class imgController {
 
     // 이미지를 DB에 BLOB으로 저장
     public void saveImagesWithPostId(Connection connection, int postId, List<byte[]> images) throws SQLException {

@@ -1,6 +1,6 @@
 package twitter.ui.login;
 
-import twitter.service.userService;
+import twitter.Controller.userController;
 import twitter.main.MainFrame;
 import twitter.model.User;
 
@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Login_Ui extends JPanel {
-    private userService userService;
+    private userController userController;
     private Connection connection;
     private final ImageIcon xLogoIcon = loadIcon("/TwitterIcons/X_logo.png");
 
@@ -24,10 +24,10 @@ public class Login_Ui extends JPanel {
         return new ImageIcon(resource);
     }
 
-    public Login_Ui(MainFrame mainframe , Connection connection, userService userService) 
+    public Login_Ui(MainFrame mainframe , Connection connection, userController userController)
     {
         this.connection = connection;
-        this.userService = userService;
+        this.userController = userController;
 
         Image scaledImage = xLogoIcon.getImage().getScaledInstance(
                 (int) (xLogoIcon.getIconWidth() * 1.3),
@@ -107,9 +107,9 @@ public class Login_Ui extends JPanel {
             User user = new User(email, password);
 
             try {
-                userService.login(connection, user);
-                if (userService.getCurrentUser() != null) {
-                    JOptionPane.showMessageDialog(mainframe, "Welcome, " + userService.getCurrentUser().getName() + "!");
+                userController.login(connection, user);
+                if (userController.getCurrentUser() != null) {
+                    JOptionPane.showMessageDialog(mainframe, "Welcome, " + userController.getCurrentUser().getName() + "!");
                     mainframe.showTwitterMainUiPanel(); //잘 넘어가는지 확인하기 위해서 회원가입 panel로 넘어감, mainpanel로 연결 예정
                 } else {
                     JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");

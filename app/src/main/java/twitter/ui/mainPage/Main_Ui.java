@@ -4,8 +4,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,15 +13,15 @@ import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
 import twitter.model.User;
-import twitter.service.followService;
-import twitter.service.imgService;
-import twitter.service.postService;
+import twitter.Controller.followController;
+import twitter.Controller.imgController;
+import twitter.Controller.postController;
 import twitter.ui.follow.follower.FollowerListPanel;
 import twitter.ui.follow.following.FollowingListPanel;
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 import twitter.ui.post.PostUI;
-import twitter.service.likeService;
+import twitter.Controller.likeController;
 
 
 public class Main_Ui extends JPanel {
@@ -33,10 +31,10 @@ public class Main_Ui extends JPanel {
     private JPanel bottomPanel;
     private MainFrame mainFrame;
     private Connection connection; //
-    private userService userService;
-    private imgService imageService;
-    private likeService likeService;
-    private followService followService;
+    private userController userController;
+    private imgController imageService;
+    private likeController likeController;
+    private followController followController;
 
     public JPanel getMainPanel() {
         return mainPanel;
@@ -64,19 +62,19 @@ public class Main_Ui extends JPanel {
     private final String GeminiIconClicked = "/TwitterIcons/aimessagebothover.png";
 
 
-    public Main_Ui(MainFrame mainframe, Connection connection, userService userService, postService postService) {
+    public Main_Ui(MainFrame mainframe, Connection connection, userController userController, postController postController) {
         this.mainFrame = mainframe;
         this.connection = connection;
-        this.userService = userService; // Initialize connection and userService
-        this.likeService = new likeService(connection); // likeService 초기화
+        this.userController = userController; // Initialize connection and userService
+        this.likeController = new likeController(connection); // likeService 초기화
 
         setLayout(new BorderLayout());
 
         completeTopPanel = new JPanel(new CardLayout());
-        completeTopPanel.add(new MainTopPanel(this, mainframe, connection, userService), "MainTop");
-        completeTopPanel.add(new SearchTopPanel(mainframe, connection, userService), "SearchTop");
+        completeTopPanel.add(new MainTopPanel(this, mainframe, connection, userController), "MainTop");
+        completeTopPanel.add(new SearchTopPanel(mainframe, connection, userController), "SearchTop");
 
-        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userService, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
+        completeTopPanel.add(new FollowerTopPanel(mainframe, connection, userController, this), "FollowerTop"); //FollowerTopPanel에서 mainui의 메소드를 사용하기위해 this를 넘겼습니다.
 
         completeTopPanel.add(new BookmarkTopPanel(mainFrame), "BookmarkTop");
 
@@ -193,16 +191,16 @@ updatePostContent("recommend");
         mainPanel.removeAll();
         mainPanel.setPreferredSize(null);
 
-        postService postService = new postService();
+        postController postController = new postController();
         Connection con = MainFrame.getConnection();
 
         // 모든 포스트 가져오기
-        List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService);
+        List<PostUI> examplePosts = postController.getAllPosts(con, mainFrame, userController, postController);
 // 리스트를 역순으로 뒤집기
         Collections.reverse(examplePosts);
         if ("following".equals(filterType)) {
             // 로그인 상태 확인
-            if (userService.getCurrentUser() == null) {
+            if (userController.getCurrentUser() == null) {
                 // 로그인하지 않은 경우 "로그인 필요" 메시지 출력
                 JPanel noResultPanel = new JPanel(new GridBagLayout());
                 noResultPanel.setBackground(Color.BLACK);
@@ -215,10 +213,10 @@ updatePostContent("recommend");
                 mainPanel.add(noResultPanel);
             } else {
                 // 로그인한 경우, 팔로우한 사용자의 게시물 필터링
-                User currentUser = userService.getCurrentUser();
-                followService followService = new followService();
+                User currentUser = userController.getCurrentUser();
+                followController followController = new followController();
 
-                List<User> followingList = followService.getFollowing(con, currentUser);
+                List<User> followingList = followController.getFollowing(con, currentUser);
 
                 // 팔로우한 사용자의 ID 목록 추출
                 List<Integer> followedUserIds = followingList.stream()
@@ -361,10 +359,10 @@ updatePostContent("recommend");
             mainPanel.add(noKeywordPanel); // 메인 패널에 추가
         } else {
 
-            postService postService = new postService();
+            postController postController = new postController();
             Connection con = MainFrame.getConnection();
 
-            List<PostUI> examplePosts = postService.getAllPosts(con, mainFrame, userService, postService); // 모든 포스트 가져오기
+            List<PostUI> examplePosts = postController.getAllPosts(con, mainFrame, userController, postController); // 모든 포스트 가져오기
 
             // 키워드를 포함하는 포스트 필터링
             List<PostUI> filteredPosts = new ArrayList<>(examplePosts.stream()
@@ -402,8 +400,8 @@ updatePostContent("recommend");
                 if ("popular".equals(filterType)) {
                     filteredPosts.sort((p1, p2) -> {
                         try {
-                            int likes1 = likeService.getLikeCount(p1.getPostId());
-                            int likes2 = likeService.getLikeCount(p2.getPostId());
+                            int likes1 = likeController.getLikeCount(p1.getPostId());
+                            int likes2 = likeController.getLikeCount(p2.getPostId());
                             return Integer.compare(likes2, likes1); // 좋아요 순 정렬
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -445,9 +443,9 @@ updatePostContent("recommend");
         List<String> userHandles = new ArrayList<>();
 
         Connection connection = MainFrame.getConnection();
-        followService followService = new followService();
+        followController followController = new followController();
 
-        if(userService.getCurrentUser() == null){
+        if(userController.getCurrentUser() == null){
                 // 로그인X 문구 추가
                 JPanel loginPromptPanel = new JPanel(new GridBagLayout());
                 loginPromptPanel.setBackground(Color.BLACK);
@@ -485,16 +483,16 @@ updatePostContent("recommend");
         {
 
             ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
-            int id = userService.getCurrentUser().getId();
+            int id = userController.getCurrentUser().getId();
             if (type.equals("follower")) {
-                List<User> followerList = followService.getFollowers(connection, userService.getCurrentUser());
+                List<User> followerList = followController.getFollowers(connection, userController.getCurrentUser());
 
                 userNames = followerList.stream().map(User::getName).toList();
                 userHandles = followerList.stream().map(User::getEmail).toList();
                 mainPanel.add(new FollowerListPanel(userNames,userHandles,profileImage));
 
             } else if (type.equals("following")){
-                List<User> followingList = followService.getFollowing(connection, userService.getCurrentUser());
+                List<User> followingList = followController.getFollowing(connection, userController.getCurrentUser());
 
                 userNames = followingList.stream().map(User::getName).toList();
                 userHandles = followingList.stream().map(User::getEmail).toList();
@@ -572,7 +570,7 @@ updatePostContent("recommend");
         mainPanel.setPreferredSize(null); // 크기 초기화
 
         // 로그인 여부 확인 및 분기 처리
-        if (userService.getCurrentUser() == null) {
+        if (userController.getCurrentUser() == null) {
             // 로그인되지 않은 경우 사용자 친화적인 메시지와 버튼 추가
             JPanel loginPromptPanel = new JPanel(new GridBagLayout());
             loginPromptPanel.setBackground(Color.BLACK);
@@ -608,9 +606,9 @@ updatePostContent("recommend");
         } else {
             // 로그인된 경우 북마크된 포스트 추가
             List<PostUI> bookmarkedPosts = new ArrayList<>();
-            postService postService = new postService();
+            postController postController = new postController();
 
-            bookmarkedPosts = postService.getBookmarkedPostsByUser(connection, mainFrame, userService, postService);
+            bookmarkedPosts = postController.getBookmarkedPostsByUser(connection, mainFrame, userController, postController);
             Collections.reverse(bookmarkedPosts);
             for (PostUI post : bookmarkedPosts) {
                 mainPanel.add(post); // 북마크된 포스트를 메인 패널에 추가

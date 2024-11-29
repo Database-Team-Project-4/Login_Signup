@@ -1,7 +1,7 @@
 package twitter.ui.addPost;
 
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ public class addPostTopPanel extends JPanel {
     private static final Color BUTTON_COLOR = new Color(0, 122, 255);
     private final String imageIconPath = "/TwitterIcons/X.png";
 
-    public addPostTopPanel(MainFrame mainframe, Connection connection, userService userService) {
+    public addPostTopPanel(MainFrame mainframe, Connection connection, userController userController) {
         setLayout(new BorderLayout());
         setBackground(BACKGROUND_COLOR);
         setPreferredSize(new Dimension(getWidth(), 40)); // 상단바 높이 설정

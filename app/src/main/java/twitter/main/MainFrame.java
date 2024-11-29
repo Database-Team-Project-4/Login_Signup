@@ -7,11 +7,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import twitter.service.postService;
-import twitter.service.userService;
+import twitter.Controller.postController;
+import twitter.Controller.userController;
 import twitter.ui.Comment.ExpandedCommentUI;
-import twitter.ui.follow.follower.Follower_Ui;
-import twitter.ui.follow.following.Following_Ui;
 import twitter.ui.module.CustomSearchField;
 import twitter.ui.login.Login_Ui;
 import twitter.ui.post.ExpandedPostUI;
@@ -27,15 +25,15 @@ public class MainFrame extends JFrame {
 
     private static Connection connection;
     private JPanel currentPanel;
-    private userService userService = new userService();
-    private postService postService = new postService();
+    private userController userController = new userController();
+    private postController postController = new postController();
     private Main_Ui mainUi;
     private boolean profileView;
 
-    public MainFrame(Connection connection, userService userService) {
+    public MainFrame(Connection connection, userController userController) {
         MainFrame.connection = connection;
-        this.userService = userService;
-        mainUi = new Main_Ui(this, connection, userService, postService);
+        this.userController = userController;
+        mainUi = new Main_Ui(this, connection, userController, postController);
         add(mainUi); // MainFrame에 Main_Ui 추가
 
 
@@ -51,11 +49,11 @@ public class MainFrame extends JFrame {
         return connection;
     }
 
-    public userService getUserService() {
-        return userService;
+    public userController getUserService() {
+        return userController;
     }
-    public postService getPostService() {
-        return postService;
+    public postController getPostService() {
+        return postController;
     }
 
     // MainFrame 클래스에 showBookmarkTopPanel 메서드 추가
@@ -77,7 +75,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = false;
-        currentPanel = new SearchTopPanel(this, connection, userService);  // CustomSearchField에 파라미터 전달
+        currentPanel = new SearchTopPanel(this, connection, userController);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -99,8 +97,8 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = false;
-        mainUi = new Main_Ui(this, connection, userService , postService);
-        currentPanel = new Main_Ui(this, connection, userService, postService);  // TwitterMainUI 클래스로부터 UI 로직 실행
+        mainUi = new Main_Ui(this, connection, userController, postController);
+        currentPanel = new Main_Ui(this, connection, userController, postController);  // TwitterMainUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -115,7 +113,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new Gemini_panel(this, connection, userService); // connection, userService 전달
+        currentPanel = new Gemini_panel(this, connection, userController); // connection, userService 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -125,7 +123,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = false;
-        currentPanel = new ExpandedPostUI(postId, connection, this, userService, postService);  // ExpandedPostUI 클래스로부터 UI 로직 실행
+        currentPanel = new ExpandedPostUI(postId, connection, this, userController, postController);  // ExpandedPostUI 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -134,7 +132,7 @@ public class MainFrame extends JFrame {
     public void showExpandedCommentUI(int postId) {
         System.out.println("showExpandedCommentUI 호출됨: Post ID = " + postId);
 
-        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId, this, userService, connection);
+        ExpandedCommentUI expandedCommentUI = new ExpandedCommentUI(postId, this, userController, connection);
 
         if (currentPanel != null) {
             remove(currentPanel); // 기존 패널 제거
@@ -181,7 +179,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
 
-        currentPanel = new addPostUi(this, connection, userService, postService);  // CustomSearchField에 파라미터 전달
+        currentPanel = new addPostUi(this, connection, userController, postController);  // CustomSearchField에 파라미터 전달
         add(currentPanel);
         revalidate();
         repaint();
@@ -191,7 +189,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new Login_Ui(this, connection, userService);  // Login_Ui 클래스로부터 UI 로직 실행
+        currentPanel = new Login_Ui(this, connection, userController);  // Login_Ui 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -202,7 +200,7 @@ public class MainFrame extends JFrame {
         if (currentPanel != null) {
             remove(currentPanel);
         }
-        currentPanel = new SignUp_Ui(this, connection, userService);  // SignUp_Ui 클래스로부터 UI 로직 실행
+        currentPanel = new SignUp_Ui(this, connection, userController);  // SignUp_Ui 클래스로부터 UI 로직 실행
         add(currentPanel);
         revalidate();
         repaint();
@@ -213,7 +211,7 @@ public class MainFrame extends JFrame {
             remove(currentPanel);
         }
         profileView = true;
-        currentPanel = new UserProfile(this, connection, userService, postService, userId); // UserProfile 클래스를 추가
+        currentPanel = new UserProfile(this, connection, userController, postController, userId); // UserProfile 클래스를 추가
         add(currentPanel);
         revalidate();
         repaint();
@@ -227,11 +225,11 @@ public class MainFrame extends JFrame {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://58.121.110.129:4472/twitter", "root", "ckwnsgk@1");
-            userService userService = new userService();
+            userController userController = new userController();
 
             // 로그인 UI 띄우기
             SwingUtilities.invokeLater(() -> {
-                MainFrame frame = new MainFrame(connection, userService);
+                MainFrame frame = new MainFrame(connection, userController);
                 frame.setVisible(true);
             });
 

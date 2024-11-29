@@ -1,7 +1,7 @@
 package twitter.ui.follow.follower;
 
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class Follower_Ui extends JPanel {
     };
     ImageIcon profileImage = new ImageIcon(getClass().getResource("/TwitterIcons/icondef.png"));
 
-    public Follower_Ui(MainFrame mainframe, Connection connection, userService userService) {
+    public Follower_Ui(MainFrame mainframe, Connection connection, userController userController) {
         setLayout(new BorderLayout());
 
         // 상단바 추가

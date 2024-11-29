@@ -3,8 +3,8 @@ package twitter.ui.addPost;
 import twitter.main.MainFrame;
 import twitter.model.Post;
 import twitter.model.User;
-import twitter.service.postService;
-import twitter.service.userService;
+import twitter.Controller.postController;
+import twitter.Controller.userController;
 
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -21,11 +21,11 @@ import java.sql.SQLException;
 
 public class addPostUi extends JPanel {
 
-    public addPostUi(MainFrame mainframe, Connection connection, userService userService, postService postService) {
+    public addPostUi(MainFrame mainframe, Connection connection, userController userController, postController postController) {
         setLayout(new BorderLayout());
 
         // 상단바 추가
-        addPostTopPanel topPanel = new addPostTopPanel(mainframe, connection, userService);
+        addPostTopPanel topPanel = new addPostTopPanel(mainframe, connection, userController);
         add(topPanel, BorderLayout.NORTH);
 
         // 중간 패널 추가 (게시글 작성용)
@@ -41,7 +41,7 @@ public class addPostUi extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String content = middlePanel.getPostContent().trim(); // 게시물 내용 가져오기
                 File images = bottomPanel.getSelectedImageFile(); // 게시물 이미지 가져오기
-                User currentUser = userService.getCurrentUser(); // 현재 사용자 정보 가져오기
+                User currentUser = userController.getCurrentUser(); // 현재 사용자 정보 가져오기
 
                 // 내용이 비어 있는지 확인
                 if (content.isEmpty()) {
@@ -52,7 +52,7 @@ public class addPostUi extends JPanel {
                     Post post;
                     if (images == null) {
                         // 이미지 없이 게시물 작성
-                        post = postService.writePost(connection, currentUser, content);
+                        post = postController.writePost(connection, currentUser, content);
                     } else {
                         // 이미지 포함하여 게시물 작성
                         List<byte[]> image = new ArrayList<>();
@@ -62,7 +62,7 @@ public class addPostUi extends JPanel {
                             JOptionPane.showMessageDialog(null, "이미지 변환 중 오류가 발생했습니다: " + ex.getMessage(), "에러", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
-                        post = postService.createPostWithImages(connection, currentUser, content, image);
+                        post = postController.createPostWithImages(connection, currentUser, content, image);
                     }
                     if (post != null) {
                         JOptionPane.showMessageDialog(null, "게시물이 성공적으로 등록되었습니다!", "성공", JOptionPane.INFORMATION_MESSAGE);

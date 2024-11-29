@@ -1,15 +1,15 @@
-package twitter.service;
+package twitter.Controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class bookmarkService {
+public class bookmarkController {
 
     private final Connection connection;
 
-    public bookmarkService(Connection connection) {
+    public bookmarkController(Connection connection) {
         this.connection = connection;
     }
 

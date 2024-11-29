@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 
 public class MainTopPanel extends JPanel {
     private JPanel recommendButtonUnderline, followButtonUnderline;
@@ -24,7 +24,7 @@ public class MainTopPanel extends JPanel {
     private final ImageIcon writePostIconHover = loadIcon("/TwitterIcons/writepostcursor.png");
     private Main_Ui mainUI;  // MainUI 인스턴스 참조 추가
     private int userId;
-    private userService userService;
+    private userController userController;
     private MainFrame mainframe;
 
     // 아이콘 로드 기능 유지
@@ -37,16 +37,16 @@ public class MainTopPanel extends JPanel {
     }
 
     // 생성자
-    public MainTopPanel(Main_Ui mainUI, MainFrame mainframe, Connection connection, userService userService) {
+    public MainTopPanel(Main_Ui mainUI, MainFrame mainframe, Connection connection, userController userController) {
         this.mainUI = mainUI;
         this.mainframe = mainframe;
-        this.userService = userService;
+        this.userController = userController;
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         setPreferredSize(new Dimension(getWidth(), 100));
 
-        if (userService.isLoggedIn()) {
-            this.userId = userService.getCurrentUser().getId(); // 현재 사용자 ID 가져오기
+        if (userController.isLoggedIn()) {
+            this.userId = userController.getCurrentUser().getId(); // 현재 사용자 ID 가져오기
         } else {
             this.userId = -1; // 로그인 안된 경우 기본값
         }
@@ -56,7 +56,7 @@ public class MainTopPanel extends JPanel {
         topPanel.setBackground(new Color(7, 7, 7));
         topPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
-        JButton profileButton = createIconButton(profileIcon, userService, mainframe);
+        JButton profileButton = createIconButton(profileIcon, userController, mainframe);
         JLabel logoLabel = new JLabel(xLogoIcon, SwingConstants.CENTER);
         JButton writePostButton = createIconButtonWithHover(writePostIconDefault, writePostIconHover, writePostIconDefault);
 
@@ -76,7 +76,7 @@ public class MainTopPanel extends JPanel {
         profileButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (userService.isLoggedIn()) {
+                if (userController.isLoggedIn()) {
                     mainframe.showUserProfilePanel(userId);
                 } else {
                     mainframe.showLoginPanel();
@@ -161,13 +161,13 @@ public class MainTopPanel extends JPanel {
     }
 
     // 프로필 아이콘 버튼 생성
-    private JButton createIconButton(ImageIcon icon, userService userService, MainFrame mainFrame) {
+    private JButton createIconButton(ImageIcon icon, userController userController, MainFrame mainFrame) {
         JButton button = new JButton(icon);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.addActionListener(e -> {
-            if (userService.isLoggedIn()) {
+            if (userController.isLoggedIn()) {
                 mainFrame.showUserProfilePanel(userId);
             } else {
                 mainFrame.showLoginPanel();

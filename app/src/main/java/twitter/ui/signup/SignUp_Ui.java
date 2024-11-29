@@ -1,6 +1,6 @@
 package twitter.ui.signup;
 
-import twitter.service.userService;
+import twitter.Controller.userController;
 import twitter.main.MainFrame;
 import twitter.model.User;
 
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 
 public class SignUp_Ui extends JPanel {
     private Connection connection;
-    private userService userService;
+    private userController userController;
     private final ImageIcon xLogoIcon = loadIcon("/TwitterIcons/X_logo.png");
 
     // 기존 기능 유지하며 아이콘 로드 기능
@@ -24,9 +24,9 @@ public class SignUp_Ui extends JPanel {
         }
         return new ImageIcon(resource);
     }
-    public SignUp_Ui(MainFrame mainframe, Connection connection, userService userService) {
+    public SignUp_Ui(MainFrame mainframe, Connection connection, userController userController) {
         this.connection = connection;
-        this.userService = userService;
+        this.userController = userController;
 
         Image scaledImage = xLogoIcon.getImage().getScaledInstance(
                 (int) (xLogoIcon.getIconWidth() * 1.3),
@@ -145,7 +145,7 @@ public class SignUp_Ui extends JPanel {
             User newUser = new User(email, name, password, address);
 
             try {
-                userService.signup(connection, newUser);
+                userController.signup(connection, newUser);
                 JOptionPane.showMessageDialog(mainframe, "Sign up successful!");
                 mainframe.showLoginPanel(); // 로그인 이후 홈화면으로 이동 !! (임시인거 같군여)
             } catch (SQLException ex) {

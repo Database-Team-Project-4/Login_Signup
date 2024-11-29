@@ -1,9 +1,9 @@
 package twitter.ui.post;
 
 import twitter.main.MainFrame;
-import twitter.service.commentService;
-import twitter.service.postService;
-import twitter.service.userService;
+import twitter.Controller.commentController;
+import twitter.Controller.postController;
+import twitter.Controller.userController;
 import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.MoreButton;
 
@@ -21,13 +21,13 @@ public class ExpandedPostUI extends JPanel {
     private int userId; // userId 변수 추가
 
     // 세 개의 인수를 받는 생성자
-    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userService userService, postService postService) {
+    public ExpandedPostUI(int postId, Connection connection, MainFrame mainFrame, userController userController, postController postController) {
         this.mainFrame = mainFrame;
-        initializeUI(postId, connection, mainFrame, userService, postService);
+        initializeUI(postId, connection, mainFrame, userController, postController);
     }
 
     // UI 초기화 메서드
-    private void initializeUI(int postId, Connection connection, MainFrame mainFrame, userService userService, postService postService) {
+    private void initializeUI(int postId, Connection connection, MainFrame mainFrame, userController userController, postController postController) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -110,9 +110,9 @@ public class ExpandedPostUI extends JPanel {
         // 기존 PostUI를 중앙에 배치
         PostUI postUI;
         if (mainFrame != null && userId != -1) {
-            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, postService, connection);
+            postUI = new PostUI(mainFrame, postId, userId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userController, postController, connection);
         } else {
-            postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userService, connection);
+            postUI = new PostUI(postId, userName, userEmail, contentText, likes, comments, bookmarks, createdAt, userController, connection);
         }
 
         Component[] components = postUI.getComponents();
@@ -166,10 +166,10 @@ public class ExpandedPostUI extends JPanel {
 
 
         // 데이터베이스에서 댓글 데이터 가져오기
-        commentService commentService = new commentService();
+        commentController commentController = new commentController();
 
         try {
-            List<CommentUI> comment = commentService.getCommentsByPostId(postId, connection);
+            List<CommentUI> comment = commentController.getCommentsByPostId(postId, connection);
             if (!comment.isEmpty()) {
                 commentUserName = comment.get(0).getUserName();
                 commentUserEmail = comment.get(0).getUserEmail();

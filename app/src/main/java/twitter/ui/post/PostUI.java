@@ -1,10 +1,9 @@
 package twitter.ui.post;
 
 import twitter.main.MainFrame;
-import twitter.model.User;
-import twitter.service.postService;
-import twitter.service.imgService;
-import twitter.service.userService;
+import twitter.Controller.postController;
+import twitter.Controller.imgController;
+import twitter.Controller.userController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,14 +31,14 @@ public class PostUI extends JPanel {
     private MainFrame mainFrame;
     private String createdAt;
     private Runnable refreshCallback;
-    private postService postService;
+    private postController postController;
     private List<byte[]> images; // 이미지 리스트 추가
 
     public void addRefreshCallback(Runnable refreshCallback) {
         this.refreshCallback = refreshCallback;
     }
 
-    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userService userService, postService postService, Connection connection) {
+    public PostUI(MainFrame mainFrame, int postId, int userId, String userName, String userEmail, String contentText, int likes, int comments, int bookmarks, String created_at, userController userController, postController postController, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -53,7 +52,7 @@ public class PostUI extends JPanel {
         this.comments = comments;
         this.bookmarks = bookmarks;
         this.createdAt = created_at;
-        this.postService = postService;
+        this.postController = postController;
         // 이미지 가져오기
         this.images = getImagesForPost(connection, postId);
 
@@ -63,7 +62,7 @@ public class PostUI extends JPanel {
 
 
         // 상단 패널 (작성자 정보)
-        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
+        UserHeaderPanel userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userController, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
         // 팔로우 버튼 숨김 처리 (프로필 화면인 경우)
@@ -84,7 +83,7 @@ public class PostUI extends JPanel {
 
         List<byte[]> images = null;
         try {
-            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+            images = postController.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,7 +93,7 @@ public class PostUI extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
-        PostFooterPanel postFooterPanel = new PostFooterPanel(postId, userId , userService, connection);
+        PostFooterPanel postFooterPanel = new PostFooterPanel(postId, userId , userController, connection);
         add(postFooterPanel, BorderLayout.SOUTH);
 
         // 전체 크기 조정
@@ -103,7 +102,7 @@ public class PostUI extends JPanel {
 
 
     public PostUI(int postId, String userName, String userEmail, String contentText,
-                  int likes, int comments, int bookmarks, String createdAt, userService userService, Connection connection) {
+                  int likes, int comments, int bookmarks, String createdAt, userController userController, Connection connection) {
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
 
@@ -123,13 +122,13 @@ public class PostUI extends JPanel {
         String postInfo = String.format("%s", createdAt);
 
         // 상단 패널 (작성자 정보)
-        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userService, connection, refreshCallback);
+        userHeaderPanel = new UserHeaderPanel(userName, userEmail, profileIcon, userId, userController, connection, refreshCallback);
         add(userHeaderPanel, BorderLayout.NORTH);
 
 
         List<byte[]> images = null;
         try {
-            images = postService.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
+            images = postController.getImagesByPostId(connection, postId); // 게시물의 이미지 가져오기
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -141,7 +140,7 @@ public class PostUI extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // 하단 패널 (좋아요, 댓글, 북마크 버튼)
-        PostFooterPanel postFooterPanel = new PostFooterPanel(postId,userId, userService, connection);
+        PostFooterPanel postFooterPanel = new PostFooterPanel(postId,userId, userController, connection);
         add(postFooterPanel, BorderLayout.SOUTH);
 
         // 전체 크기 조정
@@ -181,8 +180,8 @@ public class PostUI extends JPanel {
     private List<byte[]> getImagesForPost(Connection connection, int postId) {
         List<byte[]> images = new ArrayList<>();
         try {
-            imgService imgService = new imgService();
-            images = imgService.retrieveImagesByPostId(connection, postId);
+            imgController imgController = new imgController();
+            images = imgController.retrieveImagesByPostId(connection, postId);
         } catch (SQLException e) {
             System.out.println("이미지 로딩 중 오류 발생: " + e.getMessage());
         }

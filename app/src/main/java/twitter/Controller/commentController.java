@@ -1,13 +1,12 @@
-package twitter.service;
+package twitter.Controller;
 
 import twitter.ui.Comment.CommentUI;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class commentService {
+public class commentController {
 
     // 댓글 작성 메서드
     public void addComment(int postId, String content, Integer parentCommentId, Connection connection, int userId) throws SQLException {

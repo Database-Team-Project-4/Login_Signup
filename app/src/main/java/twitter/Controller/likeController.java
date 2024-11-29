@@ -1,15 +1,15 @@
-package twitter.service;
+package twitter.Controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class likeService {
+public class likeController {
 
     private final Connection connection;
 
-    public likeService(Connection connection) {
+    public likeController(Connection connection) {
         this.connection = connection;
     }
 

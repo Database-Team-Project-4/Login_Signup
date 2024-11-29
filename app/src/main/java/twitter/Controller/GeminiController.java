@@ -1,4 +1,4 @@
-package twitter.service;
+package twitter.Controller;
 
 import org.json.JSONObject;
 import javax.swing.*;
@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-public class GeminiService {
+public class GeminiController {
 
     public static String callGeminiApi(String prompt, String information ,  JTextArea responseArea) throws Exception 
     {

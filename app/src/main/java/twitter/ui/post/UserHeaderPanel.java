@@ -1,8 +1,7 @@
 package twitter.ui.post;
 
-import twitter.model.User;
-import twitter.service.followService;
-import twitter.service.userService;
+import twitter.Controller.followController;
+import twitter.Controller.userController;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 
 import javax.swing.*;
@@ -16,12 +15,12 @@ public class UserHeaderPanel extends JPanel {
     private JLabel profilePic;
     private JButton followButton; // 팔로우 버튼
     private boolean isFollowing; // 팔로잉 여부
-    private followService followService; // 팔로우/언팔로우 처리 서비스 객체
+    private followController followController; // 팔로우/언팔로우 처리 서비스 객체
     private Runnable refreshCallback; // 팔로우 상태 변경 시 새로고침 콜백
 
 
-    public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage, int displayedUser, userService userService, Connection conn, Runnable refreshCallback) {
-        this.followService = new followService(); // 팔로우 서비스 객체 초기화
+    public UserHeaderPanel(String userNameText, String userHandleText, ImageIcon profileImage, int displayedUser, userController userController, Connection conn, Runnable refreshCallback) {
+        this.followController = new followController(); // 팔로우 서비스 객체 초기화
         this.refreshCallback = refreshCallback;
 
 
@@ -63,16 +62,16 @@ public class UserHeaderPanel extends JPanel {
         followButton.setPreferredSize(new Dimension(70, 20));
         followButton.setFont(new Font("SansSerif", Font.PLAIN, 11));
 
-        if (userService.getCurrentUser() != null && userService.getCurrentUser().getId() == displayedUser) {
+        if (userController.getCurrentUser() != null && userController.getCurrentUser().getId() == displayedUser) {
             hideFollowButton(); // 팔로우 버튼 숨기기
         } else {
             // 로그인 상태 확인
-            if (userService.getCurrentUser() == null) {
+            if (userController.getCurrentUser() == null) {
                 followButton.setEnabled(false); // 로그인되지 않은 경우 버튼 비활성화
                 followButton.setText("로그인 필요");
             } else {
                 // 현재 로그인된 사용자와 표시된 사용자의 팔로우 상태 확인
-                this.isFollowing = followService.isAlreadyFollowing(conn, userService.getCurrentUser().getId(), displayedUser);
+                this.isFollowing = followController.isAlreadyFollowing(conn, userController.getCurrentUser().getId(), displayedUser);
                 updateFollowButtonStyle(); // 초기 스타일 설정
 
                 // 버튼 클릭 이벤트 추가
@@ -80,11 +79,11 @@ public class UserHeaderPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if (isFollowing) {
-                            String result = followService.unfollowUser(conn, userService.getCurrentUser(), displayedUser);
+                            String result = followController.unfollowUser(conn, userController.getCurrentUser(), displayedUser);
                             JOptionPane.showMessageDialog(null, result);
                             isFollowing = false;
                         } else {
-                            String result = followService.followUser(conn, userService.getCurrentUser(), displayedUser);
+                            String result = followController.followUser(conn, userController.getCurrentUser(), displayedUser);
                             JOptionPane.showMessageDialog(null, result);
                             isFollowing = true;
                         }

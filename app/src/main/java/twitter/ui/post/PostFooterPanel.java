@@ -1,9 +1,9 @@
 package twitter.ui.post;
 
-import twitter.service.bookmarkService;
-import twitter.service.commentService;
-import twitter.service.likeService;
-import twitter.service.userService;
+import twitter.Controller.bookmarkController;
+import twitter.Controller.commentController;
+import twitter.Controller.likeController;
+import twitter.Controller.userController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,15 +19,15 @@ public class PostFooterPanel extends JPanel {
     private int likeCount; // 좋아요 개수를 저장하는 인스턴스 변수
     private JButton likeButton; // likeButton을 인스턴스 변수로 선언
 
-    public PostFooterPanel(int postId, int userId, userService userService, Connection connection) {
+    public PostFooterPanel(int postId, int userId, userController userController, Connection connection) {
         setLayout(new FlowLayout(FlowLayout.CENTER, 20, 5));
         setBackground(Color.BLACK);
 
 
         int commentCount = 0;
         try {
-            commentService commentService = new commentService();
-            commentCount = commentService.getCommentCount(postId, connection); // 댓글 수 가져오기
+            commentController commentController = new commentController();
+            commentCount = commentController.getCommentCount(postId, connection); // 댓글 수 가져오기
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "댓글 수를 가져오는 중 오류가 발생했습니다.");
@@ -45,10 +45,10 @@ public class PostFooterPanel extends JPanel {
         likeCountLabel = new JLabel();
         likeCountLabel.setForeground(Color.WHITE);
 
-        likeService likeService = new likeService(connection);
+        likeController likeController = new likeController(connection);
         try {
-            likeCount = likeService.getLikeCount(postId); // 좋아요 개수 가져오기
-            isLiked = likeService.isLikedByUser(postId, userId); // 좋아요 상태 가져오기
+            likeCount = likeController.getLikeCount(postId); // 좋아요 개수 가져오기
+            isLiked = likeController.isLikedByUser(postId, userId); // 좋아요 상태 가져오기
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "좋아요 정보를 가져오는 중 오류가 발생했습니다.");
@@ -57,13 +57,13 @@ public class PostFooterPanel extends JPanel {
             isLiked = false;
         }
 
-        likeButton = createLikeButton(postId, "likedef.png", "likeclicked.png", likeService, userService, connection); // likeButton 생성
+        likeButton = createLikeButton(postId, "likedef.png", "likeclicked.png", likeController, userController, connection); // likeButton 생성
 
         likePanel.add(likeButton);
         likePanel.add(likeCountLabel);
 
-        bookmarkService bookmarks = new bookmarkService(connection);
-        JButton bookmarkButton = createBookmarkButton(postId, "bookmarkdef.png", "bookmarkClicked.png", userService, bookmarks);
+        bookmarkController bookmarks = new bookmarkController(connection);
+        JButton bookmarkButton = createBookmarkButton(postId, "bookmarkdef.png", "bookmarkClicked.png", userController, bookmarks);
 
         add(commentButton);
         add(likePanel);
@@ -84,7 +84,7 @@ public class PostFooterPanel extends JPanel {
         return button;
     }
 
-    private JButton createLikeButton(int postId, String defaultIconPath, String toggledIconPath, likeService likeService, userService userService, Connection connection) {
+    private JButton createLikeButton(int postId, String defaultIconPath, String toggledIconPath, likeController likeController, userController userController, Connection connection) {
         ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + defaultIconPath));
         ImageIcon toggledIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + toggledIconPath));
 
@@ -96,17 +96,17 @@ public class PostFooterPanel extends JPanel {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (userService.getCurrentUser() == null) {
+                if (userController.getCurrentUser() == null) {
                     JOptionPane.showMessageDialog(null, "로그인이 필요합니다.");
                     return;
                 }
                 try {
                     isLiked = !isLiked; 
                     if (isLiked) {
-                        likeService.addLike(postId, userService.getCurrentUser().getId());
+                        likeController.addLike(postId, userController.getCurrentUser().getId());
                         likeCount++;
                     } else {
-                        likeService.removeLike(postId, userService.getCurrentUser().getId());
+                        likeController.removeLike(postId, userController.getCurrentUser().getId());
                         likeCount--;
                     }
                     updateLikeUI(); 
@@ -116,7 +116,7 @@ public class PostFooterPanel extends JPanel {
                     JOptionPane.showMessageDialog(null, errorMessage);
                     try {
                         isLiked = !isLiked;
-                        likeCount = likeService.getLikeCount(postId);
+                        likeCount = likeController.getLikeCount(postId);
                         updateLikeUI();
 
                     } catch (SQLException ex2){
@@ -129,7 +129,7 @@ public class PostFooterPanel extends JPanel {
         return button;
     }
 
-    private JButton createBookmarkButton(int postId, String defaultIconPath, String toggledIconPath, userService userService, bookmarkService bookmarks) {
+    private JButton createBookmarkButton(int postId, String defaultIconPath, String toggledIconPath, userController userController, bookmarkController bookmarks) {
         ImageIcon defaultIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + defaultIconPath));
         ImageIcon toggledIcon = new ImageIcon(getClass().getResource("/TwitterIcons/" + toggledIconPath));
 
@@ -139,8 +139,8 @@ public class PostFooterPanel extends JPanel {
 
         try {
             bookmarkCount = bookmarks.getBookmarkCount(postId);
-            if (userService.getCurrentUser() != null) {
-                int userId = userService.getCurrentUser().getId();
+            if (userController.getCurrentUser() != null) {
+                int userId = userController.getCurrentUser().getId();
                 isBookmarked = bookmarks.isBookmarkedByUser(postId, userId);
             }
             button.setIcon(isBookmarked ? toggledIcon : defaultIcon);
@@ -155,8 +155,8 @@ public class PostFooterPanel extends JPanel {
         button.setContentAreaFilled(false);
         button.setHorizontalTextPosition(SwingConstants.RIGHT);
 
-        if (userService.getCurrentUser() != null) {
-            int userId = userService.getCurrentUser().getId();
+        if (userController.getCurrentUser() != null) {
+            int userId = userController.getCurrentUser().getId();
             boolean finalIsBookmarked = isBookmarked;
             int finalBookmarkCount = bookmarkCount;
 

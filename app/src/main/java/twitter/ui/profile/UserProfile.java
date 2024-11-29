@@ -1,9 +1,9 @@
 package twitter.ui.profile;
 
 import twitter.main.MainFrame;
-import twitter.service.postService;
-import twitter.service.userService;
-import twitter.service.followService;
+import twitter.Controller.postController;
+import twitter.Controller.userController;
+import twitter.Controller.followController;
 import twitter.ui.Comment.CommentUI;
 import twitter.ui.module.custombutton.RoundedRectangleButton;
 import twitter.ui.post.PostUI;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import twitter.model.User;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,19 +38,19 @@ public class UserProfile extends JPanel {
     private String userHandleText;
     private ImageIcon profileImageIcon;
     private Connection connection; // 데이터베이스 연결 객체
-    private userService userService;
-    private postService postService;
-    private followService followService;
+    private userController userController;
+    private postController postController;
+    private followController followController;
 
-    public UserProfile(MainFrame mainframe, Connection connection, userService userService, postService postService, int userId) {
+    public UserProfile(MainFrame mainframe, Connection connection, userController userController, postController postController, int userId) {
         this.mainframe = mainframe;
         this.userId = userId;
         this.connection = connection;
-        this.userService = userService;
-        this.postService = postService;
+        this.userController = userController;
+        this.postController = postController;
 
         // 현재 로그인한 사용자 ID를 userService에서 가져옴
-        User currentUser = userService.getCurrentUser();
+        User currentUser = userController.getCurrentUser();
         if (currentUser != null) {
             this.currentUserId = currentUser.getId(); // 로그인한 사용자의 ID 설정
         } else {
@@ -193,7 +192,7 @@ private JButton createFollowButton() {
     }
 
     private JPanel createUserHeaderPanel() {
-        followService followService = new followService();
+        followController followController = new followController();
         JPanel userHeaderPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -245,8 +244,8 @@ private JButton createFollowButton() {
         followInfoPanel.setBackground(new Color(7, 7, 7));
         followInfoPanel.setBounds(8, 155, 200, 30); // 핸들 아래 위치
 
-        List<User> followingList = followService.getFollowing(connection, userService.getCurrentUser());
-        List<User> followerList = followService.getFollowers(connection, userService.getCurrentUser());
+        List<User> followingList = followController.getFollowing(connection, userController.getCurrentUser());
+        List<User> followerList = followController.getFollowers(connection, userController.getCurrentUser());
 
         // 자신의 팔로잉 수 확인 라벨
         JLabel followingLabel = new JLabel("팔로잉 " + followingList.size());
@@ -430,7 +429,7 @@ private JButton createFollowButton() {
                 int bookmarks = 0;
 
                 // PostUI 객체 생성 시 mainFrame과 userId를 전달
-                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userService, postService, connection);
+                PostUI postUI = new PostUI(mainframe, postId, userId, userName, email, content, likes, comments, bookmarks, created_at, userController, postController, connection);
                 posts.add(postUI);
             }
 

@@ -4,8 +4,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.sql.Connection;
@@ -14,15 +12,15 @@ import java.util.List;
 
 import twitter.main.MainFrame;
 import twitter.model.User;
-import twitter.service.GeminiService;
-import twitter.service.userService;
+import twitter.Controller.GeminiController;
+import twitter.Controller.userController;
 
 
 public class Gemini_panel extends JPanel {
 
     private User currentUser;
     private Connection connection;
-    private userService userService;
+    private userController userController;
 
     private JTextField promptField;
     private JPanel chatArea;
@@ -31,10 +29,10 @@ public class Gemini_panel extends JPanel {
     private int chatAreaWidth = 160; // 채팅 영역 너비 증가
 
 
-    public Gemini_panel(MainFrame mainframe, Connection connection, userService userService) {
+    public Gemini_panel(MainFrame mainframe, Connection connection, userController userController) {
         this.connection = connection;
-        this.userService = userService;
-        this.currentUser = userService.getCurrentUser();
+        this.userController = userController;
+        this.currentUser = userController.getCurrentUser();
 
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -119,7 +117,7 @@ public class Gemini_panel extends JPanel {
         runButton.setMargin(new Insets(10, 15, 10, 15));
 
         runButton.addActionListener(e -> {
-            if (userService.getCurrentUser() == null) {
+            if (userController.getCurrentUser() == null) {
                 JOptionPane.showMessageDialog(Gemini_panel.this, "Gemini API를 사용하려면 로그인이 필요합니다.", "로그인 필요", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -129,7 +127,7 @@ public class Gemini_panel extends JPanel {
             //System.out.println("======================================================" + information);
             Thread apiThread = new Thread(() -> {
                 try {
-                    String response = GeminiService.callGeminiApi(prompt, information, null); // null은 추가적인 매개변수를 위한 자리입니다. 필요에 따라 수정하세요.
+                    String response = GeminiController.callGeminiApi(prompt, information, null); // null은 추가적인 매개변수를 위한 자리입니다. 필요에 따라 수정하세요.
                 
                     SwingUtilities.invokeLater(() -> {
                         addMessage("사용자", prompt);

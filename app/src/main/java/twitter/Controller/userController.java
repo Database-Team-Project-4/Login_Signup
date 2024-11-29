@@ -1,5 +1,5 @@
 // userService.java
-package twitter.service;
+package twitter.Controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 import twitter.model.User; // User 클래스가 twitter 패키지에 있다고 가정합니다.
 
-public class userService {
+public class userController {
 
     private User currentUser = null;
     private boolean isLoggedIn = false; // 로그인 상태를 나타내는 변수

@@ -1,11 +1,11 @@
-package twitter.service;
+package twitter.Controller;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class searchService {
+public class searchController {
 
     // 기본 통합 검색 (최신 순)
     public boolean defaultSearch(Connection con, String keyword) {

@@ -17,9 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import twitter.ui.mainPage.Main_Ui;
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 
 public class FollowerTopPanel extends JPanel {
     private JPanel followerUnderline, followingUnderline;
@@ -27,7 +26,7 @@ public class FollowerTopPanel extends JPanel {
     private Main_Ui mainUi;
     private MainFrame mainFrame;
 
-    public FollowerTopPanel(MainFrame mainFrame, Connection connection, userService userService, Main_Ui mainui) {
+    public FollowerTopPanel(MainFrame mainFrame, Connection connection, userController userController, Main_Ui mainui) {
         this.mainUi = mainui;
         this.mainFrame = mainFrame;
 
@@ -52,7 +51,7 @@ public class FollowerTopPanel extends JPanel {
             }
         });
 
-        String usernameText = (userService.getCurrentUser() != null) ? userService.getCurrentUser().getName() : "Need to Login";
+        String usernameText = (userController.getCurrentUser() != null) ? userController.getCurrentUser().getName() : "Need to Login";
         JLabel usernameLabel = new JLabel(usernameText, SwingConstants.CENTER);
 
         usernameLabel.setForeground(Color.WHITE);

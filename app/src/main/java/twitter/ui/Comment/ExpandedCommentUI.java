@@ -1,9 +1,8 @@
 package twitter.ui.Comment;
 
-import org.checkerframework.checker.units.qual.C;
 import twitter.main.MainFrame;
-import twitter.service.commentService;
-import twitter.service.userService;
+import twitter.Controller.commentController;
+import twitter.Controller.userController;
 import twitter.ui.module.CustomScrollbar;
 import twitter.ui.module.CustomSearchField;
 
@@ -17,14 +16,14 @@ public class ExpandedCommentUI extends JPanel {
     private int postId; // Post ID 저장
     private MainFrame mainFrame;
 
-    private userService userService;
+    private userController userController;
 
 
-    public ExpandedCommentUI(int postId, MainFrame mainFrame, userService userService, Connection connection) {
+    public ExpandedCommentUI(int postId, MainFrame mainFrame, userController userController, Connection connection) {
         this.postId = postId; // postId 설정
         this.mainFrame = mainFrame;
 
-        this.userService = userService;
+        this.userController = userController;
 
         setLayout(new BorderLayout());
         setBackground(Color.BLACK);
@@ -117,7 +116,7 @@ public class ExpandedCommentUI extends JPanel {
         sendButton.setFont(new Font("SansSerif", Font.BOLD, 12));
 
         sendButton.addActionListener(e -> {
-            if (!userService.isLoggedIn()) {
+            if (!userController.isLoggedIn()) {
                 JOptionPane.showMessageDialog(this, "로그인이 필요합니다.", "로그인 필요", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -130,8 +129,8 @@ public class ExpandedCommentUI extends JPanel {
                         // 연결 재시도 로직 추가 또는 예외 처리
                     }
                     // 댓글 추가
-                    commentService commentService = new commentService();
-                    commentService.addComment(postId, commentText, null, connection, userService.getCurrentUser().getId());
+                    commentController commentController = new commentController();
+                    commentController.addComment(postId, commentText, null, connection, userController.getCurrentUser().getId());
 
                     // 입력창 초기화
                     commentInputField.setSearchText("댓글을 입력하세요...");
@@ -173,8 +172,8 @@ public class ExpandedCommentUI extends JPanel {
     private List<CommentUI> getHardcodedComments(int postId, Connection connection) {
         List<CommentUI> comments = new ArrayList<>();
         try {
-            commentService commentService = new commentService();
-            comments = commentService.getCommentsByPostId(postId, connection); // 댓글 데이터 가져오기
+            commentController commentController = new commentController();
+            comments = commentController.getCommentsByPostId(postId, connection); // 댓글 데이터 가져오기
         } catch (SQLException e) {
             e.printStackTrace(); // 예외 로그 출력
         }

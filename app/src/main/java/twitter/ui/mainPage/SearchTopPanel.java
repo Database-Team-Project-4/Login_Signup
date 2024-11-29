@@ -1,7 +1,7 @@
 package twitter.ui.mainPage;
 
 import twitter.main.MainFrame;
-import twitter.service.userService;
+import twitter.Controller.userController;
 import twitter.ui.module.CustomSearchField;
 
 import javax.swing.*;
@@ -22,7 +22,7 @@ public class SearchTopPanel extends JPanel {
     private Runnable searchListener;
 
 
-    public SearchTopPanel(MainFrame mainframe, Connection connection, userService userService) {
+    public SearchTopPanel(MainFrame mainframe, Connection connection, userController userController) {
         setLayout(new BorderLayout());
         setBackground(new Color(7, 7, 7));
         this.mainFrame = mainframe;
